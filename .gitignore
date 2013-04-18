@@ -1,0 +1,69 @@
+*\bin
+*\obj
+*.user
+[Oo]bj
+[Bb]in
+*.user
+*.suo
+*.[Cc]ache
+*.bak
+*.ncb
+*.log 
+*.DS_Store
+[Tt]humbs.db 
+_ReSharper.*
+*.resharper
+Ankh.NoLoad
+*.vsmdi
+*.docstates
+TestResults
+*.InstallLog
+*.sdf
+#java specific
+*.class
+
+#netbeans ignore personal stuff 
+nbproject/private/
+
+
+## generic files to ignore
+*~
+*.lock
+*.DS_Store
+*.swp
+*.out
+# use glob syntax.
+syntax: glob
+*.ser
+*.class
+*~
+*.bak
+*.off
+*.old
+.DS_Store
+*.cache
+# logs
+derby.log
+#derby db
+lift_example
+# eclipse conf file
+#.settings
+#.classpath
+#.project
+.manager
+# building
+target
+build
+null
+tmp*
+temp*
+dist
+test-output
+# other scm
+.svn
+.CVS
+.hg*
+.metadata
+# switch to regexp syntax.
+# syntax: regexp
+# ^\.pc/
