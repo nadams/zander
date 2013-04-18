@@ -5,6 +5,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zander.Domain", "Zander.Dom
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zander.UnitTests", "Zander.UnitTests\Zander.UnitTests.csproj", "{09C906C8-715C-41E0-BA37-B6D632FB94AA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Provider.Net.Sockets", "Provider\Net\Provider.Net.Sockets\Provider.Net.Sockets.csproj", "{A37346C3-B2BC-4682-B298-A2DA7BA3869F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Provider", "Provider", "{8F39A304-CFB1-4216-8B92-DD7BD05E1A96}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Net", "Net", "{AF7C2C09-52BD-48A2-A3FD-927DC76C4DAF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,8 +25,16 @@ Global
 		{09C906C8-715C-41E0-BA37-B6D632FB94AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09C906C8-715C-41E0-BA37-B6D632FB94AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09C906C8-715C-41E0-BA37-B6D632FB94AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A37346C3-B2BC-4682-B298-A2DA7BA3869F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A37346C3-B2BC-4682-B298-A2DA7BA3869F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A37346C3-B2BC-4682-B298-A2DA7BA3869F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A37346C3-B2BC-4682-B298-A2DA7BA3869F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{AF7C2C09-52BD-48A2-A3FD-927DC76C4DAF} = {8F39A304-CFB1-4216-8B92-DD7BD05E1A96}
+		{A37346C3-B2BC-4682-B298-A2DA7BA3869F} = {AF7C2C09-52BD-48A2-A3FD-927DC76C4DAF}
 	EndGlobalSection
 EndGlobal
