@@ -39,6 +39,32 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\BotSkill.cs" />
+    <Compile Include="Entities\CompatFlags.cs" />
+    <Compile Include="Entities\CompatFlags2.cs" />
+    <Compile Include="Entities\DMFlags.cs" />
+    <Compile Include="Entities\DMFlags2.cs" />
+    <Compile Include="Entities\DMFlags3.cs" />
+    <Compile Include="Entities\GameMode.cs" />
+    <Compile Include="Entities\IMasterServer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Entities\Server.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Entities\MasterServer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Entities\MasterServerStatus.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Entities\Player.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Entities\Skill.cs" />
+    <Compile Include="Entities\Team.cs" />
+    <Compile Include="Entities\ZandronumMasterServer.cs" />
+    <Compile Include="Entities\ZandronumServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Query\ServerQueryEnum.cs" />
   </ItemGroup>
