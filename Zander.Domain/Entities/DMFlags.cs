@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Zander.Domain.Entities {
+
+	[Flags]
 	public enum DMFlags : uint {
+
 	}
 }
