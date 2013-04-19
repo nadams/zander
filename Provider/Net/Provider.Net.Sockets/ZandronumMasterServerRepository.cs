@@ -18,7 +18,9 @@ namespace Zander.Provider.Net.Sockets {
 		}
 
 		public IMasterServer Get(string address) {
-			throw new System.NotImplementedException();
+			IMasterServer masterServer = new ZandronumMasterServer(address);
+
+			return masterServer;
 		}
 	}
 }
