@@ -82,7 +82,7 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 		public void Get_NoServersOnMaster_EmptyServerListReturned() {
 			var apiMock = new Mock<IRemoteServerApi>();
 			apiMock.Setup(x => x.ChallengeMasterServer(It.IsAny<MasterChallengeRequest>())).Returns(this.goodMasterChallenge);
-			apiMock.Setup(x => x.GetServerList(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<short>())).Returns(Enumerable.Empty<IPEndPoint>());
+			apiMock.Setup(x => x.GetServerList()).Returns(Enumerable.Empty<ServerListResponse>());
 
 			var repo = new ZandronumMasterServerRepository(apiMock.Object);
 
