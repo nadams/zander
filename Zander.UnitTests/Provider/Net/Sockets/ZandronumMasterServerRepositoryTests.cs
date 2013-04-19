@@ -11,8 +11,14 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 
 		[TestMethod]
 		public void Get_Address_SameAsPassedIn() {
-			var api = new Mock<IRemoteServerApi>().Object;
-			var repo = new ZandronumMasterServerRepository(api);
+			var apiMock = new Mock<IRemoteServerApi>();
+			apiMock.Setup(x => x.ChallengeMasterServer(It.IsAny<MasterChallengeRequest>())).Returns(() => new MasterChallengeResponse { 
+				Status = MasterChallengeStatus.BeginningOfServerList,
+				ServerBlock = 0,
+				PacketNumber = 0
+			});
+
+			var repo = new ZandronumMasterServerRepository(apiMock.Object);
 			var address = "master.server:15000";
 
 			var masterServer = repo.Get("master.server:15000");
