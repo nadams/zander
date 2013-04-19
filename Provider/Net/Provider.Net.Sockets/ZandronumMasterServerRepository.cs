@@ -1,20 +1,20 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using Zander.Domain;
 using Zander.Domain.Entities;
 using Zander.Domain.Exceptions;
 using Zander.Domain.Remote;
-using System.Linq;
 
 namespace Zander.Provider.Net.Sockets {
 	public class ZandronumMasterServerRepository : IMasterServerRepository {
 		private readonly IRemoteServerApi serverApi;
 
-		public virtual int Challenge {
+		public int Challenge {
 			get { return 5660028; }
 		}
 
-		public virtual short ProtocolVersion {
+		public short ProtocolVersion {
 			get { return 2; }
 		}
 
@@ -38,6 +38,7 @@ namespace Zander.Provider.Net.Sockets {
 			var request = new MasterChallengeRequest(this.Challenge, this.ProtocolVersion);
 
 			var response = this.serverApi.ChallengeMasterServer(request);
+
 			switch(response.Status) {
 				case MasterChallengeValues.Banned:
 					throw new ClientBannedException();
