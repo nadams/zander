@@ -36,7 +36,7 @@ namespace Zander.Provider.Net.Sockets {
 			var response = this.serverApi.ChallengeMasterServer(request);
 			switch(response.Status) {
 				case MasterChallengeStatus.Banned:
-					break;
+					throw new ClientBannedException();
 
 				case MasterChallengeStatus.Denied:
 					break;
