@@ -39,7 +39,17 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 		[TestMethod]
 		[ExpectedException(typeof(ClientBannedException))]
 		public void Get_ClientHasBeenBanned_ClientBannedExceptionThrown() {
+			var apiMock = new Mock<IRemoteServerApi>();
+			apiMock.Setup(x => x.ChallengeMasterServer(It.IsAny<MasterChallengeRequest>())).Returns(() => {
+				var response = new MasterChallengeResponse();
+				response.Status = MasterChallengeStatus.Banned;
 
+				return response;
+			});
+
+			var repo = new ZandronumMasterServerRepository(apiMock.Object);
+
+			repo.Get("test");
 		}
 
 		[TestMethod]
