@@ -1,9 +1,10 @@
 ﻿using Zander.Domain;
 using Zander.Domain.Entities;
+using Zander.Domain.Remote;
 
 namespace Zander.Provider.Net.Sockets {
 	public class ZandronumMasterServerRepository : IMasterServerRepository {
-		private readonly ISocketApi sockets;
+		private readonly IRemoteServerApi serverApi;
 
 		public virtual long Challenge {
 			get { return 5660028L; }
@@ -13,8 +14,8 @@ namespace Zander.Provider.Net.Sockets {
 			get { return 2; }
 		}
 
-		public ZandronumMasterServerRepository(ISocketApi socketApi) {
-			this.sockets = socketApi;
+		public ZandronumMasterServerRepository(IRemoteServerApi serverApi) {
+			this.serverApi = serverApi;
 		}
 
 		public IMasterServer Get(string address) {
