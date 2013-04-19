@@ -1,4 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Linq;
+using System.Net;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Zander.Domain.Exceptions;
 using Zander.Domain.Remote;
@@ -25,7 +27,7 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 
 			var masterServer = repo.Get("master.server:15000");
 
-			Assert.AreEqual(masterServer.Address, address);
+			Assert.AreEqual(address, masterServer.Address);
 		}
 
 		[TestMethod]
@@ -80,10 +82,13 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 		public void Get_NoServersOnMaster_EmptyServerListReturned() {
 			var apiMock = new Mock<IRemoteServerApi>();
 			apiMock.Setup(x => x.ChallengeMasterServer(It.IsAny<MasterChallengeRequest>())).Returns(this.goodMasterChallenge);
+			apiMock.Setup(x => x.GetServerList(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<short>())).Returns(Enumerable.Empty<IPEndPoint>());
 
 			var repo = new ZandronumMasterServerRepository(apiMock.Object);
 
 			var masterServer = repo.Get("test");
+
+			Assert.AreEqual(0, masterServer.Servers.Count());
 		}
 	}
 }
