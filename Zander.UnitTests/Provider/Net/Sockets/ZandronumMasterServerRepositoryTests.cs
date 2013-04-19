@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -89,6 +90,22 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 			var masterServer = repo.Get("test");
 
 			Assert.AreEqual(0, masterServer.Servers.Count());
+		}
+
+		[TestMethod]
+		public void Get_ServersOnMaster_ResponseConvertedToIPEndPoints() {
+			var apiMock = new Mock<IRemoteServerApi>();
+			apiMock.Setup(x => x.ChallengeMasterServer(It.IsAny<MasterChallengeRequest>())).Returns(this.goodMasterChallenge);
+			apiMock.Setup(x => x.GetServerList()).Returns(new List<ServerListResponse> {
+				new ServerListResponse(10, 0, 0, 1, 10666)
+			});
+
+			var repo = new ZandronumMasterServerRepository(apiMock.Object);
+
+			var masterServer = repo.Get("test");
+
+			Assert.AreEqual(1, masterServer.Servers.Count());
+			Assert.AreEqual("10.0.0.1:10666", masterServer.Servers.First().ToString());
 		}
 	}
 }

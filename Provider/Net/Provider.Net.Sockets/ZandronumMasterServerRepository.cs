@@ -4,6 +4,7 @@ using Zander.Domain;
 using Zander.Domain.Entities;
 using Zander.Domain.Exceptions;
 using Zander.Domain.Remote;
+using System.Linq;
 
 namespace Zander.Provider.Net.Sockets {
 	public class ZandronumMasterServerRepository : IMasterServerRepository {
@@ -22,10 +23,13 @@ namespace Zander.Provider.Net.Sockets {
 		}
 
 		public IMasterServer Get(string address) {
-			IMasterServer masterServer = new ZandronumMasterServer(address);
+			var servers = new List<IPEndPoint>();
+			IMasterServer masterServer = new ZandronumMasterServer(address, servers);
 
 			var response = this.ChallengeMaster();
 			var endpoints = this.GetServerEndpoints(response.ServerBlock);
+
+			servers.AddRange(endpoints);
 
 			return masterServer;
 		}
@@ -59,7 +63,13 @@ namespace Zander.Provider.Net.Sockets {
 				throw new UnknownMasterServerResponseException();
 			}
 
-			var endpoints = new List<IPEndPoint>();
+			var responses = this.serverApi.GetServerList();
+
+			var endpoints = responses.Select(x => {
+				var ipAddress = new IPAddress(new byte[] { x.Octet1, x.Octet2, x.Octet3, x.Octet4 });
+
+				return new IPEndPoint(ipAddress, x.Port);
+			});
 
 			return endpoints;
 		}
