@@ -75,7 +75,7 @@
     <Compile Include="Query\ServerQueryEnum.cs" />
     <Compile Include="Remote\MasterChallengeRequest.cs" />
     <Compile Include="Remote\MasterChallengeResponse.cs" />
-    <Compile Include="Remote\MasterChallengeStatus.cs" />
+    <Compile Include="Remote\MasterChallengeValues.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

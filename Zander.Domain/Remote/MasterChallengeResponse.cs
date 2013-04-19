@@ -1,8 +1,8 @@
 ﻿
 namespace Zander.Domain.Remote {
 	public class MasterChallengeResponse {
-		public MasterChallengeStatus Status { get; set; }
+		public MasterChallengeValues Status { get; set; }
+		public MasterChallengeValues ServerBlock { get; set; }
 		public byte PacketNumber { get; set; }
-		public int ServerBlock { get; set; }
 	}
 }

@@ -1,4 +1,6 @@
-﻿using Zander.Domain;
+﻿using System.Collections.Generic;
+using System.Net;
+using Zander.Domain;
 using Zander.Domain.Entities;
 using Zander.Domain.Exceptions;
 using Zander.Domain.Remote;
@@ -23,6 +25,7 @@ namespace Zander.Provider.Net.Sockets {
 			IMasterServer masterServer = new ZandronumMasterServer(address);
 
 			var response = this.ChallengeMaster();
+			var endpoints = this.GetServerEndpoints(response.ServerBlock);
 
 			return masterServer;
 		}
@@ -35,16 +38,16 @@ namespace Zander.Provider.Net.Sockets {
 
 			var response = this.serverApi.ChallengeMasterServer(request);
 			switch(response.Status) {
-				case MasterChallengeStatus.Banned:
+				case MasterChallengeValues.Banned:
 					throw new ClientBannedException();
 
-				case MasterChallengeStatus.Denied:
+				case MasterChallengeValues.Denied:
 					throw new ClientIgnoredException();
 
-				case MasterChallengeStatus.ObsoleteProtocol:
+				case MasterChallengeValues.ObsoleteProtocol:
 					throw new ObsoleteProtocolException();
 
-				case MasterChallengeStatus.BeginningOfServerList:
+				case MasterChallengeValues.BeginningOfServerList:
 					break;
 
 				default:
@@ -52,6 +55,16 @@ namespace Zander.Provider.Net.Sockets {
 			}
 
 			return response;
+		}
+
+		private IEnumerable<IPEndPoint> GetServerEndpoints(MasterChallengeValues status) {
+			if(status != MasterChallengeValues.ServerBlock) {
+				throw new UnknownMasterServerResponseException();
+			}
+
+			var endpoints = new List<IPEndPoint>();
+
+			return endpoints;
 		}
 	}
 }

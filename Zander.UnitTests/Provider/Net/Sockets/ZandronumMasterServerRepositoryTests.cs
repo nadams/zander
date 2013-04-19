@@ -13,7 +13,7 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 		public void Get_Address_SameAsPassedIn() {
 			var apiMock = new Mock<IRemoteServerApi>();
 			apiMock.Setup(x => x.ChallengeMasterServer(It.IsAny<MasterChallengeRequest>())).Returns(() => new MasterChallengeResponse { 
-				Status = MasterChallengeStatus.BeginningOfServerList,
+				Status = MasterChallengeValues.BeginningOfServerList,
 				ServerBlock = 0,
 				PacketNumber = 0
 			});
@@ -31,7 +31,7 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 		public void Get_ClientUsingObsoleteProtocol_ObsoleteProtocolExceptionThrown() {
 			var apiMock = new Mock<IRemoteServerApi>();
 			apiMock.Setup(x => x.ChallengeMasterServer(It.IsAny<MasterChallengeRequest>())).Returns(new MasterChallengeResponse {
-				Status = MasterChallengeStatus.ObsoleteProtocol
+				Status = MasterChallengeValues.ObsoleteProtocol
 			});
 
 			var repo = new ZandronumMasterServerRepository(apiMock.Object);
@@ -44,7 +44,7 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 		public void Get_ClientHasBeenBanned_ClientBannedExceptionThrown() {
 			var apiMock = new Mock<IRemoteServerApi>();
 			apiMock.Setup(x => x.ChallengeMasterServer(It.IsAny<MasterChallengeRequest>())).Returns(new MasterChallengeResponse {
-				Status = MasterChallengeStatus.Banned
+				Status = MasterChallengeValues.Banned
 			});
 
 			var repo = new ZandronumMasterServerRepository(apiMock.Object);
@@ -57,7 +57,7 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 		public void Get_ClientHasMadeTooManyRequests_ClientIgnoredExceptionThrown() {
 			var apiMock = new Mock<IRemoteServerApi>();
 			apiMock.Setup(x => x.ChallengeMasterServer(It.IsAny<MasterChallengeRequest>())).Returns(new MasterChallengeResponse {
-				Status = MasterChallengeStatus.Denied
+				Status = MasterChallengeValues.Denied
 			});
 
 			var repo = new ZandronumMasterServerRepository(apiMock.Object);
@@ -70,7 +70,7 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 		public void Get_ClientGetUnknownStatus_UnknownMasterServerResponseExceptionThrown() {
 			var apiMock = new Mock<IRemoteServerApi>();
 			apiMock.Setup(x => x.ChallengeMasterServer(It.IsAny<MasterChallengeRequest>())).Returns(new MasterChallengeResponse {
-				Status = MasterChallengeStatus.Unknown
+				Status = MasterChallengeValues.Unknown
 			});
 
 			var repo = new ZandronumMasterServerRepository(apiMock.Object);
