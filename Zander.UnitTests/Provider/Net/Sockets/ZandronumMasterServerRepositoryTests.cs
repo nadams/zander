@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Zander.Domain.Exceptions;
@@ -23,7 +22,10 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 			var apiMock = new Mock<IRemoteServerApi>();
 			apiMock.Setup(x => x.ChallengeMasterServer(It.IsAny<MasterChallengeRequest>())).Returns(this.goodMasterChallenge);
 
-			var repo = new ZandronumMasterServerRepository(apiMock.Object);
+			var apiProviderMock = new Mock<IRemoteServerApiProvider>();
+			apiProviderMock.Setup(x => x.GetInstance(It.IsAny<string>(), It.IsAny<int>())).Returns(apiMock.Object);
+
+			var repo = new ZandronumMasterServerRepository(apiProviderMock.Object);
 			var address = "master.server:15000";
 
 			var masterServer = repo.Get("master.server:15000");
@@ -38,7 +40,10 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 			apiMock.Setup(x => x.ChallengeMasterServer(It.IsAny<MasterChallengeRequest>()))
 				.Returns(new MasterChallengeResponse(MasterChallengeValues.ObsoleteProtocol, 0, 0));
 
-			var repo = new ZandronumMasterServerRepository(apiMock.Object);
+			var apiProviderMock = new Mock<IRemoteServerApiProvider>();
+			apiProviderMock.Setup(x => x.GetInstance(It.IsAny<string>(), It.IsAny<int>())).Returns(apiMock.Object);
+
+			var repo = new ZandronumMasterServerRepository(apiProviderMock.Object);
 
 			repo.Get("test");
 		}
@@ -50,7 +55,10 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 			apiMock.Setup(x => x.ChallengeMasterServer(It.IsAny<MasterChallengeRequest>()))
 				.Returns(new MasterChallengeResponse(MasterChallengeValues.Banned, 0, 0));
 
-			var repo = new ZandronumMasterServerRepository(apiMock.Object);
+			var apiProviderMock = new Mock<IRemoteServerApiProvider>();
+			apiProviderMock.Setup(x => x.GetInstance(It.IsAny<string>(), It.IsAny<int>())).Returns(apiMock.Object);
+
+			var repo = new ZandronumMasterServerRepository(apiProviderMock.Object);
 
 			repo.Get("test");
 		}
@@ -62,7 +70,10 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 			apiMock.Setup(x => x.ChallengeMasterServer(It.IsAny<MasterChallengeRequest>()))
 				.Returns(new MasterChallengeResponse(MasterChallengeValues.Denied, 0, 0));
 
-			var repo = new ZandronumMasterServerRepository(apiMock.Object);
+			var apiProviderMock = new Mock<IRemoteServerApiProvider>();
+			apiProviderMock.Setup(x => x.GetInstance(It.IsAny<string>(), It.IsAny<int>())).Returns(apiMock.Object);
+
+			var repo = new ZandronumMasterServerRepository(apiProviderMock.Object);
 
 			repo.Get("test");
 		}
@@ -74,7 +85,10 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 			apiMock.Setup(x => x.ChallengeMasterServer(It.IsAny<MasterChallengeRequest>()))
 				.Returns(new MasterChallengeResponse(MasterChallengeValues.Unknown, 0, 0));
 
-			var repo = new ZandronumMasterServerRepository(apiMock.Object);
+			var apiProviderMock = new Mock<IRemoteServerApiProvider>();
+			apiProviderMock.Setup(x => x.GetInstance(It.IsAny<string>(), It.IsAny<int>())).Returns(apiMock.Object);
+
+			var repo = new ZandronumMasterServerRepository(apiProviderMock.Object);
 
 			repo.Get("test");
 		}
@@ -85,7 +99,10 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 			apiMock.Setup(x => x.ChallengeMasterServer(It.IsAny<MasterChallengeRequest>())).Returns(this.goodMasterChallenge);
 			apiMock.Setup(x => x.GetServerList()).Returns(Enumerable.Empty<ServerListResponse>());
 
-			var repo = new ZandronumMasterServerRepository(apiMock.Object);
+			var apiProviderMock = new Mock<IRemoteServerApiProvider>();
+			apiProviderMock.Setup(x => x.GetInstance(It.IsAny<string>(), It.IsAny<int>())).Returns(apiMock.Object);
+
+			var repo = new ZandronumMasterServerRepository(apiProviderMock.Object);
 
 			var masterServer = repo.Get("test");
 
@@ -100,7 +117,10 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 				new ServerListResponse(10, 0, 0, 1, 10666)
 			});
 
-			var repo = new ZandronumMasterServerRepository(apiMock.Object);
+			var apiProviderMock = new Mock<IRemoteServerApiProvider>();
+			apiProviderMock.Setup(x => x.GetInstance(It.IsAny<string>(), It.IsAny<int>())).Returns(apiMock.Object);
+
+			var repo = new ZandronumMasterServerRepository(apiProviderMock.Object);
 
 			var masterServer = repo.Get("test");
 

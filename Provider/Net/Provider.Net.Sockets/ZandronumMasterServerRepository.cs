@@ -8,7 +8,7 @@ using Zander.Domain.Remote;
 
 namespace Zander.Provider.Net.Sockets {
 	public class ZandronumMasterServerRepository : IMasterServerRepository {
-		private readonly IRemoteServerApi serverApi;
+		private readonly IRemoteServerApiProvider serverApiProvider;
 
 		public int Challenge {
 			get { return 5660028; }
@@ -18,26 +18,27 @@ namespace Zander.Provider.Net.Sockets {
 			get { return 2; }
 		}
 
-		public ZandronumMasterServerRepository(IRemoteServerApi serverApi) {
-			this.serverApi = serverApi;
+		public ZandronumMasterServerRepository(IRemoteServerApiProvider serverApiProvider) {
+			this.serverApiProvider = serverApiProvider;
 		}
 
 		public IMasterServer Get(string address) {
 			var servers = new List<IPEndPoint>();
 			IMasterServer masterServer = new ZandronumMasterServer(address, servers);
 
-			var response = this.ChallengeMaster();
-			var endpoints = this.GetServerEndpoints(response.ServerBlock);
+			var serverApi = this.serverApiProvider.GetInstance(address, 1000);
+			var response = this.ChallengeMaster(serverApi);
+			var endpoints = this.GetServerEndpoints(serverApi, response.ServerBlock);
 
 			servers.AddRange(endpoints);
 
 			return masterServer;
 		}
 
-		private MasterChallengeResponse ChallengeMaster() {
+		private MasterChallengeResponse ChallengeMaster(IRemoteServerApi api) {
 			var request = new MasterChallengeRequest(this.Challenge, this.ProtocolVersion);
 
-			var response = this.serverApi.ChallengeMasterServer(request);
+			var response = api.ChallengeMasterServer(request);
 
 			switch(response.Status) {
 				case MasterChallengeValues.Banned:
@@ -59,12 +60,12 @@ namespace Zander.Provider.Net.Sockets {
 			return response;
 		}
 
-		private IEnumerable<IPEndPoint> GetServerEndpoints(MasterChallengeValues status) {
+		private IEnumerable<IPEndPoint> GetServerEndpoints(IRemoteServerApi serverApi, MasterChallengeValues status) {
 			if(status != MasterChallengeValues.ServerBlock) {
 				throw new UnknownMasterServerResponseException();
 			}
 
-			var responses = this.serverApi.GetServerList();
+			var responses = serverApi.GetServerList();
 
 			var endpoints = responses.Select(x => {
 				var ipAddress = new IPAddress(new byte[] { x.Octet1, x.Octet2, x.Octet3, x.Octet4 });

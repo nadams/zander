@@ -1,0 +1,33 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
+using Zander.Domain.Remote;
+
+namespace Zander.Provider.Net.Sockets {
+	public class RemoteServerApi : IRemoteServerApi {
+
+		private readonly string address;
+		private readonly int timeout;
+
+		public RemoteServerApi(string address, int timeout) {
+			this.address = address;
+			this.timeout = timeout;
+		}
+
+		public MasterChallengeResponse ChallengeMasterServer(MasterChallengeRequest request) {
+			return null;
+		}
+
+		public IEnumerable<ServerListResponse> GetServerList() {
+			throw new NotImplementedException();
+		}
+
+		public Domain.Entities.Server GetServerInfo(IPEndPoint serverEndpoint) {
+			throw new NotImplementedException();
+		}
+
+		public void Dispose() {
+			throw new NotImplementedException();
+		}
+	}
+}
