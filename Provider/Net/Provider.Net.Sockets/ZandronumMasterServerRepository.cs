@@ -39,7 +39,7 @@ namespace Zander.Provider.Net.Sockets {
 					throw new ClientBannedException();
 
 				case MasterChallengeStatus.Denied:
-					break;
+					throw new ClientIgnoredException();
 
 				case MasterChallengeStatus.ObsoleteProtocol:
 					throw new ObsoleteProtocolException();
@@ -48,7 +48,7 @@ namespace Zander.Provider.Net.Sockets {
 					break;
 
 				default:
-					break;
+					throw new UnknownMasterServerResponseException();
 			}
 
 			return response;

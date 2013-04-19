@@ -55,7 +55,33 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 		[TestMethod]
 		[ExpectedException(typeof(ClientIgnoredException))]
 		public void Get_ClientHasMadeTooManyRequests_ClientIgnoredExceptionThrown() {
+			var apiMock = new Mock<IRemoteServerApi>();
+			apiMock.Setup(x => x.ChallengeMasterServer(It.IsAny<MasterChallengeRequest>())).Returns(() => {
+				var response = new MasterChallengeResponse();
+				response.Status = MasterChallengeStatus.Denied;
 
+				return response;
+			});
+
+			var repo = new ZandronumMasterServerRepository(apiMock.Object);
+
+			repo.Get("test");
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(UnknownMasterServerResponseException))]
+		public void Get_ClientGetUnknownStatus_UnknownMasterServerResponseExceptionThrown() {
+			var apiMock = new Mock<IRemoteServerApi>();
+			apiMock.Setup(x => x.ChallengeMasterServer(It.IsAny<MasterChallengeRequest>())).Returns(() => {
+				var response = new MasterChallengeResponse();
+				response.Status = MasterChallengeStatus.Unknown;
+
+				return response;
+			});
+
+			var repo = new ZandronumMasterServerRepository(apiMock.Object);
+
+			repo.Get("test");
 		}
 	}
 }
