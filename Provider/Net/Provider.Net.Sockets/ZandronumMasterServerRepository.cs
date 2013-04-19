@@ -31,10 +31,7 @@ namespace Zander.Provider.Net.Sockets {
 		}
 
 		private MasterChallengeResponse ChallengeMaster() {
-			var request = new MasterChallengeRequest {
-				Challenge = this.Challenge,
-				ProtocolVersion = this.ProtocolVersion
-			};
+			var request = new MasterChallengeRequest(this.Challenge, this.ProtocolVersion);
 
 			var response = this.serverApi.ChallengeMasterServer(request);
 			switch(response.Status) {
