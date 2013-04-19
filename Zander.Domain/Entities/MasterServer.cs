@@ -3,7 +3,7 @@
 namespace Zander.Domain.Entities {
 	public abstract class MasterServer : IMasterServer {
 		public abstract short ProtocolVersion { get; }
-		public abstract long Challenge { get; }
+		public abstract int Challenge { get; }
 
 		private readonly ICollection<Server> servers;
 		private readonly string address;

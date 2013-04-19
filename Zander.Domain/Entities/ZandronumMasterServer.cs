@@ -4,8 +4,8 @@
 			get { return 2; }
 		}
 
-		public override long Challenge {
-			get { return 5660028L; }
+		public override int Challenge {
+			get { return 5660028; }
 		}
 
 		public ZandronumMasterServer(string address) : base(address) { }

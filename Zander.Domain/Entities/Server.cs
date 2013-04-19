@@ -2,7 +2,7 @@
 
 namespace Zander.Domain.Entities {
 	public abstract class Server {
-		public abstract long Challenge { get; }
+		public abstract int Challenge { get; }
 
 		public bool RequiresPassword { get; set; }
 		public bool RequiresJoinPassword { get; set; }
@@ -16,7 +16,7 @@ namespace Zander.Domain.Entities {
 		public int PointLimit { get; set; }
 		public int WinLimit { get; set; }
 		public int NumberOfTeams { get; set; }
-		public double TeamDamage { get; set; }
+		public float TeamDamage { get; set; }
 		public string WadUrl { get; set; }
 		public string DisplayName { get; set; }
 		public string AdminEmail { get; set; }
