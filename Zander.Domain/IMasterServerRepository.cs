@@ -2,7 +2,7 @@
 
 namespace Zander.Domain {
 	public interface IMasterServerRepository {
-		long Challenge { get; }
+		int Challenge { get; }
 		short ProtocolVersion { get; }
 		IMasterServer Get(string address);
 	}

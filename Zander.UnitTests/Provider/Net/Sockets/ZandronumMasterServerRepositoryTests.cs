@@ -21,9 +21,19 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 		}
 
 		[TestMethod]
-		[ExpectedException(typeof(ObsoleteProtocolVersionException))]
-		public void Get_ClientUsingObsoleteProtocol_ObsoleteProtocolVersionExceptionThrown() {
-			
+		[ExpectedException(typeof(ObsoleteProtocolException))]
+		public void Get_ClientUsingObsoleteProtocol_ObsoleteProtocolExceptionThrown() {
+			var apiMock = new Mock<IRemoteServerApi>();
+			apiMock.Setup(x => x.ChallengeMasterServer(It.IsAny<MasterChallengeRequest>())).Returns(() => {
+				var response = new MasterChallengeResponse();
+				response.Status = MasterChallengeStatus.ObsoleteProtocol;
+
+				return response;
+			});
+
+			var repo = new ZandronumMasterServerRepository(apiMock.Object);
+
+			repo.Get("test");
 		}
 
 		[TestMethod]

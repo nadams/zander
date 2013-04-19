@@ -67,13 +67,14 @@
     <Compile Include="Entities\ZandronumServer.cs" />
     <Compile Include="Exceptions\ClientBannedException.cs" />
     <Compile Include="Exceptions\ClientIgnoredException.cs" />
-    <Compile Include="Exceptions\ObsoleteProtocolVersionException.cs" />
+    <Compile Include="Exceptions\ObsoleteProtocolException.cs" />
     <Compile Include="IMasterServerRepository.cs" />
     <Compile Include="Remote\IRemoteServerApi.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Query\ServerQueryEnum.cs" />
-    <Compile Include="Remote\ChallengeRequest.cs" />
-    <Compile Include="Remote\ChallengeResponse.cs" />
+    <Compile Include="Remote\MasterChallengeRequest.cs" />
+    <Compile Include="Remote\MasterChallengeResponse.cs" />
+    <Compile Include="Remote\MasterChallengeStatus.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

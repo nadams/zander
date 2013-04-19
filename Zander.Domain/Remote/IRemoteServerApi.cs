@@ -5,7 +5,7 @@ using Zander.Domain.Entities;
 
 namespace Zander.Domain.Remote {
 	public interface IRemoteServerApi : IDisposable {
-		ChallengeResponse ChallengeMasterServer(ChallengeRequest request);
+		MasterChallengeResponse ChallengeMasterServer(MasterChallengeRequest request);
 		IEnumerable<IPEndPoint> GetServerList(string masterServerAddress, long challenge, short protocolVersion);
 		Server GetServerInfo(IPEndPoint serverEndpoint);
 	}
