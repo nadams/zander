@@ -40,7 +40,7 @@
   <ItemGroup>
     <Compile Include="IO\CustomBinaryReader.cs" />
     <Compile Include="IO\HuffmanWrapper.cs" />
-    <Compile Include="IO\IHuffmanEncoding.cs" />
+    <Compile Include="IO\INetworkCompressor.cs" />
     <Compile Include="IO\ISocket.cs" />
     <Compile Include="IO\ISocketProvider.cs" />
     <Compile Include="IO\SocketWrapper.cs" />
