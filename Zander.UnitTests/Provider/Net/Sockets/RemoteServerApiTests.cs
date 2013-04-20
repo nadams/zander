@@ -8,7 +8,7 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 
 		[TestMethod]
 		public void ChallengeMasterServer_() {
-
+			Assert.Fail();
 		}
 
 		private class EmptyNetworkCompressor : INetworkCompressor {
