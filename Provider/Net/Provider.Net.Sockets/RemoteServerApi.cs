@@ -47,11 +47,13 @@ namespace Zander.Provider.Net.Sockets {
 						response.ServerBlock = (MasterChallengeValues)reader.ReadInt32();
 
 						if(response.ServerBlock == MasterChallengeValues.ServerBlock) {
-							var servers = new List<IPEndPoint>();
+							var servers = new List<ServerListResponse>();
 
 							do {
 								this.ReadServers(reader, servers);
 							} while(((MasterChallengeValues)reader.ReadByte()) == MasterChallengeValues.EndOfCurrentList);
+
+							response.Servers = servers;
 						}
 					}
 				}
@@ -60,7 +62,7 @@ namespace Zander.Provider.Net.Sockets {
 			return response;
 		}
 
-		private void ReadServers(BinaryReader reader, List<IPEndPoint> servers) {
+		private void ReadServers(BinaryReader reader, List<ServerListResponse> servers) {
 			byte numberOfServers;
 
 			while((numberOfServers = reader.ReadByte()) > 0) {
@@ -68,13 +70,11 @@ namespace Zander.Provider.Net.Sockets {
 				byte octet2 = reader.ReadByte();
 				byte octet3 = reader.ReadByte();
 				byte octet4 = reader.ReadByte();
-				short port = reader.ReadInt16();
+				ushort port = reader.ReadUInt16();
 
-				var ipAddress = new IPAddress(new byte[] { octet1, octet2, octet3, octet4 });
+				var response = new ServerListResponse(octet1, octet2, octet3, octet4, port);
 
-				var endpoint = new IPEndPoint(ipAddress, port);
-
-				servers.Add(endpoint);
+				servers.Add(response);
 			}
 		}
 
