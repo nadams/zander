@@ -1,34 +1,46 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
+﻿using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace Zander.Provider.Net.Sockets.IO {
 	public class CustomBinaryReader : BinaryReader {
 		private readonly Encoding encoding;
 
-		public CustomBinaryReader(Stream input) : base(input) {
+		public readonly int maxStringSize;
+
+		public CustomBinaryReader(Stream input) : this(input, Encoding.Default) {
 			this.encoding = Encoding.Default;
 		}
 
-		public CustomBinaryReader(Stream input, Encoding encoding) : base(input, encoding) {
+		public CustomBinaryReader(Stream input, Encoding encoding) : this(input, encoding, true) {
 			this.encoding = encoding;
 		}
 
-		public CustomBinaryReader(Stream input, Encoding encoding, bool leaveOpen) : base(input, encoding, leaveOpen) {
+		public CustomBinaryReader(Stream input, Encoding encoding, bool leaveOpen, int maxStringSize = 4096) : base(input, encoding, leaveOpen) {
 			this.encoding = encoding;
+			this.maxStringSize = maxStringSize;
 		}
 
 		public override string ReadString() {
-			var bytes = new List<byte>();
+			var bytes = new byte[maxStringSize];
 
 			byte b;
-
+			int index = 0;
 			while((b = this.ReadByte()) > 0) {
-				bytes.Add(b);
+				bytes[index] = b;
+
+				index++;
+
+				if(this.PeekChar() == -1) {
+					throw new InvalidDataException("String is not null terminated");
+				} 
+
+				if(index >= maxStringSize) {
+					throw new InternalBufferOverflowException(string.Format("String is larger than {0} bytes", maxStringSize));
+				}
 			}
 
-			return this.encoding.GetString(bytes.ToArray());
+			return this.encoding.GetString(bytes.TakeWhile(x => x > 0).ToArray());
 		}
 	}
 }
