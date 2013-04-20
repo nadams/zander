@@ -133,5 +133,26 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 			Assert.AreEqual(1, masterServer.Servers.Count());
 			Assert.AreEqual("10.0.0.1:10666", masterServer.Servers.First().ToString());
 		}
+
+		[TestMethod]
+		[ExpectedException(typeof(UnknownMasterServerResponseException))]
+		public void Get_ServersOnMasterInvalidServerBlockValue_UnknownMasterServerResponseExceptionThrown() {
+			var apiMock = new Mock<IRemoteServerApi>();
+			apiMock.Setup(x => x.ChallengeMasterServer(It.IsAny<MasterChallengeRequest>())).Returns(new MasterChallengeResponse {
+				PacketNumber = 0,
+				ServerBlock = MasterChallengeValues.Unknown,
+				Status = MasterChallengeValues.BeginningOfServerList,
+				Servers = new List<ServerListResponse> { 
+					new ServerListResponse(10, 0, 0, 1, 10666)
+				}
+			});
+
+			var apiProviderMock = new Mock<IRemoteServerApiProvider>();
+			apiProviderMock.Setup(x => x.GetInstance(It.IsAny<string>(), It.IsAny<int>())).Returns(apiMock.Object);
+
+			var repo = new ZandronumMasterServerRepository(apiProviderMock.Object);
+
+			var masterServer = repo.Get("test");
+		}
 	}
 }
