@@ -15,6 +15,7 @@ namespace Zander.Provider.Net.Sockets {
 		}
 
 		public MasterChallengeResponse ChallengeMasterServer(MasterChallengeRequest request) {
+
 			return null;
 		}
 
