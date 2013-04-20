@@ -2,10 +2,7 @@
 using System.Net;
 
 namespace Zander.Domain.Entities {
-	public abstract class MasterServer : IMasterServer {
-		public abstract short ProtocolVersion { get; }
-		public abstract int Challenge { get; }
-
+	public class MasterServer : IMasterServer {
 		private readonly IEnumerable<IPEndPoint> servers;
 		private readonly string address;
 		private readonly MasterServerStatus status;

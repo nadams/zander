@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 
 namespace Zander.Domain.Entities {
-	public abstract class Server {
-		public abstract int Challenge { get; }
-
+	public class Server {
 		public bool RequiresPassword { get; set; }
 		public bool RequiresJoinPassword { get; set; }
 		public bool EnforceMasterBanlist { get; set; }

@@ -10,8 +10,12 @@ namespace Zander.Provider.Net.Sockets {
 	public class ZandronumMasterServerRepository : IMasterServerRepository {
 		private readonly IRemoteServerApiProvider serverApiProvider;
 
-		public int Challenge {
+		public int MasterChallenge {
 			get { return 5660028; }
+		}
+
+		public int ServerChallenge {
+			get { return 199; }
 		}
 
 		public short ProtocolVersion {
@@ -24,7 +28,7 @@ namespace Zander.Provider.Net.Sockets {
 
 		public IMasterServer Get(string address) {
 			var servers = new List<IPEndPoint>();
-			IMasterServer masterServer = new ZandronumMasterServer(address, servers);
+			var masterServer = new MasterServer(address, servers);
 
 			var serverApi = this.serverApiProvider.GetInstance(address, 1000);
 			var response = this.ChallengeMaster(serverApi);
@@ -36,7 +40,7 @@ namespace Zander.Provider.Net.Sockets {
 		}
 
 		private MasterChallengeResponse ChallengeMaster(IRemoteServerApi api) {
-			var request = new MasterChallengeRequest(this.Challenge, this.ProtocolVersion);
+			var request = new MasterChallengeRequest(this.MasterChallenge, this.ProtocolVersion);
 
 			var response = api.ChallengeMasterServer(request);
 
