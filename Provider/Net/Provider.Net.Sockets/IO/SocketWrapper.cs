@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Net.Sockets;
 
 namespace Zander.Provider.Net.Sockets.IO {
@@ -29,8 +30,14 @@ namespace Zander.Provider.Net.Sockets.IO {
 			return this.socket.ReceiveFrom(buffer, flags, ref endpoint);
 		}
 
-		public void Dispose() {
+		protected virtual void Dispose(bool disposing) {
 			this.socket.Dispose();
+		}
+
+		public void Dispose() {
+			this.Dispose(true);
+
+			GC.SuppressFinalize(this);
 		}
 	}
 }

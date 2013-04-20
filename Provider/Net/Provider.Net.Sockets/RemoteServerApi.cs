@@ -82,10 +82,6 @@ namespace Zander.Provider.Net.Sockets {
 			throw new NotImplementedException();
 		}
 
-		public void Dispose() {
-			throw new NotImplementedException();
-		}
-
 		private MemoryStream SendAndGetResponse(MemoryStream outStream) {
 			MemoryStream result = null;
 
