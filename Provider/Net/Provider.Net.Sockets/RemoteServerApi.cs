@@ -37,18 +37,42 @@ namespace Zander.Provider.Net.Sockets {
 				using(var inStream = this.SendAndGetResponse(outStream)) {
 					var reader = new BinaryReader(inStream, Encoding.Default);
 
-					MasterChallengeValues masterStatus = (MasterChallengeValues)reader.ReadInt32();
+					response.Status = (MasterChallengeValues)reader.ReadInt32();
 
-					response.Status = masterStatus;
 					if(response.Status == MasterChallengeValues.BeginningOfServerList) {
 						response.PacketNumber = reader.ReadByte();
+						response.ServerBlock = (MasterChallengeValues)reader.ReadInt32();
 
+						if(response.ServerBlock == MasterChallengeValues.ServerBlock) {
+							var servers = new List<IPEndPoint>();
 
+							do {
+								this.ReadServers(reader, servers);
+							} while(((MasterChallengeValues)reader.ReadByte()) == MasterChallengeValues.EndOfCurrentList);
+						}
 					}
 				}
 			}
 
 			return response;
+		}
+
+		private void ReadServers(BinaryReader reader, List<IPEndPoint> servers) {
+			byte numberOfServers;
+
+			while((numberOfServers = reader.ReadByte()) > 0) {
+				byte octet1 = reader.ReadByte();
+				byte octet2 = reader.ReadByte();
+				byte octet3 = reader.ReadByte();
+				byte octet4 = reader.ReadByte();
+				short port = reader.ReadInt16();
+
+				var ipAddress = new IPAddress(new byte[] { octet1, octet2, octet3, octet4 });
+
+				var endpoint = new IPEndPoint(ipAddress, port);
+
+				servers.Add(endpoint);
+			}
 		}
 
 		public Server GetServerInfo(IPEndPoint serverEndpoint) {
