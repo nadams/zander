@@ -38,8 +38,9 @@ namespace Zander.Provider.Net.Sockets {
 
 				using(var inStream = this.SendAndGetResponse(outStream)) {
 					var reader = new BinaryReader(inStream, Encoding.Default);
+					var status = reader.ReadInt32();
 
-					response.Status = (MasterChallengeValues)reader.ReadInt32();
+					response.Status = (MasterChallengeValues)status;
 
 					if(response.Status == MasterChallengeValues.BeginningOfServerList) {
 						response.PacketNumber = reader.ReadByte();
