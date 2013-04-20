@@ -5,12 +5,7 @@ using System.Text;
 namespace Zander.Provider.Net.Sockets.IO {
 	public class CustomBinaryReader : BinaryReader {
 		private readonly Encoding encoding;
-
 		public readonly int maxStringSize;
-
-		public CustomBinaryReader(Stream input) : this(input, Encoding.Default) {
-			this.encoding = Encoding.Default;
-		}
 
 		public CustomBinaryReader(Stream input, Encoding encoding) : this(input, encoding, true) {
 			this.encoding = encoding;
