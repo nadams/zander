@@ -1,4 +1,8 @@
-﻿namespace Zander.Provider.Net.Sockets.IO {
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace Zander.Provider.Net.Sockets.IO {
+
+	[ExcludeFromCodeCoverage]
 	public class HuffmanWrapper : INetworkCompressor {
 
 		public byte[] Encode(byte[] decodedData) {

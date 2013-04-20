@@ -1,6 +1,9 @@
-﻿using System.Net.Sockets;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Net.Sockets;
 
 namespace Zander.Provider.Net.Sockets.IO {
+
+	[ExcludeFromCodeCoverage]
 	public class SocketProvider : ISocketProvider {
 		public int ReceiveTimeout { get; set; }
 

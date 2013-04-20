@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Sockets;
 
 namespace Zander.Provider.Net.Sockets.IO {
+
+	[ExcludeFromCodeCoverage]
 	public class SocketWrapper : ISocket {
 		private readonly Socket socket;
 
