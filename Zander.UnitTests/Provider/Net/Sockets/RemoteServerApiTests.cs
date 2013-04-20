@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -7,7 +8,6 @@ using Moq;
 using Zander.Domain.Remote;
 using Zander.Provider.Net.Sockets;
 using Zander.Provider.Net.Sockets.IO;
-using System.Linq;
 
 namespace Zander.UnitTests.Provider.Net.Sockets {
 
