@@ -45,6 +45,66 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 		}
 
 		[TestMethod]
+		public void ChallengeMasterServer_UserHasBeenBanned_BannedResponseReceived() {
+			var socketMock = new Mock<ISocket>();
+			socketMock.Setup(
+				x => x.ReceiveFrom(
+					It.IsAny<byte[]>(),
+					It.Is<SocketFlags>(y => y == SocketFlags.None),
+					It.Is<IPEndPoint>(y => y.ToString() == "10.0.0.1:15300"))
+				).Returns((byte[] b, SocketFlags flags, IPEndPoint endpoint) => {
+					var stream = new MemoryStream();
+					var writer = new BinaryWriter(stream);
+					writer.Write((int)MasterChallengeValues.Banned);
+					writer.Flush();
+
+					var data = stream.GetBuffer();
+					Buffer.BlockCopy(data, 0, b, 0, data.Length);
+
+					writer.Close();
+
+					return data.Length;
+				});
+
+			var request = new MasterChallengeRequest(1500, 5);
+
+			var api = new RemoteServerApi(new EmptyNetworkCompressor(), new FakeSocketProvider(socketMock.Object), "10.0.0.1:15300", 0);
+			var response = api.ChallengeMasterServer(request);
+
+			Assert.AreEqual(MasterChallengeValues.Banned, response.Status);
+		}
+
+		[TestMethod]
+		public void ChallengeMasterServer_UserHasBeenIgnored_DeniedResponseReceived() {
+			var socketMock = new Mock<ISocket>();
+			socketMock.Setup(
+				x => x.ReceiveFrom(
+					It.IsAny<byte[]>(),
+					It.Is<SocketFlags>(y => y == SocketFlags.None),
+					It.Is<IPEndPoint>(y => y.ToString() == "10.0.0.1:15300"))
+				).Returns((byte[] b, SocketFlags flags, IPEndPoint endpoint) => {
+					var stream = new MemoryStream();
+					var writer = new BinaryWriter(stream);
+					writer.Write((int)MasterChallengeValues.Denied);
+					writer.Flush();
+
+					var data = stream.GetBuffer();
+					Buffer.BlockCopy(data, 0, b, 0, data.Length);
+
+					writer.Close();
+
+					return data.Length;
+				});
+
+			var request = new MasterChallengeRequest(1500, 5);
+
+			var api = new RemoteServerApi(new EmptyNetworkCompressor(), new FakeSocketProvider(socketMock.Object), "10.0.0.1:15300", 0);
+			var response = api.ChallengeMasterServer(request);
+
+			Assert.AreEqual(MasterChallengeValues.Denied, response.Status);
+		}
+
+		[TestMethod]
 		public void ChallengeMasterServer_ZeroServersAvailable_EmptyListOfEndpointsReturned() {
 			var socketMock = new Mock<ISocket>();
 			socketMock.Setup(
