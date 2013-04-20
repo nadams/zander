@@ -38,7 +38,7 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IO\CustomBinaryWriter.cs" />
+    <Compile Include="IO\CustomBinaryReader.cs" />
     <Compile Include="IO\HuffmanWrapper.cs" />
     <Compile Include="IO\IHuffmanEncoding.cs" />
     <Compile Include="RemoteServerApi.cs" />

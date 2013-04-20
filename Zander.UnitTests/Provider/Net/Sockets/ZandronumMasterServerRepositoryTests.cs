@@ -11,16 +11,14 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 	[TestClass]
 	public class ZandronumMasterServerRepositoryTests {
 
-		private readonly MasterChallengeResponse goodMasterChallenge;
-
-		public ZandronumMasterServerRepositoryTests() {
-			this.goodMasterChallenge = new MasterChallengeResponse(MasterChallengeValues.BeginningOfServerList, MasterChallengeValues.ServerBlock, 0);
-		}
-
 		[TestMethod]
 		public void Get_Address_SameAsPassedIn() {
 			var apiMock = new Mock<IRemoteServerApi>();
-			apiMock.Setup(x => x.ChallengeMasterServer(It.IsAny<MasterChallengeRequest>())).Returns(this.goodMasterChallenge);
+			apiMock.Setup(x => x.ChallengeMasterServer(It.IsAny<MasterChallengeRequest>())).Returns(new MasterChallengeResponse { 
+				PacketNumber = 0, 
+				ServerBlock = MasterChallengeValues.ServerBlock,
+				Status = MasterChallengeValues.BeginningOfServerList
+			});
 
 			var apiProviderMock = new Mock<IRemoteServerApiProvider>();
 			apiProviderMock.Setup(x => x.GetInstance(It.IsAny<string>(), It.IsAny<int>())).Returns(apiMock.Object);
@@ -38,7 +36,7 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 		public void Get_ClientUsingObsoleteProtocol_ObsoleteProtocolExceptionThrown() {
 			var apiMock = new Mock<IRemoteServerApi>();
 			apiMock.Setup(x => x.ChallengeMasterServer(It.IsAny<MasterChallengeRequest>()))
-				.Returns(new MasterChallengeResponse(MasterChallengeValues.ObsoleteProtocol, 0, 0));
+				.Returns(new MasterChallengeResponse { Status = MasterChallengeValues.ObsoleteProtocol });
 
 			var apiProviderMock = new Mock<IRemoteServerApiProvider>();
 			apiProviderMock.Setup(x => x.GetInstance(It.IsAny<string>(), It.IsAny<int>())).Returns(apiMock.Object);
@@ -53,7 +51,7 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 		public void Get_ClientHasBeenBanned_ClientBannedExceptionThrown() {
 			var apiMock = new Mock<IRemoteServerApi>();
 			apiMock.Setup(x => x.ChallengeMasterServer(It.IsAny<MasterChallengeRequest>()))
-				.Returns(new MasterChallengeResponse(MasterChallengeValues.Banned, 0, 0));
+				.Returns(new MasterChallengeResponse { Status = MasterChallengeValues.Banned });
 
 			var apiProviderMock = new Mock<IRemoteServerApiProvider>();
 			apiProviderMock.Setup(x => x.GetInstance(It.IsAny<string>(), It.IsAny<int>())).Returns(apiMock.Object);
@@ -68,7 +66,7 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 		public void Get_ClientHasMadeTooManyRequests_ClientIgnoredExceptionThrown() {
 			var apiMock = new Mock<IRemoteServerApi>();
 			apiMock.Setup(x => x.ChallengeMasterServer(It.IsAny<MasterChallengeRequest>()))
-				.Returns(new MasterChallengeResponse(MasterChallengeValues.Denied, 0, 0));
+				.Returns(new MasterChallengeResponse { Status = MasterChallengeValues.Denied });
 
 			var apiProviderMock = new Mock<IRemoteServerApiProvider>();
 			apiProviderMock.Setup(x => x.GetInstance(It.IsAny<string>(), It.IsAny<int>())).Returns(apiMock.Object);
@@ -83,7 +81,7 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 		public void Get_ClientGetUnknownStatus_UnknownMasterServerResponseExceptionThrown() {
 			var apiMock = new Mock<IRemoteServerApi>();
 			apiMock.Setup(x => x.ChallengeMasterServer(It.IsAny<MasterChallengeRequest>()))
-				.Returns(new MasterChallengeResponse(MasterChallengeValues.Unknown, 0, 0));
+				.Returns(new MasterChallengeResponse { Status = MasterChallengeValues.Unknown });
 
 			var apiProviderMock = new Mock<IRemoteServerApiProvider>();
 			apiProviderMock.Setup(x => x.GetInstance(It.IsAny<string>(), It.IsAny<int>())).Returns(apiMock.Object);
@@ -96,8 +94,12 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 		[TestMethod]
 		public void Get_NoServersOnMaster_EmptyServerListReturned() {
 			var apiMock = new Mock<IRemoteServerApi>();
-			apiMock.Setup(x => x.ChallengeMasterServer(It.IsAny<MasterChallengeRequest>())).Returns(this.goodMasterChallenge);
-			apiMock.Setup(x => x.GetServerList()).Returns(Enumerable.Empty<ServerListResponse>());
+			apiMock.Setup(x => x.ChallengeMasterServer(It.IsAny<MasterChallengeRequest>())).Returns(new MasterChallengeResponse { 
+				PacketNumber = 0,
+				ServerBlock = MasterChallengeValues.ServerBlock,
+				Status = MasterChallengeValues.BeginningOfServerList,
+				Servers = Enumerable.Empty<ServerListResponse>()
+			});
 
 			var apiProviderMock = new Mock<IRemoteServerApiProvider>();
 			apiProviderMock.Setup(x => x.GetInstance(It.IsAny<string>(), It.IsAny<int>())).Returns(apiMock.Object);
@@ -112,9 +114,13 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 		[TestMethod]
 		public void Get_ServersOnMaster_ResponseConvertedToIPEndPoints() {
 			var apiMock = new Mock<IRemoteServerApi>();
-			apiMock.Setup(x => x.ChallengeMasterServer(It.IsAny<MasterChallengeRequest>())).Returns(this.goodMasterChallenge);
-			apiMock.Setup(x => x.GetServerList()).Returns(new List<ServerListResponse> {
-				new ServerListResponse(10, 0, 0, 1, 10666)
+			apiMock.Setup(x => x.ChallengeMasterServer(It.IsAny<MasterChallengeRequest>())).Returns(new MasterChallengeResponse {
+				PacketNumber = 0,
+				ServerBlock = MasterChallengeValues.ServerBlock,
+				Status = MasterChallengeValues.BeginningOfServerList,
+				Servers = new List<ServerListResponse> { 
+					new ServerListResponse(10, 0, 0, 1, 10666)
+				}
 			});
 
 			var apiProviderMock = new Mock<IRemoteServerApiProvider>();

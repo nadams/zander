@@ -2,11 +2,11 @@
 using System.Text;
 
 namespace Zander.Provider.Net.Sockets.IO {
-	public class CustomBinaryWriter : BinaryWriter {
+	public class HuffmanWriter : BinaryWriter {
 
 		private readonly Encoding encoding;
 
-		public CustomBinaryWriter(Encoding stringEncoding) {
+		public HuffmanWriter(Encoding stringEncoding) {
 			this.encoding = stringEncoding;
 		}
 

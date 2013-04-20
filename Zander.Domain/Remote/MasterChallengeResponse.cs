@@ -1,25 +1,17 @@
-﻿namespace Zander.Domain.Remote {
+﻿using System.Collections.Generic;
+using System.Net;
+
+namespace Zander.Domain.Remote {
 	public class MasterChallengeResponse {
-		private readonly MasterChallengeValues status;
-		private readonly MasterChallengeValues serverBlock;
-		private readonly byte packetNumber;
+		public MasterChallengeValues Status { get; set; }
+		public MasterChallengeValues ServerBlock { get; set; }
+		public IEnumerable<ServerListResponse> Servers { get; set; }
+		public byte PacketNumber { get; set; }
 
-		public MasterChallengeValues Status {
-			get { return this.status; }
-		}
-
-		public MasterChallengeValues ServerBlock {
-			get { return this.serverBlock; }
-		}
-
-		public byte PacketNumber {
-			get { return this.packetNumber; }
-		}
-
-		public MasterChallengeResponse(MasterChallengeValues status, MasterChallengeValues serverBlock, byte packetNumber) {
-			this.status = status;
-			this.serverBlock = serverBlock;
-			this.packetNumber = packetNumber;
+		public MasterChallengeResponse() {
+			this.Servers = new List<ServerListResponse>();
+			this.Status = MasterChallengeValues.Unknown;
+			this.ServerBlock = MasterChallengeValues.Unknown;
 		}
 	}
 }

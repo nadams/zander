@@ -28,7 +28,7 @@ namespace Zander.Provider.Net.Sockets {
 
 			var serverApi = this.serverApiProvider.GetInstance(address, 1000);
 			var response = this.ChallengeMaster(serverApi);
-			var endpoints = this.GetServerEndpoints(serverApi, response.ServerBlock);
+			var endpoints = this.GetServerEndpoints(response);
 
 			servers.AddRange(endpoints);
 
@@ -60,14 +60,12 @@ namespace Zander.Provider.Net.Sockets {
 			return response;
 		}
 
-		private IEnumerable<IPEndPoint> GetServerEndpoints(IRemoteServerApi serverApi, MasterChallengeValues status) {
-			if(status != MasterChallengeValues.ServerBlock) {
+		private IEnumerable<IPEndPoint> GetServerEndpoints(MasterChallengeResponse response) {
+			if(response.ServerBlock != MasterChallengeValues.ServerBlock) {
 				throw new UnknownMasterServerResponseException();
 			}
 
-			var responses = serverApi.GetServerList();
-
-			var endpoints = responses.Select(x => {
+			var endpoints = response.Servers.Select(x => {
 				var ipAddress = new IPAddress(new byte[] { x.Octet1, x.Octet2, x.Octet3, x.Octet4 });
 
 				return new IPEndPoint(ipAddress, x.Port);

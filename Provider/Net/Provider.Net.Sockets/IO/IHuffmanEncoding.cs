@@ -1,5 +1,5 @@
-﻿namespace Zander.Provider.Net.Sockets.IO {
-	public interface IHuffmanEncoding {
+﻿namespace Zander.Provider.Net.Sockets {
+	public interface INetworkCompressor {
 		byte[] Encode(byte[] decodedData);
 		byte[] Decode(byte[] encodedData);
 	}
