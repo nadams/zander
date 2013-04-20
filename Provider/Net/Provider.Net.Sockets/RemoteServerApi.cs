@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using Zander.Domain.Remote;
 
@@ -15,6 +16,12 @@ namespace Zander.Provider.Net.Sockets {
 		}
 
 		public MasterChallengeResponse ChallengeMasterServer(MasterChallengeRequest request) {
+
+			using(var sendStream = new BinaryWriter(new MemoryStream())) {
+				sendStream.Write(request.Challenge);
+				sendStream.Write(request.ProtocolVersion);
+
+			}
 
 			return null;
 		}
