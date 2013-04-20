@@ -14,12 +14,14 @@ namespace Zander.Provider.Net.Sockets {
 
 		private readonly int timeout;
 		private readonly INetworkCompressor huffman;
+		private readonly ISocketProvider socketProvider;
 
 		private IPEndPoint address;
 
-		public RemoteServerApi(INetworkCompressor huffmanEncoding, string address, int timeout) {
+		public RemoteServerApi(INetworkCompressor huffmanEncoding, ISocketProvider socketProvider, string address, int timeout) {
 			this.huffman = huffmanEncoding;
 			this.timeout = timeout;
+			this.socketProvider = socketProvider;
 
 			var parts = address.Split(':');
 
@@ -86,7 +88,7 @@ namespace Zander.Provider.Net.Sockets {
 		private MemoryStream SendAndGetResponse(MemoryStream outStream) {
 			MemoryStream result = null;
 
-			using(var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp)) {
+			using(var socket = this.socketProvider.GetSocket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp)) {
 				socket.ReceiveTimeout = this.timeout;
 
 				var data = outStream.GetBuffer();
@@ -95,10 +97,9 @@ namespace Zander.Provider.Net.Sockets {
 				var encodedData = this.huffman.Encode(data);
 				socket.SendTo(encodedData, SocketFlags.None, this.address);
 
-				var receiveEndpoint = (EndPoint)this.address;
 				var receiveBuffer = new byte[BufferSize];
 
-				socket.ReceiveFrom(receiveBuffer, SocketFlags.None, ref receiveEndpoint);
+				socket.ReceiveFrom(receiveBuffer, SocketFlags.None, this.address);
 
 				var decodedData = this.huffman.Decode(receiveBuffer);
 
