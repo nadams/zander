@@ -14,10 +14,6 @@ namespace Zander.Provider.Net.Sockets {
 			get { return 5660028; }
 		}
 
-		public int ServerChallenge {
-			get { return 199; }
-		}
-
 		public short ProtocolVersion {
 			get { return 2; }
 		}

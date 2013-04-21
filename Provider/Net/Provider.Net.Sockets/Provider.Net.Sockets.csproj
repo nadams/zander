@@ -47,6 +47,7 @@
     <Compile Include="RemoteServerApi.cs" />
     <Compile Include="RemoteServerApiProvider.cs" />
     <Compile Include="IO\SocketProvider.cs" />
+    <Compile Include="ServerRepository.cs" />
     <Compile Include="ZandronumMasterServerRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
