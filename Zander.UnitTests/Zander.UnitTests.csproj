@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Provider\Net\Sockets\CustomBinaryReaderTests.cs" />
+    <Compile Include="Provider\Net\Sockets\HuffmanTests.cs" />
     <Compile Include="Provider\Net\Sockets\RemoteServerApiTests.cs" />
     <Compile Include="Provider\Net\Sockets\ZandronumMasterServerRepositoryTests.cs" />
   </ItemGroup>
