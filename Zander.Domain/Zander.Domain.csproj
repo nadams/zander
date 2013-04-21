@@ -87,6 +87,7 @@
     <Compile Include="Remote\ChallengeValues.cs" />
     <Compile Include="Remote\IRemoteServerApi.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Remote\ServerChallengeValues.cs" />
     <Compile Include="Remote\ServerQueryValues.cs" />
     <Compile Include="Remote\IRemoteServerApiProvider.cs" />
     <Compile Include="Remote\MasterChallengeRequest.cs" />

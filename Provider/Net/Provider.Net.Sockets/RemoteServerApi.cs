@@ -79,7 +79,16 @@ namespace Zander.Provider.Net.Sockets {
 		}
 
 		public ServerResponse GetServerInfo(ServerRequest request) {
-			throw new NotImplementedException();
+			ServerResponse response = new ServerResponse();
+
+			var requestData = BitConverter.GetBytes(request.Challenge).
+				Concat(BitConverter.GetBytes(request.Query)).
+				Concat(BitConverter.GetBytes(Environment.TickCount)).
+				ToArray();
+
+			var responseData = this.SendAndGetResponse(requestData);
+
+			return response;
 		}
 
 		private byte[] SendAndGetResponse(byte[] data) {
