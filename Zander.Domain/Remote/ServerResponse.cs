@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Zander.Domain.Remote {
+﻿namespace Zander.Domain.Remote {
 	public class ServerResponse {
+		public ServerChallengeValues Status { get; set; }
+		public int CurrentTime { get; set; }
+
+		public string ServerVersion { get; set; }
+		public ServerQueryValues QueriedFlags { get; set; }
 	}
 }

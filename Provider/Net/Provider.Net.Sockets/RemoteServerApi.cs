@@ -87,6 +87,17 @@ namespace Zander.Provider.Net.Sockets {
 				ToArray();
 
 			var responseData = this.SendAndGetResponse(requestData);
+			using(var stream = new MemoryStream(responseData, false)) {
+				var reader = new CustomBinaryReader(stream, Encoding.ASCII);
+
+				response.Status = (ServerChallengeValues)reader.ReadInt32();
+				response.CurrentTime = reader.ReadInt32();
+
+				if(response.Status == ServerChallengeValues.BeginningOfData) {
+					response.ServerVersion = reader.ReadString();
+					response.QueriedFlags = (ServerQueryValues)reader.ReadInt32();
+				}
+			}
 
 			return response;
 		}
