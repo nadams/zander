@@ -5,12 +5,16 @@ namespace Zander.Provider.Net.Sockets.IO {
 	[ExcludeFromCodeCoverage]
 	public class HuffmanWrapper : INetworkCompressor {
 
-		public byte[] Encode(byte[] decodedData) {
-			return Huffman.Encode(decodedData);
+		static HuffmanWrapper() {
+			Huffman.Compression.Construct();
 		}
 
-		public byte[] Decode(byte[] encodedData) {
-			return Huffman.Decode(encodedData);
+		public int Encode(byte[] input, byte[] output, int length) {
+			return Huffman.Compression.Encode(input, output, length);
+		}
+
+		public int Decode(byte[] input, byte[] output, int length) {
+			return Huffman.Compression.Decode(input, output, length);
 		}
 	}
 }

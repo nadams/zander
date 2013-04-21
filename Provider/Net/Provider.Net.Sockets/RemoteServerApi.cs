@@ -7,6 +7,7 @@ using System.Text;
 using Zander.Domain.Entities;
 using Zander.Domain.Remote;
 using Zander.Provider.Net.Sockets.IO;
+using System.Linq;
 
 namespace Zander.Provider.Net.Sockets {
 	public class RemoteServerApi : IRemoteServerApi {
@@ -30,31 +31,30 @@ namespace Zander.Provider.Net.Sockets {
 
 		public MasterChallengeResponse ChallengeMasterServer(MasterChallengeRequest request) {
 			MasterChallengeResponse response = new MasterChallengeResponse();
+			
+			var challenge = BitConverter.GetBytes(request.Challenge);
+			var protocolVersion = BitConverter.GetBytes(request.ProtocolVersion);
 
-			using(var outStream = new MemoryStream()) {
-				var writer = new BinaryWriter(outStream);
-				writer.Write(request.Challenge);
-				writer.Write(request.ProtocolVersion);
+			var sendData = challenge.Concat(protocolVersion).ToArray();
 
-				using(var inStream = this.SendAndGetResponse(outStream)) {
-					var reader = new BinaryReader(inStream, Encoding.Default);
-					var status = reader.ReadInt32();
+			var receiveData = this.SendAndGetResponse(sendData);
+			using(var reader = new BinaryReader(new MemoryStream(receiveData, false))) {
+				var status = reader.ReadInt32();
 
-					response.Status = (MasterChallengeValues)status;
+				response.Status = (MasterChallengeValues)status;
 
-					if(response.Status == MasterChallengeValues.BeginningOfServerList) {
-						response.PacketNumber = reader.ReadByte();
-						response.ServerBlock = (MasterChallengeValues)reader.ReadInt32();
+				if(response.Status == MasterChallengeValues.BeginningOfServerList) {
+					response.PacketNumber = reader.ReadByte();
+					response.ServerBlock = (MasterChallengeValues)reader.ReadInt32();
 
-						if(response.ServerBlock == MasterChallengeValues.ServerBlock) {
-							var servers = new List<ServerListResponse>();
+					if(response.ServerBlock == MasterChallengeValues.ServerBlock) {
+						var servers = new List<ServerListResponse>();
 
-							do {
-								this.ReadServers(reader, servers);
-							} while(((MasterChallengeValues)reader.ReadByte()) == MasterChallengeValues.EndOfCurrentList);
+						do {
+							this.ReadServers(reader, servers);
+						} while(((MasterChallengeValues)reader.ReadByte()) == MasterChallengeValues.EndOfCurrentList);
 
-							response.Servers = servers;
-						}
+						response.Servers = servers;
 					}
 				}
 			}
@@ -82,28 +82,28 @@ namespace Zander.Provider.Net.Sockets {
 			throw new NotImplementedException();
 		}
 
-		private MemoryStream SendAndGetResponse(MemoryStream outStream) {
-			MemoryStream result = null;
+		private byte[] SendAndGetResponse(byte[] data) {
+			byte[] result = { };
 
 			using(var socket = this.socketProvider.GetSocket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp)) {
 				socket.ReceiveTimeout = this.timeout;
 
-				var data = outStream.GetBuffer();
 				var endpoint = new IPEndPoint(IPAddress.Any, 0);
+				byte[] encodedData = new byte[BufferSize];
 
-				var encodedData = this.huffman.Encode(data);
+				var encodedLength = this.huffman.Encode(data, encodedData, data.Length);
 				socket.SendTo(encodedData, SocketFlags.None, this.address);
 
 				var receiveBuffer = new byte[BufferSize];
 
-				socket.ReceiveFrom(receiveBuffer, SocketFlags.None, this.address);
+				int receiveLength = socket.ReceiveFrom(receiveBuffer, SocketFlags.None, this.address);
 
-				var decodedData = this.huffman.Decode(receiveBuffer);
+				receiveBuffer = receiveBuffer.Take(receiveLength).ToArray();
+				var decodedData = new byte[BufferSize];
+				var decodedLength = this.huffman.Decode(receiveBuffer, decodedData, receiveLength);
+				decodedData = decodedData.Take(decodedLength).ToArray();
 
-				var output = new byte[BufferSize];
-				Buffer.BlockCopy(decodedData, 0, output, 0, decodedData.Length);
-
-				result = new MemoryStream(output, 0, decodedData.Length, true, true);
+				result = decodedData;
 			}
 
 			return result;

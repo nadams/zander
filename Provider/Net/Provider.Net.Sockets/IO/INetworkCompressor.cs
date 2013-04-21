@@ -1,6 +1,6 @@
 ﻿namespace Zander.Provider.Net.Sockets {
 	public interface INetworkCompressor {
-		byte[] Encode(byte[] decodedData);
-		byte[] Decode(byte[] encodedData);
+		int Encode(byte[] input, byte[] output, int length);
+		int Decode(byte[] input, byte[] output, int length);
 	}
 }
