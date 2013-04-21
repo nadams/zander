@@ -1,9 +1,9 @@
 ﻿using System;
 
-namespace Zander.Domain.Query {
+namespace Zander.Domain.Remote {
 
 	[Flags]
-	public enum ServerQueryEnum : uint {
+	public enum ServerQueryValues : uint {
 		Name = 0x1,
 		Url = 0x2,
 		Email = 0x4,
@@ -18,10 +18,8 @@ namespace Zander.Domain.Query {
 		ForceJoinPassword = 0x800,
 		GameSkill = 0x1000,
 		BotSkill = 0x2000,
-		[Obsolete] Dmflags = 0x4000,
 		Limits = 0x10000,
 		TeamDamage = 0x20000,
-		[Obsolete] TeamScores = 0x40000,
 		NumberOfPlayers = 0x80000,
 		PlayerData = 0x100000,
 		TeamInfoNumber = 0x200000,

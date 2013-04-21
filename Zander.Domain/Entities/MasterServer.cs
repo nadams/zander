@@ -5,7 +5,6 @@ namespace Zander.Domain.Entities {
 	public class MasterServer : IMasterServer {
 		private readonly IEnumerable<IPEndPoint> servers;
 		private readonly string address;
-		private readonly MasterServerStatus status;
 
 		public IEnumerable<IPEndPoint> Servers {
 			get { return this.servers; }
