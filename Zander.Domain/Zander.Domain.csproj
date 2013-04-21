@@ -78,6 +78,8 @@
     <Compile Include="Remote\MasterChallengeResponse.cs" />
     <Compile Include="Remote\MasterChallengeValues.cs" />
     <Compile Include="Remote\ServerListResponse.cs" />
+    <Compile Include="Remote\ServerRequest.cs" />
+    <Compile Include="Remote\ServerResponse.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

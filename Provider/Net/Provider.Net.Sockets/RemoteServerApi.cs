@@ -78,7 +78,7 @@ namespace Zander.Provider.Net.Sockets {
 			}
 		}
 
-		public Server GetServerInfo(IPEndPoint serverEndpoint) {
+		public ServerResponse GetServerInfo(ServerRequest request) {
 			throw new NotImplementedException();
 		}
 
