@@ -5,6 +5,7 @@ namespace Zander.Domain.Remote {
 		private readonly IPEndPoint address;
 		private readonly uint query;
 		private readonly int challenge;
+		private readonly int tickCount;
 
 		public IPEndPoint Address {
 			get { return this.address; }
@@ -18,10 +19,15 @@ namespace Zander.Domain.Remote {
 			get { return this.challenge; }
 		}
 
-		public ServerRequest(IPEndPoint address, uint query, int challenge) {
+		public int TickCount {
+			get { return this.tickCount; }
+		}
+
+		public ServerRequest(IPEndPoint address, uint query, int challenge, int tickCount) {
 			this.address = address;
 			this.query = query;
 			this.challenge = challenge;
+			this.tickCount = tickCount;
 		}
 	}
 }

@@ -83,7 +83,7 @@ namespace Zander.Provider.Net.Sockets {
 
 			var requestData = BitConverter.GetBytes(request.Challenge).
 				Concat(BitConverter.GetBytes(request.Query)).
-				Concat(BitConverter.GetBytes(Environment.TickCount)).
+				Concat(BitConverter.GetBytes(request.TickCount)).
 				ToArray();
 
 			var responseData = this.SendAndGetResponse(requestData);
