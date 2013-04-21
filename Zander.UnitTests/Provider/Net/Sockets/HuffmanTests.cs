@@ -7,12 +7,12 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 		
 		[TestMethod]
 		public void Encode_() {
-
+			Assert.Fail();
 		}
 
 		[TestMethod]
 		public void Decode_() {
-
+			Assert.Fail();
 		}
 	}
 }
