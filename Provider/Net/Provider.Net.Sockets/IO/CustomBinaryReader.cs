@@ -16,6 +16,12 @@ namespace Zander.Provider.Net.Sockets.IO {
 			this.maxStringSize = maxStringSize;
 		}
 
+		/// <summary>
+		/// Reads a null terminated string
+		/// </summary>
+		/// <exception cref="InvalidDataException">If the string is not null terminated</exception>
+		/// <exception cref="InternalBufferOverflowException">The string being read is larger than the internal string size</exception>
+		/// <returns>A string from a given stream</returns>
 		public override string ReadString() {
 			var bytes = new byte[maxStringSize];
 

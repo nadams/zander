@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using Zander.Domain.Entities;
 using Zander.Domain.Remote;
 using Zander.Provider.Net.Sockets.IO;
-using System.Linq;
 
 namespace Zander.Provider.Net.Sockets {
 	public class RemoteServerApi : IRemoteServerApi {
+		private delegate void LoadServerInfo(ServerResponse response, ServerQueryValues flags, BinaryReader reader);
+
 		private const int BufferSize = 0x10000;
 
 		private readonly int timeout;
@@ -96,6 +97,105 @@ namespace Zander.Provider.Net.Sockets {
 				if(response.Status == ServerChallengeValues.BeginningOfData) {
 					response.ServerVersion = reader.ReadString();
 					response.QueriedFlags = (ServerQueryValues)reader.ReadInt32();
+
+					Func<string> readString = () => reader.ReadString();
+					Func<int> readInt = () => reader.ReadInt32();
+					Func<byte> readByte = () => reader.ReadByte();
+					Func<short> readShort = () => reader.ReadInt16();
+					Func<float> readFloat = () => reader.ReadSingle();
+
+					var flags = response.QueriedFlags;
+					if(flags.HasFlag(ServerQueryValues.Name)) {
+						response.Name = readString();
+					}
+
+					if(flags.HasFlag(ServerQueryValues.Url)) {
+						response.Url = readString();
+					}
+
+					if(flags.HasFlag(ServerQueryValues.Email)) {
+						response.Email = readString();
+					}
+
+					if(flags.HasFlag(ServerQueryValues.MapName)) {
+						response.MapName = readString();
+					}
+
+					if(flags.HasFlag(ServerQueryValues.MaxClients)) {
+						response.MaxClients = readByte();
+					}
+
+					if(flags.HasFlag(ServerQueryValues.MaxPlayers)) {
+						response.MaxPlayers = readByte();
+					}
+
+					if(flags.HasFlag(ServerQueryValues.PWads)) {
+						response.PWadsLoaded = readByte();
+
+						var pwads = new List<string>();
+						for(int i = 0; i < response.PWadsLoaded; i++) {
+							pwads.Add(readString());
+						}
+
+						response.PWads = pwads;
+					}
+
+					if(flags.HasFlag(ServerQueryValues.GameType)) {
+						response.GameType = readByte();
+						response.IsInstagib = readByte() == 0 ? false : true;
+						response.IsBuckshot = readByte() == 0 ? false : true;
+					}
+
+					if(flags.HasFlag(ServerQueryValues.GameName)) {
+						response.GameName = readString();
+					}
+
+					if(flags.HasFlag(ServerQueryValues.IWad)) {
+						response.IWad = readString();
+					}
+
+					if(flags.HasFlag(ServerQueryValues.ForcePassword)) {
+						response.HasPassword = readByte() == 0 ? false : true;
+					}
+
+					if(flags.HasFlag(ServerQueryValues.ForceJoinPassword)) {
+						response.HasJoinPassword = readByte() == 0 ? false : true;
+					}
+
+					if(flags.HasFlag(ServerQueryValues.GameSkill)) {
+						response.GameSkill = readByte();
+					}
+
+					if(flags.HasFlag(ServerQueryValues.BotSkill)) {
+						response.BotSkill = readByte();
+					}
+
+					if(flags.HasFlag(ServerQueryValues.Limits)) {
+						response.FragLimit = readShort();
+						response.TimeLimit = readShort();
+						response.TimeLeft = readShort();
+						response.DuelLimit = readShort();
+						response.PointLimit = readShort();
+						response.WinLimit = readShort();
+					}
+
+					if(flags.HasFlag(ServerQueryValues.TeamDamage)) {
+						response.TeamDamage = readFloat();
+					}
+
+					if(flags.HasFlag(ServerQueryValues.NumberOfPlayers)) {
+						response.NumberOfPlayers = readByte();
+
+						if(flags.HasFlag(ServerQueryValues.PlayerData)) {
+							var players = new List<PlayerDataResponse>();
+
+							for(int i = 0; i < response.NumberOfPlayers; i++) {
+
+							}
+
+							response.PlayerData = players;
+						}
+					}
 				}
 			}
 
