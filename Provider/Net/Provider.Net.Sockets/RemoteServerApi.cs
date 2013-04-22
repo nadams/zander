@@ -103,6 +103,8 @@ namespace Zander.Provider.Net.Sockets {
 					Func<byte> readByte = () => reader.ReadByte();
 					Func<short> readShort = () => reader.ReadInt16();
 					Func<float> readFloat = () => reader.ReadSingle();
+					Func<bool> readBool = () => reader.ReadByte() == 0 ? false : true;
+					Func<ushort> readUShort = () => reader.ReadUInt16();
 
 					var flags = response.QueriedFlags;
 					if(flags.HasFlag(ServerQueryValues.Name)) {
@@ -142,8 +144,8 @@ namespace Zander.Provider.Net.Sockets {
 
 					if(flags.HasFlag(ServerQueryValues.GameType)) {
 						response.GameType = readByte();
-						response.IsInstagib = readByte() == 0 ? false : true;
-						response.IsBuckshot = readByte() == 0 ? false : true;
+						response.IsInstagib = readBool();
+						response.IsBuckshot = readBool();
 					}
 
 					if(flags.HasFlag(ServerQueryValues.GameName)) {
@@ -155,11 +157,11 @@ namespace Zander.Provider.Net.Sockets {
 					}
 
 					if(flags.HasFlag(ServerQueryValues.ForcePassword)) {
-						response.HasPassword = readByte() == 0 ? false : true;
+						response.HasPassword = readBool();
 					}
 
 					if(flags.HasFlag(ServerQueryValues.ForceJoinPassword)) {
-						response.HasJoinPassword = readByte() == 0 ? false : true;
+						response.HasJoinPassword = readBool();
 					}
 
 					if(flags.HasFlag(ServerQueryValues.GameSkill)) {
@@ -190,11 +192,66 @@ namespace Zander.Provider.Net.Sockets {
 							var players = new List<PlayerDataResponse>();
 
 							for(int i = 0; i < response.NumberOfPlayers; i++) {
+								var player = new PlayerDataResponse { 
+									Name = readString(),
+									PointCount = readShort(),
+									Ping = readUShort(),
+									IsSpectating = readBool(),
+									TeamId = readByte(),
+									TimeOnServer = readByte(),
+								};
 
+								players.Add(player);
 							}
 
 							response.PlayerData = players;
 						}
+					}
+
+					if(flags.HasFlag(ServerQueryValues.TeamInfoNumber)) {
+						response.NumberOfTeams = readByte();
+						var teams = new List<TeamInfoResponse>();
+
+						for(int i = 0; i < response.NumberOfTeams; i++) {
+							var team = new TeamInfoResponse();
+
+							if(flags.HasFlag(ServerQueryValues.TeamInfoName)) {
+								team.Name = readString();
+							}
+
+							if(flags.HasFlag(ServerQueryValues.TeamInfoColor)) {
+								team.Color = readInt();
+							}
+
+							if(flags.HasFlag(ServerQueryValues.TeamInfoScore)) {
+								team.Score = readShort();
+							}						
+						}
+
+						response.Teams = teams;
+					}
+
+					if(flags.HasFlag(ServerQueryValues.TestingServer)) {
+						response.IsTestingServer = readBool();
+						response.TestingBinaryUrl = readString();
+					}
+
+					if(flags.HasFlag(ServerQueryValues.DataChecksum)) {
+						response.Checksum = readString();
+					}
+
+					if(flags.HasFlag(ServerQueryValues.AllDmflags)) {
+						response.NumberOfFlags = readByte();
+
+						response.DMFlags = readInt();
+						response.DMFlags2 = readInt();
+						response.DMFlags3 = readInt();
+						response.CompatFlags = readInt();
+						response.CompatFlags2 = readInt();
+					}
+
+					if(flags.HasFlag(ServerQueryValues.SecuritySettings)) {
+						response.UsesSecuritySettings = readBool();
 					}
 				}
 			}
