@@ -60,6 +60,7 @@ namespace Zander.Domain.Remote {
 		public bool IsSpectating { get; set; }
 		public byte TeamId { get; set; }
 		public byte TimeOnServer { get; set; }
+		public bool IsBot { get; set; }
 	}
 
 	public class TeamInfoResponse {

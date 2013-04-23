@@ -189,6 +189,7 @@ namespace Zander.Provider.Net.Sockets {
 									PointCount = readShort(),
 									Ping = readUShort(),
 									IsSpectating = readBool(),
+									IsBot = readBool(),
 									TeamId = readByte(),
 									TimeOnServer = readByte(),
 								};

@@ -3,7 +3,7 @@
 namespace Zander.Domain.Remote {
 	public class ServerRequest {
 		private readonly IPEndPoint endpoint;
-		private readonly uint query;
+		private readonly int query;
 		private readonly int challenge;
 		private readonly int tickCount;
 		private readonly int timeout;
@@ -12,7 +12,7 @@ namespace Zander.Domain.Remote {
 			get { return this.endpoint; }
 		}
 
-		public uint Query {
+		public int Query {
 			get { return this.query; }
 		}
 
@@ -28,7 +28,7 @@ namespace Zander.Domain.Remote {
 			get { return this.timeout; }
 		}
 
-		public ServerRequest(IPEndPoint endpoint, int timeout, uint query, int challenge, int tickCount) {
+		public ServerRequest(IPEndPoint endpoint, int timeout, int query, int challenge, int tickCount) {
 			this.endpoint = endpoint;
 			this.query = query;
 			this.challenge = challenge;

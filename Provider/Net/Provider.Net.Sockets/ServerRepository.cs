@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Net;
 using Zander.Domain;
 using Zander.Domain.Entities;
 using Zander.Domain.Remote;
@@ -17,7 +19,71 @@ namespace Zander.Provider.Net.Sockets {
 		}
 
 		public Server Get(string address, int timeout, ServerQueryValues query) {
-			throw new NotImplementedException();
+
+			var endpoint = this.GetIPEndPoint(address);
+
+			var api = this.serverApiProvider.GetInstance();
+			var request = new ServerRequest(endpoint, timeout, (int)query, this.ServerChallenge, Environment.TickCount);
+			var response = api.GetServerInfo(request);
+
+			var server = new Server {
+				AdminEmail = response.Email,
+				BotSkill = (BotSkill)response.BotSkill,
+				CompatFlags = (CompatFlags)response.CompatFlags,
+				CompatFlags2 = (CompatFlags2)response.CompatFlags2,
+				CurrentMap = response.MapName,
+				DataChecksum = response.Checksum,
+				DisplayName = response.Name,
+				DMFlags = (DMFlags)response.DMFlags,
+				DMFlags2 = (DMFlags2)response.DMFlags2,
+				DMFlags3 = (DMFlags3)response.DMFlags3,
+				DuelLimit = response.DuelLimit,
+				EnforceMasterBanlist = response.UsesSecuritySettings,
+				FragLimit = response.FragLimit,
+				GameName = response.GameName,
+				IsTestingServer = response.IsTestingServer,
+				IWad = new Wad { Name = response.IWad },
+				MaxClients = response.MaxClients,
+				MaxPlayers = response.MaxPlayers,
+				NumberOfTeams = response.NumberOfTeams,
+				PointLimit = response.PointLimit,
+				RequiresJoinPassword = response.HasJoinPassword,
+				RequiresPassword = response.HasPassword,
+				Skill = (Skill)response.GameSkill,
+				TeamDamage = response.TeamDamage,
+				TestingServer = response.TestingBinaryUrl,
+				TimeLeft = response.TimeLeft,
+				TimeLimit = response.TimeLimit,
+				WadUrl = response.Url,
+				WinLimit = response.WinLimit,
+				PWads = response.PWads.Select(x => new Wad {
+					Name = x
+				}),
+			};
+
+			server.Teams = response.Teams.Select(x => new Team {
+				Color = x.Color,
+				Name = x.Name,
+				Score = x.Score
+			});
+
+			server.Players = response.PlayerData.Select(x => new Player {
+				IsBot = x.IsBot,
+				IsSpectating = x.IsSpectating,
+				Name = x.Name,
+				Ping = x.Ping,
+				PointCount = x.PointCount,
+				Team = server.Teams.ElementAt(x.TeamId),
+				TimeOnServer = x.TimeOnServer
+			});
+
+			return server;
+		}
+
+		private IPEndPoint GetIPEndPoint(string address) {
+			var split = address.Split(':');
+
+			return new IPEndPoint(IPAddress.Parse(split[0]), int.Parse(split[1]));
 		}
 	}
 }

@@ -1,5 +1,4 @@
-﻿using System.Net;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Zander.Domain.Entities;
 using Zander.Domain.Remote;
@@ -27,16 +26,14 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 				CompatFlags2 = (int)compatFlags2
 			});
 
-			Assert.Fail();
+			var api = new ServerRepository(new FakeServerProvider(remoteApiMock.Object));
+			var response = api.Get("10.0.0.1:15300", 1000, ServerQueryValues.AllDmflags);
 
-			//var api = new ServerRepository(new FakeServerProvider(remoteApiMock.Object));
-			//var response = api.Get(new IPEndPoint(IPAddress.Any, 0), ServerQueryValues.AllDmflags);
-
-			//Assert.AreEqual(dmflags, response.DMFlags);
-			//Assert.AreEqual(dmflags2, response.DMFlags2);
-			//Assert.AreEqual(dmflags3, response.DMFlags3);
-			//Assert.AreEqual(compatFlags, response.CompatFlags);
-			//Assert.AreEqual(compatFlags2, response.CompatFlags2);
+			Assert.AreEqual(dmflags, response.DMFlags);
+			Assert.AreEqual(dmflags2, response.DMFlags2);
+			Assert.AreEqual(dmflags3, response.DMFlags3);
+			Assert.AreEqual(compatFlags, response.CompatFlags);
+			Assert.AreEqual(compatFlags2, response.CompatFlags2);
 		}
 
 		private class FakeServerProvider : IRemoteServerApiProvider {

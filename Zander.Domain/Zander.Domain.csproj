@@ -78,6 +78,7 @@
     </Compile>
     <Compile Include="Entities\Skill.cs" />
     <Compile Include="Entities\Team.cs" />
+    <Compile Include="Entities\Wad.cs" />
     <Compile Include="Exceptions\ClientBannedException.cs" />
     <Compile Include="Exceptions\ClientIgnoredException.cs" />
     <Compile Include="Exceptions\ObsoleteProtocolException.cs" />
