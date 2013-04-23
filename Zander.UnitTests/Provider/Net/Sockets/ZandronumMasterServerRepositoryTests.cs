@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Zander.Domain.Exceptions;
@@ -25,9 +24,9 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 			apiProviderMock.Setup(x => x.GetInstance()).Returns(apiMock.Object);
 
 			var repo = new ZandronumMasterServerRepository(apiProviderMock.Object);
-			var address = "master.server:15000";
+			var address = "10.0.0.1:15000";
 
-			var masterServer = repo.Get("master.server:15000", 1000);
+			var masterServer = repo.Get("10.0.0.1:15000", 1000);
 
 			Assert.AreEqual(address, masterServer.Address);
 		}
@@ -44,7 +43,7 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 
 			var repo = new ZandronumMasterServerRepository(apiProviderMock.Object);
 
-			repo.Get("master.server:15000", 1000);
+			repo.Get("10.0.0.1:15000", 1000);
 		}
 
 		[TestMethod]
@@ -59,7 +58,7 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 
 			var repo = new ZandronumMasterServerRepository(apiProviderMock.Object);
 
-			repo.Get("master.server:15000", 1000);
+			repo.Get("10.0.0.1:15000", 1000);
 		}
 
 		[TestMethod]
@@ -74,7 +73,7 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 
 			var repo = new ZandronumMasterServerRepository(apiProviderMock.Object);
 
-			repo.Get("master.server:15000", 1000);
+			repo.Get("10.0.0.1:15000", 1000);
 		}
 
 		[TestMethod]
@@ -89,7 +88,7 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 
 			var repo = new ZandronumMasterServerRepository(apiProviderMock.Object);
 
-			repo.Get("master.server:15000", 1000);
+			repo.Get("10.0.0.1:15000", 1000);
 		}
 
 		[TestMethod]
@@ -107,7 +106,7 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 
 			var repo = new ZandronumMasterServerRepository(apiProviderMock.Object);
 
-			var masterServer = repo.Get("master.server:15000", 1000);
+			var masterServer = repo.Get("10.0.0.1:15000", 1000);
 
 			Assert.AreEqual(0, masterServer.Servers.Count());
 		}
@@ -129,7 +128,7 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 
 			var repo = new ZandronumMasterServerRepository(apiProviderMock.Object);
 
-			var masterServer = repo.Get("master.server:15000", 1000);
+			var masterServer = repo.Get("10.0.0.1:15000", 1000);
 
 			Assert.AreEqual(1, masterServer.Servers.Count());
 			Assert.AreEqual("10.0.0.1:10666", masterServer.Servers.First().ToString());
@@ -153,7 +152,7 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 
 			var repo = new ZandronumMasterServerRepository(apiProviderMock.Object);
 
-			var masterServer = repo.Get("master.server:15000", 1000);
+			var masterServer = repo.Get("10.0.0.1:15000", 1000);
 		}
 	}
 }
