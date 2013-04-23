@@ -10,7 +10,7 @@ namespace Zander.Provider.Net.Sockets {
 		private readonly IRemoteServerApiProvider serverApiProvider;
 
 		public int ServerChallenge {
-			get { return 199; }
+			get { return (int)ChallengeValues.ServerChallenge; }
 		}
 
 		public ServerRepository(IRemoteServerApiProvider serverApiProvider) {

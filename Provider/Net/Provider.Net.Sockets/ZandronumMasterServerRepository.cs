@@ -11,11 +11,11 @@ namespace Zander.Provider.Net.Sockets {
 		private readonly IRemoteServerApiProvider serverApiProvider;
 
 		public int MasterChallenge {
-			get { return 5660028; }
+			get { return (int)ChallengeValues.MasterChallenge; }
 		}
 
 		public short ProtocolVersion {
-			get { return 2; }
+			get { return (int)ChallengeValues.MasterProtocol; }
 		}
 
 		public ZandronumMasterServerRepository(IRemoteServerApiProvider serverApiProvider) {
