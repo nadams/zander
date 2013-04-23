@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Zander.Domain.Entities {
 	public class Server {
@@ -33,5 +34,11 @@ namespace Zander.Domain.Entities {
 		public IEnumerable<string> PWads { get; set; }
 		public IEnumerable<Player> Players { get; set; }
 		public IEnumerable<Team> Teams { get; set; }
+
+		public Server() {
+			this.PWads = Enumerable.Empty<string>();
+			this.Players = Enumerable.Empty<Player>();
+			this.Teams = Enumerable.Empty<Team>();
+		}
 	}
 }

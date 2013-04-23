@@ -3,7 +3,7 @@
 namespace Zander.Domain.Remote {
 
 	[Flags]
-	public enum ServerQueryValues : uint {
+	public enum ServerQueryValues {
 		Name = 0x1,
 		Url = 0x2,
 		Email = 0x4,

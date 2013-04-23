@@ -5,6 +5,7 @@ using Zander.Domain.Remote;
 namespace Zander.Domain {
 	public interface IServerRepository {
 		int ServerChallenge { get; }
-		Server Get(IPEndPoint endpoint, ServerQueryValues query);
+
+		Server Get(string address, int timeout, ServerQueryValues query);
 	}
 }

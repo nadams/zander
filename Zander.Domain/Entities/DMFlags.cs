@@ -3,7 +3,8 @@
 namespace Zander.Domain.Entities {
 
 	[Flags]
-	public enum DMFlags : uint {
+	public enum DMFlags {
+		None = 0,
 		NoHealth = 1 << 0,
 		NoItems = 1 << 1,
 		WeaponsStay = 1 << 2,

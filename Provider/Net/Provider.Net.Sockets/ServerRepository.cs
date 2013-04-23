@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net;
 using Zander.Domain;
 using Zander.Domain.Entities;
 using Zander.Domain.Remote;
@@ -17,7 +16,7 @@ namespace Zander.Provider.Net.Sockets {
 			this.serverApiProvider = serverApiProvider;
 		}
 
-		public Server Get(IPEndPoint endpoint, ServerQueryValues query) {
+		public Server Get(string address, int timeout, ServerQueryValues query) {
 			throw new NotImplementedException();
 		}
 	}
