@@ -3,6 +3,8 @@ using Moq;
 using Zander.Domain.Entities;
 using Zander.Domain.Remote;
 using Zander.Provider.Net.Sockets;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Zander.UnitTests.Provider.Net.Sockets {
 
@@ -34,6 +36,70 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 			Assert.AreEqual(dmflags3, response.DMFlags3);
 			Assert.AreEqual(compatFlags, response.CompatFlags);
 			Assert.AreEqual(compatFlags2, response.CompatFlags2);
+		}
+
+		[TestMethod]
+		public void Get_TeamsAndPlayers_TeamsAreAssignedToPlayers() {
+			var remoteApiMock = new Mock<IRemoteServerApi>();
+
+			remoteApiMock.Setup(x => x.GetServerInfo(It.IsAny<ServerRequest>())).Returns(() => {
+				var teams = new List<TeamInfoResponse> {
+					new TeamInfoResponse {
+						Color = 1,
+						Name = "red",
+						Score = 3
+					},
+					new TeamInfoResponse {
+						Color = 2,
+						Name = "blue",
+						Score = 2
+					}
+				};
+
+				var players = new List<PlayerDataResponse> { 
+					new PlayerDataResponse {
+						Name = "Bob",
+						Ping = 45,
+						PointCount = 1,
+						TeamId = 0,
+						TimeOnServer = 5
+					},
+					new PlayerDataResponse {
+						Name = "Joe",
+						Ping = 243,
+						PointCount = 2,
+						TeamId = 0,
+						TimeOnServer = 10
+					},
+					new PlayerDataResponse {
+						Name = "Lightning Larry",
+						Ping = 22,
+						PointCount = 2,
+						TeamId = 1,
+						TimeOnServer = 10
+					}
+				};
+
+				var serverResponse = new ServerResponse { 
+					Teams = teams,
+					PlayerData = players
+				};
+
+				return serverResponse;
+			});
+
+			var api = new ServerRepository(new FakeServerProvider(remoteApiMock.Object));
+			var response = api.Get("10.0.0.1:15300", 1000, ServerQueryValues.PlayerData | ServerQueryValues.TeamInfo);
+
+			var redTeam = response.Teams.ElementAt(0);
+			var blueTeam = response.Teams.ElementAt(1);
+			var bob = response.Players.ElementAt(0);
+			var joe = response.Players.ElementAt(1);
+			var lightningLarry = response.Players.ElementAt(2);
+
+			Assert.AreSame(redTeam, bob.Team);
+			Assert.AreSame(redTeam, joe.Team);
+			Assert.AreSame(blueTeam, lightningLarry.Team);
 		}
 
 		private class FakeServerProvider : IRemoteServerApiProvider {

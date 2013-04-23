@@ -31,6 +31,8 @@ namespace Zander.Domain.Remote {
 		AllDmflags = 0x8000000,
 		SecuritySettings = 0x10000000,
 
+		TeamInfo = TeamInfoColor | TeamInfoName | TeamInfoNumber | TeamInfoScore,
+
 		AllData = Name
 			| Url
 			| Email

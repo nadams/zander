@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using Zander.Domain;
@@ -61,11 +62,11 @@ namespace Zander.Provider.Net.Sockets {
 				}),
 			};
 
-			server.Teams = response.Teams.Select(x => new Team {
+			var teams = response.Teams.Select(x => new Team {
 				Color = x.Color,
 				Name = x.Name,
 				Score = x.Score
-			});
+			}).ToList();
 
 			server.Players = response.PlayerData.Select(x => new Player {
 				IsBot = x.IsBot,
@@ -73,9 +74,11 @@ namespace Zander.Provider.Net.Sockets {
 				Name = x.Name,
 				Ping = x.Ping,
 				PointCount = x.PointCount,
-				Team = server.Teams.ElementAt(x.TeamId),
+				Team = teams[x.TeamId],
 				TimeOnServer = x.TimeOnServer
 			});
+
+			server.Teams = teams;
 
 			return server;
 		}
