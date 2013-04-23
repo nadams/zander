@@ -47,7 +47,7 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 				this.api = api;
 			}
 
-			public IRemoteServerApi GetInstance(IPEndPoint endpoint, int timeout) {
+			public IRemoteServerApi GetInstance() {
 				return this.api;
 			}
 		}

@@ -14,17 +14,12 @@ namespace Zander.Provider.Net.Sockets {
 
 		private const int BufferSize = 0x10000;
 
-		private readonly int timeout;
 		private readonly INetworkCompressor huffman;
 		private readonly ISocketProvider socketProvider;
 
-		private IPEndPoint address;
-
-		public RemoteServerApi(INetworkCompressor huffmanEncoding, ISocketProvider socketProvider, IPEndPoint address, int timeout) {
+		public RemoteServerApi(INetworkCompressor huffmanEncoding, ISocketProvider socketProvider) {
 			this.huffman = huffmanEncoding;
-			this.timeout = timeout;
 			this.socketProvider = socketProvider;
-			this.address = address;
 		}
 
 		public MasterChallengeResponse ChallengeMasterServer(MasterChallengeRequest request) {
@@ -35,7 +30,7 @@ namespace Zander.Provider.Net.Sockets {
 
 			var sendData = challenge.Concat(protocolVersion).ToArray();
 
-			var receiveData = this.SendAndGetResponse(sendData);
+			var receiveData = this.SendAndGetResponse(sendData, request.Endpoint, request.Timeout);
 			using(var reader = new BinaryReader(new MemoryStream(receiveData, false))) {
 				var status = reader.ReadInt32();
 
@@ -84,7 +79,7 @@ namespace Zander.Provider.Net.Sockets {
 				Concat(BitConverter.GetBytes(request.TickCount)).
 				ToArray();
 
-			var responseData = this.SendAndGetResponse(requestData);
+			var responseData = this.SendAndGetResponse(requestData, request.Endpoint, request.Timeout);
 			using(var stream = new MemoryStream(responseData, false)) {
 				var reader = new CustomBinaryReader(stream, Encoding.ASCII);
 
@@ -256,21 +251,21 @@ namespace Zander.Provider.Net.Sockets {
 			return response;
 		}
 
-		private byte[] SendAndGetResponse(byte[] data) {
+		private byte[] SendAndGetResponse(byte[] data, IPEndPoint address, int timeout) {
 			byte[] result = { };
 
 			using(var socket = this.socketProvider.GetSocket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp)) {
-				socket.ReceiveTimeout = this.timeout;
+				socket.ReceiveTimeout = timeout;
 
 				var endpoint = new IPEndPoint(IPAddress.Any, 0);
 				byte[] encodedData = new byte[BufferSize];
 
 				var encodedLength = this.huffman.Encode(data, encodedData, data.Length);
-				socket.SendTo(encodedData, SocketFlags.None, this.address);
+				socket.SendTo(encodedData, SocketFlags.None, address);
 
 				var receiveBuffer = new byte[BufferSize];
 
-				int receiveLength = socket.ReceiveFrom(receiveBuffer, SocketFlags.None, this.address);
+				int receiveLength = socket.ReceiveFrom(receiveBuffer, SocketFlags.None, address);
 
 				receiveBuffer = receiveBuffer.Take(receiveLength).ToArray();
 				var decodedData = new byte[BufferSize];

@@ -28,9 +28,9 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 					return this.EncodeData(masterResponse, b);
 				});
 
-			var request = new MasterChallengeRequest(1500, 5);
+			var request = new MasterChallengeRequest(new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 0, 1500, 5);
 
-			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socketMock.Object), new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 0);
+			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socketMock.Object));
 			var response = api.ChallengeMasterServer(request);
 
 			Assert.AreEqual(MasterChallengeValues.ObsoleteProtocol, response.Status);
@@ -50,9 +50,9 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 					return this.EncodeData(masterResponse, b);
 				});
 
-			var request = new MasterChallengeRequest(1500, 5);
+			var request = new MasterChallengeRequest(new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 0, 1500, 5);
 
-			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socketMock.Object), new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 0);
+			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socketMock.Object));
 			var response = api.ChallengeMasterServer(request);
 
 			Assert.AreEqual(MasterChallengeValues.Banned, response.Status);
@@ -72,9 +72,9 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 					return this.EncodeData(masterResponse, b);
 				});
 
-			var request = new MasterChallengeRequest(1500, 5);
+			var request = new MasterChallengeRequest(new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 0, 1500, 5);
 
-			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socketMock.Object), new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 0);
+			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socketMock.Object));
 			var response = api.ChallengeMasterServer(request);
 
 			Assert.AreEqual(MasterChallengeValues.Denied, response.Status);
@@ -100,9 +100,9 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 					return this.EncodeData(masterResponse, b);
 				});
 
-			var request = new MasterChallengeRequest(0, 0);
+			var request = new MasterChallengeRequest(new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 0, 0, 0);
 
-			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socketMock.Object), new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 0);
+			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socketMock.Object));
 			var response = api.ChallengeMasterServer(request);
 
 			Assert.AreEqual(0, response.Servers.Count());
@@ -131,9 +131,9 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 					return this.EncodeData(masterResponse, b);
 				});
 
-			var request = new MasterChallengeRequest(0, 0);
+			var request = new MasterChallengeRequest(new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 0, 0, 0);
 
-			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socketMock.Object), new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 0);
+			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socketMock.Object));
 			var response = api.ChallengeMasterServer(request);
 
 			Assert.AreEqual(1, response.Servers.Count());
@@ -168,9 +168,9 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 					return this.EncodeData(masterResponse, b);
 				});
 
-			var request = new MasterChallengeRequest((int)ChallengeValues.MasterChallenge, (short)ChallengeValues.MasterProtocol);
+			var request = new MasterChallengeRequest(new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 0, (int)ChallengeValues.MasterChallenge, (short)ChallengeValues.MasterProtocol);
 
-			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socketMock.Object), new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 0);
+			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socketMock.Object));
 			var response = api.ChallengeMasterServer(request);
 
 			Assert.AreEqual(2, response.Servers.Count());

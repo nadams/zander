@@ -29,8 +29,8 @@ namespace Zander.Provider.Net.Sockets {
 			var split = address.Split(':');
 			var endpoint = new IPEndPoint(IPAddress.Parse(split[0]), int.Parse(split[1]));
 
-			var serverApi = this.serverApiProvider.GetInstance(endpoint, timeout);
-			var response = this.ChallengeMaster(serverApi);
+			var serverApi = this.serverApiProvider.GetInstance();
+			var response = this.ChallengeMaster(serverApi, endpoint, timeout);
 			var endpoints = this.GetServerEndpoints(response);
 
 			servers.AddRange(endpoints);
@@ -38,8 +38,8 @@ namespace Zander.Provider.Net.Sockets {
 			return masterServer;
 		}
 
-		private MasterChallengeResponse ChallengeMaster(IRemoteServerApi api) {
-			var request = new MasterChallengeRequest(this.MasterChallenge, this.ProtocolVersion);
+		private MasterChallengeResponse ChallengeMaster(IRemoteServerApi api, IPEndPoint endpoint, int timeout) {
+			var request = new MasterChallengeRequest(endpoint, timeout, this.MasterChallenge, this.ProtocolVersion);
 
 			var response = api.ChallengeMasterServer(request);
 
