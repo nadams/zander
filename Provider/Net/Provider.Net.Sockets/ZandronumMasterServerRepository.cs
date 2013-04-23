@@ -22,11 +22,14 @@ namespace Zander.Provider.Net.Sockets {
 			this.serverApiProvider = serverApiProvider;
 		}
 
-		public IMasterServer Get(string address) {
+		public IMasterServer Get(string address, int timeout) {
 			var servers = new List<IPEndPoint>();
 			var masterServer = new MasterServer(address, servers);
 
-			var serverApi = this.serverApiProvider.GetInstance(address, 1000);
+			var split = address.Split(':');
+			var endpoint = new IPEndPoint(IPAddress.Parse(split[0]), int.Parse(split[1]));
+
+			var serverApi = this.serverApiProvider.GetInstance(endpoint, timeout);
 			var response = this.ChallengeMaster(serverApi);
 			var endpoints = this.GetServerEndpoints(response);
 

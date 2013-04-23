@@ -20,14 +20,11 @@ namespace Zander.Provider.Net.Sockets {
 
 		private IPEndPoint address;
 
-		public RemoteServerApi(INetworkCompressor huffmanEncoding, ISocketProvider socketProvider, string address, int timeout) {
+		public RemoteServerApi(INetworkCompressor huffmanEncoding, ISocketProvider socketProvider, IPEndPoint address, int timeout) {
 			this.huffman = huffmanEncoding;
 			this.timeout = timeout;
 			this.socketProvider = socketProvider;
-
-			var parts = address.Split(':');
-
-			this.address = new IPEndPoint(IPAddress.Parse(parts[0]), int.Parse(parts[1]));
+			this.address = address;
 		}
 
 		public MasterChallengeResponse ChallengeMasterServer(MasterChallengeRequest request) {

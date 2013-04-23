@@ -1,5 +1,7 @@
-﻿namespace Zander.Domain.Remote {
+﻿using System.Net;
+
+namespace Zander.Domain.Remote {
 	public interface IRemoteServerApiProvider {
-		IRemoteServerApi GetInstance(string address, int timeout);
+		IRemoteServerApi GetInstance(IPEndPoint endpoint, int timeout);
 	}
 }
