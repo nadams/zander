@@ -17,7 +17,7 @@ namespace Zander.Provider.Net.Sockets {
 			this.serverApiProvider = serverApiProvider;
 		}
 
-		public Server Get(IPEndPoint endpoint) {
+		public Server Get(IPEndPoint endpoint, ServerQueryValues query) {
 			throw new NotImplementedException();
 		}
 	}
