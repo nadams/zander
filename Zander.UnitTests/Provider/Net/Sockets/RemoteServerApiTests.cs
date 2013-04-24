@@ -287,6 +287,102 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 			Assert.AreEqual(false, response.IsBuckshot);
 		}
 
+		[TestMethod]
+		public void Get_GameName_GameNameReturned() {
+			var serverResponse =
+				BitConverter.GetBytes((int)ServerQueryValues.GameName).
+				Concat(this.encoding.GetBytes("DOOM II\0")).
+				ToArray();
+
+			var socket = this.GetServerSocket(serverResponse);
+
+			var request = new ServerRequest(new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 1000, (int)ServerQueryValues.GameType, (int)ChallengeValues.ServerChallenge, 5);
+			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socket));
+			var response = api.GetServerInfo(request);
+
+			Assert.AreEqual("DOOM II", response.GameName);
+		}
+
+		[TestMethod]
+		public void Get_IWad_IWadReturned() {
+			var serverResponse =
+				BitConverter.GetBytes((int)ServerQueryValues.IWad).
+				Concat(this.encoding.GetBytes("doom2.wad\0")).
+				ToArray();
+
+			var socket = this.GetServerSocket(serverResponse);
+
+			var request = new ServerRequest(new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 1000, (int)ServerQueryValues.IWad, (int)ChallengeValues.ServerChallenge, 5);
+			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socket));
+			var response = api.GetServerInfo(request);
+
+			Assert.AreEqual("doom2.wad", response.IWad);
+		}
+
+		[TestMethod]
+		public void Get_ForcePassword_ForcePasswordReturned() {
+			var serverResponse =
+				BitConverter.GetBytes((int)ServerQueryValues.ForcePassword).
+				Concat(new byte[] { 1 }).
+				ToArray();
+
+			var socket = this.GetServerSocket(serverResponse);
+
+			var request = new ServerRequest(new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 1000, (int)ServerQueryValues.ForcePassword, (int)ChallengeValues.ServerChallenge, 5);
+			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socket));
+			var response = api.GetServerInfo(request);
+
+			Assert.AreEqual(true, response.HasPassword);
+		}
+
+		[TestMethod]
+		public void Get_ForceJoinPassword_ForceJoinPasswordReturned() {
+			var serverResponse =
+				BitConverter.GetBytes((int)ServerQueryValues.ForceJoinPassword).
+				Concat(new byte[] { 1 }).
+				ToArray();
+
+			var socket = this.GetServerSocket(serverResponse);
+
+			var request = new ServerRequest(new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 1000, (int)ServerQueryValues.ForceJoinPassword, (int)ChallengeValues.ServerChallenge, 5);
+			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socket));
+			var response = api.GetServerInfo(request);
+
+			Assert.AreEqual(true, response.HasJoinPassword);
+		}
+
+		[TestMethod]
+		public void Get_GameSkill_GameSkillReturned() {
+			var serverResponse =
+				BitConverter.GetBytes((int)ServerQueryValues.GameSkill).
+				Concat(new byte[] { (byte)Skill.UltraViolence }).
+				ToArray();
+
+			var socket = this.GetServerSocket(serverResponse);
+
+			var request = new ServerRequest(new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 1000, (int)ServerQueryValues.GameSkill, (int)ChallengeValues.ServerChallenge, 5);
+			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socket));
+			var response = api.GetServerInfo(request);
+
+			Assert.AreEqual((byte)Skill.UltraViolence, response.GameSkill);
+		}
+
+		[TestMethod]
+		public void Get_BotSkill_BotSkillReturned() {
+			var serverResponse =
+				BitConverter.GetBytes((int)ServerQueryValues.BotSkill).
+				Concat(new byte[] { (byte)BotSkill.Supreme }).
+				ToArray();
+
+			var socket = this.GetServerSocket(serverResponse);
+
+			var request = new ServerRequest(new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 1000, (int)ServerQueryValues.BotSkill, (int)ChallengeValues.ServerChallenge, 5);
+			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socket));
+			var response = api.GetServerInfo(request);
+
+			Assert.AreEqual((byte)BotSkill.Supreme, response.BotSkill);
+		}
+
 		private ISocket GetServerSocket(byte[] data) {
 			var headerInformation = 
 				BitConverter.GetBytes((int)ServerChallengeValues.BeginningOfData).
