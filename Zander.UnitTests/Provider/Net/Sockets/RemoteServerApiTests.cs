@@ -134,14 +134,11 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 		[TestMethod]
 		public void GetServerInfo_RequestBooleanValue_ByteconvertedToBoolean() {
 			var serverResponse =
-				BitConverter.GetBytes((int)ServerChallengeValues.BeginningOfData).
-				Concat(BitConverter.GetBytes(5)).
-				Concat(this.encoding.GetBytes("version 1.0\0")).
-				Concat(BitConverter.GetBytes((int)ServerQueryValues.GameType)).
+				BitConverter.GetBytes((int)ServerQueryValues.GameType).
 				Concat(new byte[] { (byte)GameMode.Deathmatch, 0, 1 }).
 				ToArray();
 
-			var socket = this.GetSocket(serverResponse);
+			var socket = this.GetServerSocket(serverResponse);
 
 			var request = new ServerRequest(new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 1000, (int)ServerQueryValues.GameType, (int)ChallengeValues.ServerChallenge, 5);
 			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socket));
@@ -155,17 +152,14 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 		[TestMethod]
 		public void GetServerInfo_RequestPWads_PWadsLoaded() {
 			var serverResponse =
-				BitConverter.GetBytes((int)ServerChallengeValues.BeginningOfData).
-				Concat(BitConverter.GetBytes(5)).
-				Concat(this.encoding.GetBytes("version 1.0\0")).
-				Concat(BitConverter.GetBytes((int)ServerQueryValues.PWads)).
+				BitConverter.GetBytes((int)ServerQueryValues.PWads).
 				Concat(new byte[] { 3 }).
 				Concat(this.encoding.GetBytes("zdctfmp.wad\0")).
 				Concat(this.encoding.GetBytes("zdctfmp2.wad\0")).
 				Concat(this.encoding.GetBytes("zdctfmp3-.wad\0")).
 				ToArray();
 
-			var socket = this.GetSocket(serverResponse);
+			var socket = this.GetServerSocket(serverResponse);
 
 			var request = new ServerRequest(new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 1000, (int)ServerQueryValues.PWads, (int)ChallengeValues.ServerChallenge, 5);
 			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socket));
@@ -182,14 +176,11 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 		[TestMethod]
 		public void Get_ServerName_ServerNameReturned() {
 			var serverResponse =
-				BitConverter.GetBytes((int)ServerChallengeValues.BeginningOfData).
-				Concat(BitConverter.GetBytes(5)).
-				Concat(this.encoding.GetBytes("version 1.0\0")).
-				Concat(BitConverter.GetBytes((int)ServerQueryValues.Name)).
+				BitConverter.GetBytes((int)ServerQueryValues.Name).
 				Concat(this.encoding.GetBytes("the best server in the world\0")).
 				ToArray();
 
-			var socket = this.GetSocket(serverResponse);
+			var socket = this.GetServerSocket(serverResponse);
 
 			var request = new ServerRequest(new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 1000, (int)ServerQueryValues.Name, (int)ChallengeValues.ServerChallenge, 5);
 			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socket));
@@ -201,14 +192,11 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 		[TestMethod]
 		public void Get_Url_UrlReturned() {
 			var serverResponse =
-				BitConverter.GetBytes((int)ServerChallengeValues.BeginningOfData).
-				Concat(BitConverter.GetBytes(5)).
-				Concat(this.encoding.GetBytes("version 1.0\0")).
-				Concat(BitConverter.GetBytes((int)ServerQueryValues.Url)).
+				BitConverter.GetBytes((int)ServerQueryValues.Url).
 				Concat(this.encoding.GetBytes("http://the.wads.com/wads/\0")).
 				ToArray();
 
-			var socket = this.GetSocket(serverResponse);
+			var socket = this.GetServerSocket(serverResponse);
 
 			var request = new ServerRequest(new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 1000, (int)ServerQueryValues.Url, (int)ChallengeValues.ServerChallenge, 5);
 			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socket));
@@ -220,20 +208,28 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 		[TestMethod]
 		public void Get_Email_EmailReturned() {
 			var serverResponse =
-				BitConverter.GetBytes((int)ServerChallengeValues.BeginningOfData).
-				Concat(BitConverter.GetBytes(5)).
-				Concat(this.encoding.GetBytes("version 1.0\0")).
-				Concat(BitConverter.GetBytes((int)ServerQueryValues.Email)).
+				BitConverter.GetBytes((int)ServerQueryValues.Email).
 				Concat(this.encoding.GetBytes("admin@server.com\0")).
 				ToArray();
 
-			var socket = this.GetSocket(serverResponse);
+			var socket = this.GetServerSocket(serverResponse);
 
 			var request = new ServerRequest(new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 1000, (int)ServerQueryValues.Email, (int)ChallengeValues.ServerChallenge, 5);
 			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socket));
 			var response = api.GetServerInfo(request);
 
 			Assert.AreEqual("admin@server.com", response.Email);
+		}
+
+		private ISocket GetServerSocket(byte[] data) {
+			var headerInformation = 
+				BitConverter.GetBytes((int)ServerChallengeValues.BeginningOfData).
+				Concat(BitConverter.GetBytes(5)).
+				Concat(this.encoding.GetBytes("version 1.0\0"));
+
+			var sendData = headerInformation.Concat(data).ToArray();
+
+			return this.GetSocket(sendData);
 		}
 
 		private ISocket GetSocket(byte[] data) {
@@ -243,9 +239,7 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 					It.IsAny<byte[]>(),
 					It.Is<SocketFlags>(y => y == SocketFlags.None),
 					It.Is<IPEndPoint>(y => y.ToString() == "10.0.0.1:15300"))
-				).Returns((byte[] b, SocketFlags flags, IPEndPoint endpoint) => {
-					return this.EncodeData(data, b);
-				});
+				).Returns((byte[] b, SocketFlags flags, IPEndPoint endpoint) => this.EncodeData(data, b));
 
 			return socketMock.Object;
 		}
