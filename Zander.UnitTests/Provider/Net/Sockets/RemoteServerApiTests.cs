@@ -237,6 +237,22 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 			Assert.AreEqual("map21", response.MapName);
 		}
 
+		[TestMethod]
+		public void Get_MaxClients_MaxClientsReturned() {
+			var serverResponse =
+				BitConverter.GetBytes((int)ServerQueryValues.MaxClients).
+				Concat(new byte[] { 16 }).
+				ToArray();
+
+			var socket = this.GetServerSocket(serverResponse);
+
+			var request = new ServerRequest(new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 1000, (int)ServerQueryValues.MaxClients, (int)ChallengeValues.ServerChallenge, 5);
+			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socket));
+			var response = api.GetServerInfo(request);
+
+			Assert.AreEqual(16, response.MaxClients);
+		}
+
 		private ISocket GetServerSocket(byte[] data) {
 			var headerInformation = 
 				BitConverter.GetBytes((int)ServerChallengeValues.BeginningOfData).
