@@ -167,7 +167,11 @@ namespace Zander.Provider.Net.Sockets {
 					if(flags.HasFlag(ServerQueryValues.Limits)) {
 						response.FragLimit = readShort();
 						response.TimeLimit = readShort();
-						response.TimeLeft = readShort();
+
+						if(response.TimeLimit > 0) {
+							response.TimeLeft = readShort();
+						}
+
 						response.DuelLimit = readShort();
 						response.PointLimit = readShort();
 						response.WinLimit = readShort();

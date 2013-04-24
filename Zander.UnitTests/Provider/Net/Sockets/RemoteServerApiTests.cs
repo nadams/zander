@@ -383,6 +383,73 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 			Assert.AreEqual((byte)BotSkill.Supreme, response.BotSkill);
 		}
 
+		[TestMethod]
+		public void Get_Limits_AllLimitsReturned() {
+			var serverResponse =
+				BitConverter.GetBytes((int)ServerQueryValues.Limits).
+				Concat(BitConverter.GetBytes((short)50)).
+				Concat(BitConverter.GetBytes((short)10)).
+				Concat(BitConverter.GetBytes((short)2)).
+				Concat(BitConverter.GetBytes((short)0)).
+				Concat(BitConverter.GetBytes((short)0)).
+				Concat(BitConverter.GetBytes((short)0)).
+				ToArray();
+
+			var socket = this.GetServerSocket(serverResponse);
+
+			var request = new ServerRequest(new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 1000, (int)ServerQueryValues.Limits, (int)ChallengeValues.ServerChallenge, 5);
+			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socket));
+			var response = api.GetServerInfo(request);
+
+			Assert.AreEqual(50, response.FragLimit);
+			Assert.AreEqual(10, response.TimeLimit);
+			Assert.AreEqual(2, response.TimeLeft);
+			Assert.AreEqual(0, response.DuelLimit);
+			Assert.AreEqual(0, response.PointLimit);
+			Assert.AreEqual(0, response.WinLimit);
+		}
+
+		[TestMethod]
+		public void Get_TimeLimitIsZero_TimeLeftIsNotIncluded() {
+			var serverResponse =
+				BitConverter.GetBytes((int)ServerQueryValues.Limits).
+				Concat(BitConverter.GetBytes((short)50)).
+				Concat(BitConverter.GetBytes((short)0)).
+				Concat(BitConverter.GetBytes((short)0)).
+				Concat(BitConverter.GetBytes((short)0)).
+				Concat(BitConverter.GetBytes((short)0)).
+				ToArray();
+
+			var socket = this.GetServerSocket(serverResponse);
+
+			var request = new ServerRequest(new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 1000, (int)ServerQueryValues.Limits, (int)ChallengeValues.ServerChallenge, 5);
+			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socket));
+			var response = api.GetServerInfo(request);
+
+			Assert.AreEqual(50, response.FragLimit);
+			Assert.AreEqual(0, response.TimeLimit);
+			Assert.AreEqual(0, response.TimeLeft);
+			Assert.AreEqual(0, response.DuelLimit);
+			Assert.AreEqual(0, response.PointLimit);
+			Assert.AreEqual(0, response.WinLimit);
+		}
+
+		[TestMethod]
+		public void Get_TeamDamage_TeamDamageReturned() {
+			var serverResponse =
+				BitConverter.GetBytes((int)ServerQueryValues.TeamDamage).
+				Concat(BitConverter.GetBytes((float)22.5)).
+				ToArray();
+
+			var socket = this.GetServerSocket(serverResponse);
+
+			var request = new ServerRequest(new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 1000, (int)ServerQueryValues.TeamDamage, (int)ChallengeValues.ServerChallenge, 5);
+			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socket));
+			var response = api.GetServerInfo(request);
+
+			Assert.AreEqual(22.5, response.TeamDamage);
+		}
+
 		private ISocket GetServerSocket(byte[] data) {
 			var headerInformation = 
 				BitConverter.GetBytes((int)ServerChallengeValues.BeginningOfData).
