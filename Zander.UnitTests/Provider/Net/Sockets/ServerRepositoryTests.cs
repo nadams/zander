@@ -1,10 +1,10 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Zander.Domain.Entities;
 using Zander.Domain.Remote;
 using Zander.Provider.Net.Sockets;
-using System.Linq;
-using System.Collections.Generic;
 
 namespace Zander.UnitTests.Provider.Net.Sockets {
 
