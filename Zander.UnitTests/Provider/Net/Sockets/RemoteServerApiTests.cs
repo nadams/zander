@@ -221,6 +221,22 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 			Assert.AreEqual("admin@server.com", response.Email);
 		}
 
+		[TestMethod]
+		public void Get_MapName_MapNameReturned() {
+			var serverResponse =
+				BitConverter.GetBytes((int)ServerQueryValues.MapName).
+				Concat(this.encoding.GetBytes("map21\0")).
+				ToArray();
+
+			var socket = this.GetServerSocket(serverResponse);
+
+			var request = new ServerRequest(new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 1000, (int)ServerQueryValues.MapName, (int)ChallengeValues.ServerChallenge, 5);
+			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socket));
+			var response = api.GetServerInfo(request);
+
+			Assert.AreEqual("map21", response.MapName);
+		}
+
 		private ISocket GetServerSocket(byte[] data) {
 			var headerInformation = 
 				BitConverter.GetBytes((int)ServerChallengeValues.BeginningOfData).
