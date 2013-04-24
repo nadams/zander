@@ -269,6 +269,24 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 			Assert.AreEqual(12, response.MaxPlayers);
 		}
 
+		[TestMethod]
+		public void Get_GameType_GameTypeReturned() {
+			var serverResponse =
+				BitConverter.GetBytes((int)ServerQueryValues.GameType).
+				Concat(new byte[] { (byte)GameMode.Ctf, 1, 0 }).
+				ToArray();
+
+			var socket = this.GetServerSocket(serverResponse);
+
+			var request = new ServerRequest(new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 1000, (int)ServerQueryValues.GameType, (int)ChallengeValues.ServerChallenge, 5);
+			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socket));
+			var response = api.GetServerInfo(request);
+
+			Assert.AreEqual((byte)GameMode.Ctf, response.GameType);
+			Assert.AreEqual(true, response.IsInstagib);
+			Assert.AreEqual(false, response.IsBuckshot);
+		}
+
 		private ISocket GetServerSocket(byte[] data) {
 			var headerInformation = 
 				BitConverter.GetBytes((int)ServerChallengeValues.BeginningOfData).
