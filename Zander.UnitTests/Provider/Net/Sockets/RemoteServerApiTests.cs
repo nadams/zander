@@ -217,6 +217,25 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 			Assert.AreEqual("http://the.wads.com/wads/", response.Url);
 		}
 
+		[TestMethod]
+		public void Get_Email_EmailReturned() {
+			var serverResponse =
+				BitConverter.GetBytes((int)ServerChallengeValues.BeginningOfData).
+				Concat(BitConverter.GetBytes(5)).
+				Concat(this.encoding.GetBytes("version 1.0\0")).
+				Concat(BitConverter.GetBytes((int)ServerQueryValues.Email)).
+				Concat(this.encoding.GetBytes("admin@server.com\0")).
+				ToArray();
+
+			var socket = this.GetSocket(serverResponse);
+
+			var request = new ServerRequest(new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 1000, (int)ServerQueryValues.Email, (int)ChallengeValues.ServerChallenge, 5);
+			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socket));
+			var response = api.GetServerInfo(request);
+
+			Assert.AreEqual("admin@server.com", response.Email);
+		}
+
 		private ISocket GetSocket(byte[] data) {
 			var socketMock = new Mock<ISocket>();
 			socketMock.Setup(
