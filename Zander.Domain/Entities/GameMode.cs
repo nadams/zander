@@ -1,6 +1,5 @@
 ﻿namespace Zander.Domain.Entities {
-	public enum GameMode {
-		Unknown = -1,
+	public enum GameMode : byte {
 		Cooperative = 0,
 		Survival = 1,
 		Invasion = 2,
@@ -17,5 +16,6 @@
 		OneFlagCtf = 13,
 		Skulltag = 14,
 		Domination = 15,
+		Unknown = 255,
 	}
 }

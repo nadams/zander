@@ -28,7 +28,7 @@ namespace Zander.Domain.Remote {
 		TeamInfoScore = 0x1000000,
 		TestingServer = 0x2000000,
 		DataChecksum = 0x4000000,
-		AllDmflags = 0x8000000,
+		AllDMFlags = 0x8000000,
 		SecuritySettings = 0x10000000,
 
 		TeamInfo = TeamInfoColor | TeamInfoName | TeamInfoNumber | TeamInfoScore,
@@ -57,7 +57,7 @@ namespace Zander.Domain.Remote {
 			| TeamInfoScore
 			| TestingServer
 			| DataChecksum
-			| AllDmflags
+			| AllDMFlags
 			| SecuritySettings,
 	}
 }

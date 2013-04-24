@@ -235,7 +235,7 @@ namespace Zander.Provider.Net.Sockets {
 						response.Checksum = readString();
 					}
 
-					if(flags.HasFlag(ServerQueryValues.AllDmflags)) {
+					if(flags.HasFlag(ServerQueryValues.AllDMFlags)) {
 						response.NumberOfFlags = readByte();
 
 						response.DMFlags = readInt();

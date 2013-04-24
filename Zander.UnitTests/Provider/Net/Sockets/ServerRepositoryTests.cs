@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Zander.Domain.Entities;
@@ -20,7 +21,7 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 			var compatFlags2 = CompatFlags2.None;
 
 			var remoteApiMock = new Mock<IRemoteServerApi>();
-			remoteApiMock.Setup(x => x.GetServerInfo(It.Is<ServerRequest>(y => y.Query == (int)ServerQueryValues.AllDmflags))).Returns(new ServerResponse { 
+			remoteApiMock.Setup(x => x.GetServerInfo(It.Is<ServerRequest>(y => y.Query == (int)ServerQueryValues.AllDMFlags))).Returns(new ServerResponse { 
 				DMFlags = (int)dmflags,
 				DMFlags2 = (int)dmflags2,
 				DMFlags3 = (int)dmflags3,
@@ -29,7 +30,7 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 			});
 
 			var api = new ServerRepository(new FakeServerProvider(remoteApiMock.Object));
-			var response = api.Get("10.0.0.1:15300", 1000, ServerQueryValues.AllDmflags);
+			var response = api.Get("10.0.0.1:15300", 1000, ServerQueryValues.AllDMFlags);
 
 			Assert.AreEqual(dmflags, response.DMFlags);
 			Assert.AreEqual(dmflags2, response.DMFlags2);
@@ -100,6 +101,32 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 			Assert.AreSame(redTeam, bob.Team);
 			Assert.AreSame(redTeam, joe.Team);
 			Assert.AreSame(blueTeam, lightningLarry.Team);
+		}
+
+		[TestMethod]
+		public void Get_PWads_PWadsConvertedToWad() {
+			var remoteApiMock = new Mock<IRemoteServerApi>();
+
+			remoteApiMock.Setup(x => x.GetServerInfo(It.Is<ServerRequest>(y => ((ServerQueryValues)y.Query) == ServerQueryValues.PWads))).Returns(() => {
+				var pwads = new List<string> {
+					"av.wad",
+					"av20.wad",
+					"brutaldoom.pk3",
+				};
+
+				var serverResponse = new ServerResponse {
+					PWads = pwads,
+				};
+
+				return serverResponse;
+			});
+
+			var api = new ServerRepository(new FakeServerProvider(remoteApiMock.Object));
+			var response = api.Get("10.0.0.1:15300", 1000, ServerQueryValues.PWads);
+
+			Assert.AreEqual("av.wad", response.PWads.ElementAt(0).Name);
+			Assert.AreEqual("av20.wad", response.PWads.ElementAt(1).Name);
+			Assert.AreEqual("brutaldoom.pk3", response.PWads.ElementAt(2).Name);
 		}
 
 		private class FakeServerProvider : IRemoteServerApiProvider {
