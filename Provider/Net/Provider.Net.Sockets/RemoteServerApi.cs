@@ -203,22 +203,24 @@ namespace Zander.Provider.Net.Sockets {
 
 					if(flags.HasFlag(ServerQueryValues.TeamInfoNumber)) {
 						response.NumberOfTeams = readByte();
-						var teams = new List<TeamInfoResponse>();
+						var teams = Enumerable.Repeat(new TeamInfoResponse(), response.NumberOfTeams).ToList();
 
-						for(int i = 0; i < response.NumberOfTeams; i++) {
-							var team = new TeamInfoResponse();
-
-							if(flags.HasFlag(ServerQueryValues.TeamInfoName)) {
-								team.Name = readString();
+						if(flags.HasFlag(ServerQueryValues.TeamInfoName)) {
+							for(int i = 0; i < response.NumberOfTeams; i++) {
+								teams[i].Name = readString();
 							}
+						}
 
-							if(flags.HasFlag(ServerQueryValues.TeamInfoColor)) {
-								team.Color = readInt();
+						if(flags.HasFlag(ServerQueryValues.TeamInfoColor)) {
+							for(int i = 0; i < response.NumberOfTeams; i++) {
+								teams[i].Color = readInt();
 							}
+						}
 
-							if(flags.HasFlag(ServerQueryValues.TeamInfoScore)) {
-								team.Score = readShort();
-							}						
+						if(flags.HasFlag(ServerQueryValues.TeamInfoScore)) {
+							for(int i = 0; i < response.NumberOfTeams; i++) {
+								teams[i].Score = readShort();
+							}
 						}
 
 						response.Teams = teams;
