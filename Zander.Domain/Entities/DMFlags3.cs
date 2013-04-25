@@ -3,7 +3,8 @@
 namespace Zander.Domain.Entities {
 
 	[Flags]
-	public enum DMFlags3 : uint {
+	public enum DMFlags3 {
+		None = 0,
 		NoTargetIdentify = 1 << 0,
 		ApplyLmsSpectatorSettings = 1 << 1,
 		NoCoopInfo = 1 << 2,

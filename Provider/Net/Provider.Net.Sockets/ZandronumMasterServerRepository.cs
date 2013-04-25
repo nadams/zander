@@ -1,50 +1,59 @@
-﻿using Zander.Domain;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using Zander.Domain;
 using Zander.Domain.Entities;
 using Zander.Domain.Exceptions;
 using Zander.Domain.Remote;
 
 namespace Zander.Provider.Net.Sockets {
 	public class ZandronumMasterServerRepository : IMasterServerRepository {
-		private readonly IRemoteServerApi serverApi;
+		private readonly IRemoteServerApiProvider serverApiProvider;
 
-		public virtual int Challenge {
-			get { return 5660028; }
+		public int MasterChallenge {
+			get { return (int)ChallengeValues.MasterChallenge; }
 		}
 
-		public virtual short ProtocolVersion {
-			get { return 2; }
+		public short ProtocolVersion {
+			get { return (int)ChallengeValues.MasterProtocol; }
 		}
 
-		public ZandronumMasterServerRepository(IRemoteServerApi serverApi) {
-			this.serverApi = serverApi;
+		public ZandronumMasterServerRepository(IRemoteServerApiProvider serverApiProvider) {
+			this.serverApiProvider = serverApiProvider;
 		}
 
-		public IMasterServer Get(string address) {
-			IMasterServer masterServer = new ZandronumMasterServer(address);
+		public IMasterServer Get(string address, int timeout) {
+			var servers = new List<IPEndPoint>();
+			var masterServer = new MasterServer(address, servers);
 
-			var response = this.ChallengeMaster();
+			var split = address.Split(':');
+			var endpoint = new IPEndPoint(IPAddress.Parse(split[0]), int.Parse(split[1]));
+
+			var serverApi = this.serverApiProvider.GetInstance();
+			var response = this.ChallengeMaster(serverApi, endpoint, timeout);
+			var endpoints = this.GetServerEndpoints(response);
+
+			servers.AddRange(endpoints);
 
 			return masterServer;
 		}
 
-		private MasterChallengeResponse ChallengeMaster() {
-			var request = new MasterChallengeRequest {
-				Challenge = this.Challenge,
-				ProtocolVersion = this.ProtocolVersion
-			};
+		private MasterChallengeResponse ChallengeMaster(IRemoteServerApi api, IPEndPoint endpoint, int timeout) {
+			var request = new MasterChallengeRequest(endpoint, timeout, this.MasterChallenge, this.ProtocolVersion);
 
-			var response = this.serverApi.ChallengeMasterServer(request);
+			var response = api.ChallengeMasterServer(request);
+
 			switch(response.Status) {
-				case MasterChallengeStatus.Banned:
+				case MasterChallengeValues.Banned:
 					throw new ClientBannedException();
 
-				case MasterChallengeStatus.Denied:
+				case MasterChallengeValues.Denied:
 					throw new ClientIgnoredException();
 
-				case MasterChallengeStatus.ObsoleteProtocol:
+				case MasterChallengeValues.ObsoleteProtocol:
 					throw new ObsoleteProtocolException();
 
-				case MasterChallengeStatus.BeginningOfServerList:
+				case MasterChallengeValues.BeginningOfServerList:
 					break;
 
 				default:
@@ -52,6 +61,20 @@ namespace Zander.Provider.Net.Sockets {
 			}
 
 			return response;
+		}
+
+		private IEnumerable<IPEndPoint> GetServerEndpoints(MasterChallengeResponse response) {
+			if(response.ServerBlock != MasterChallengeValues.ServerBlock) {
+				throw new UnknownMasterServerResponseException();
+			}
+
+			var endpoints = response.Servers.Select(x => {
+				var ipAddress = new IPAddress(new byte[] { x.Octet1, x.Octet2, x.Octet3, x.Octet4 });
+
+				return new IPEndPoint(ipAddress, x.Port);
+			});
+
+			return endpoints;
 		}
 	}
 }

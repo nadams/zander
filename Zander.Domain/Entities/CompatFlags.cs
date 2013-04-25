@@ -3,7 +3,8 @@
 namespace Zander.Domain.Entities {
 
 	[Flags]
-	public enum CompatFlags : uint {
+	public enum CompatFlags {
+		None = 0,
 		UseShortestTexture = 1 << 0,
 		UseOldStairIndex = 1 << 1,
 		LimitPainElemental = 1 << 2,

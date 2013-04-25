@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using Zander.Domain.Entities;
-
-namespace Zander.Domain.Remote {
-	public interface IRemoteServerApi : IDisposable {
+﻿namespace Zander.Domain.Remote {
+	public interface IRemoteServerApi {
 		MasterChallengeResponse ChallengeMasterServer(MasterChallengeRequest request);
-		IEnumerable<IPEndPoint> GetServerList(string masterServerAddress, long challenge, short protocolVersion);
-		Server GetServerInfo(IPEndPoint serverEndpoint);
+		ServerResponse GetServerInfo(ServerRequest request);
 	}
 }

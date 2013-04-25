@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Zander.Domain.Entities {
-	public abstract class Server {
-		public abstract int Challenge { get; }
-
+	public class Server {
 		public bool RequiresPassword { get; set; }
 		public bool RequiresJoinPassword { get; set; }
 		public bool EnforceMasterBanlist { get; set; }
+		public bool IsTestingServer { get; set; }
 		public int MaxClients { get; set; }
 		public int MaxPlayers { get; set; }
 		public int FragLimit { get; set; }
@@ -23,7 +23,7 @@ namespace Zander.Domain.Entities {
 		public string CurrentMap { get; set; }
 		public string TestingServer { get; set; }
 		public string DataChecksum { get; set; }
-		public string IWad { get; set; }
+		public Wad IWad { get; set; }
 		public string GameName { get; set; }
 		public Skill Skill { get; set; }
 		public BotSkill BotSkill { get; set; }
@@ -32,8 +32,14 @@ namespace Zander.Domain.Entities {
 		public DMFlags3 DMFlags3 { get; set; }
 		public CompatFlags CompatFlags { get; set; }
 		public CompatFlags2 CompatFlags2 { get; set; }
-		public IEnumerable<string> PWads { get; set; }
+		public IEnumerable<Wad> PWads { get; set; }
 		public IEnumerable<Player> Players { get; set; }
 		public IEnumerable<Team> Teams { get; set; }
+
+		public Server() {
+			this.PWads = Enumerable.Empty<Wad>();
+			this.Players = Enumerable.Empty<Player>();
+			this.Teams = Enumerable.Empty<Team>();
+		}
 	}
 }

@@ -1,5 +1,5 @@
 ﻿namespace Zander.Domain.Entities {
-	public enum Skill {
+	public enum Skill : byte {
 		TooYoungToDie = 0,
 		NotTooRough = 1,
 		HurtMePlenty = 2,

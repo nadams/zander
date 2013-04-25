@@ -3,7 +3,8 @@
 namespace Zander.Domain.Entities {
 
 	[Flags]
-	public enum CompatFlags2 : uint {
+	public enum CompatFlags2 {
+		None = 0,
 		NetScriptsAreClientSide = 1 << 0,
 		ClientSendsFullButtonInfo = 1 << 1,
 		NoLand = 1 << 2,
