@@ -450,6 +450,120 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 			Assert.AreEqual(22.5, response.TeamDamage);
 		}
 
+		[TestMethod]
+		public void Get_RequestPlayerInfoOnePlayerExists_OnePlayerInfoReturned() {
+			var serverResponse =
+				BitConverter.GetBytes((int)(ServerQueryValues.PlayerData | ServerQueryValues.NumberOfPlayers)).
+				Concat(new byte[] { 1 }).
+				Concat(this.encoding.GetBytes("Lightning Larry\0")).
+				Concat(BitConverter.GetBytes((short)22)).
+				Concat(BitConverter.GetBytes((short)154)).
+				Concat(new byte[] { 0, 0, 255, 8 }).
+				ToArray();
+
+			var socket = this.GetServerSocket(serverResponse);
+
+			var request = new ServerRequest(
+				new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 1000, 
+				(int)(ServerQueryValues.PlayerData | ServerQueryValues.NumberOfPlayers), 
+				(int)ChallengeValues.ServerChallenge, 
+				5
+			);
+
+			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socket));
+			var response = api.GetServerInfo(request);
+			var player = response.PlayerData.First();
+
+			Assert.AreEqual(1, response.PlayerData.Count());
+			Assert.AreEqual("Lightning Larry", player.Name);
+			Assert.AreEqual(22, player.PointCount);
+			Assert.AreEqual(154, player.Ping);
+			Assert.IsFalse(player.IsSpectating);
+			Assert.IsFalse(player.IsBot);
+			Assert.AreEqual(255, player.TeamId);
+			Assert.AreEqual(8, player.TimeOnServer);
+		}
+
+		[TestMethod]
+		public void Get_RequestPlayerInfoMultiplePlayersExist_MultiplePlayersReturned() {
+			var serverResponse =
+				BitConverter.GetBytes((int)(ServerQueryValues.PlayerData | ServerQueryValues.NumberOfPlayers)).
+				Concat(new byte[] { 2 }).
+				Concat(this.encoding.GetBytes("Lightning Larry\0")).
+				Concat(BitConverter.GetBytes((short)22)).
+				Concat(BitConverter.GetBytes((short)154)).
+				Concat(new byte[] { 0, 0, 255, 8 }).
+				Concat(this.encoding.GetBytes("derp\0")).
+				Concat(BitConverter.GetBytes((short)0)).
+				Concat(BitConverter.GetBytes((short)317)).
+				Concat(new byte[] { 1, 0, 255, 1 }).
+				ToArray();
+
+			var socket = this.GetServerSocket(serverResponse);
+
+			var request = new ServerRequest(
+				new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 1000,
+				(int)(ServerQueryValues.PlayerData | ServerQueryValues.NumberOfPlayers),
+				(int)ChallengeValues.ServerChallenge,
+				5
+			);
+
+			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socket));
+			var response = api.GetServerInfo(request);
+
+			Assert.AreEqual(2, response.PlayerData.Count());
+		}
+
+		[TestMethod]
+		public void Get_TeamInfoOneTeamExists_OneTeamReturned() {
+			var serverResponse =
+				BitConverter.GetBytes((int)ServerQueryValues.TeamInfo).
+				Concat(new byte[] { 1 }).
+				Concat(this.encoding.GetBytes("Red\0")).
+				Concat(BitConverter.GetBytes(45)).
+				Concat(BitConverter.GetBytes((short)23)).
+				ToArray();
+
+			var socket = this.GetServerSocket(serverResponse);
+			var request = new ServerRequest(new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 1000, (int)ServerQueryValues.TeamInfo, (int)ChallengeValues.ServerChallenge, 5);
+			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socket));
+			var response = api.GetServerInfo(request);
+			var team = response.Teams.First();
+
+			Assert.AreEqual(1, response.Teams.Count());
+			Assert.AreEqual("Red", team.Name);
+			Assert.AreEqual(45, team.Color);
+			Assert.AreEqual(23, team.Score);
+		}
+
+		[TestMethod]
+		public void Get_TeamInfoMultipleTeamsExists_MultipleTeamsReturned() {
+			var serverResponse =
+				BitConverter.GetBytes((int)ServerQueryValues.TeamInfo).
+				Concat(new byte[] { 4 }).
+				Concat(this.encoding.GetBytes("Red\0")).
+				Concat(this.encoding.GetBytes("Blue\0")).
+				Concat(this.encoding.GetBytes("White\0")).
+				Concat(this.encoding.GetBytes("Green\0")).
+				Concat(BitConverter.GetBytes((short)1)).
+				Concat(BitConverter.GetBytes((short)2)).
+				Concat(BitConverter.GetBytes((short)3)).
+				Concat(BitConverter.GetBytes((short)4)).
+				Concat(BitConverter.GetBytes(1)).
+				Concat(BitConverter.GetBytes(4)).
+				Concat(BitConverter.GetBytes(2)).
+				Concat(BitConverter.GetBytes(0)).
+				ToArray();
+
+			var socket = this.GetServerSocket(serverResponse);
+			var request = new ServerRequest(new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 1000, (int)ServerQueryValues.TeamInfo, (int)ChallengeValues.ServerChallenge, 5);
+			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socket));
+			var response = api.GetServerInfo(request);
+			var team = response.Teams.First();
+
+			Assert.AreEqual(4, response.Teams.Count());
+		}
+
 		private ISocket GetServerSocket(byte[] data) {
 			var headerInformation = 
 				BitConverter.GetBytes((int)ServerChallengeValues.BeginningOfData).
