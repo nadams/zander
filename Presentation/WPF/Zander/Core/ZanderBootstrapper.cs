@@ -5,7 +5,7 @@ using Microsoft.Practices.Unity;
 namespace Zander.Presentation.WPF.Zander.Core {
     public class ZanderBootstrapper : UnityBootstrapper {
         protected override DependencyObject CreateShell() {
-            return this.Container.Resolve<MainWindow>();
+            return this.Container.Resolve<Shell>();
         }
 
         protected override void InitializeShell() {
