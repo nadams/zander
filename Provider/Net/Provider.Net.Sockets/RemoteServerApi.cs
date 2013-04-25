@@ -232,7 +232,10 @@ namespace Zander.Provider.Net.Sockets {
 
 					if(flags.HasFlag(ServerQueryValues.TestingServer)) {
 						response.IsTestingServer = readBool();
-						response.TestingBinaryUrl = readString();
+
+						if(response.IsTestingServer) {
+							response.TestingBinaryUrl = readString();
+						}
 					}
 
 					if(flags.HasFlag(ServerQueryValues.DataChecksum)) {

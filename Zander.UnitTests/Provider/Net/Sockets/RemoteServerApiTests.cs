@@ -559,9 +559,41 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 			var request = new ServerRequest(new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 1000, (int)ServerQueryValues.TeamInfo, (int)ChallengeValues.ServerChallenge, 5);
 			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socket));
 			var response = api.GetServerInfo(request);
-			var team = response.Teams.First();
 
 			Assert.AreEqual(4, response.Teams.Count());
+		}
+
+		[TestMethod]
+		public void Get_IsTestingServer_TestingServerDetailsReturned() {
+			var serverResponse =
+				BitConverter.GetBytes((int)ServerQueryValues.TestingServer).
+				Concat(new byte[] { 1 }).
+				Concat(this.encoding.GetBytes("The latest zandronum binary.zip\0")).
+				ToArray();
+
+			var socket = this.GetServerSocket(serverResponse);
+			var request = new ServerRequest(new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 1000, (int)ServerQueryValues.TestingServer, (int)ChallengeValues.ServerChallenge, 5);
+			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socket));
+			var response = api.GetServerInfo(request);
+
+			Assert.IsTrue(response.IsTestingServer);
+			Assert.AreEqual("The latest zandronum binary.zip", response.TestingBinaryUrl);
+		}
+
+		[TestMethod]
+		public void Get_IsNotTestingServer_FalseReturned() {
+			var serverResponse =
+				BitConverter.GetBytes((int)ServerQueryValues.TestingServer).
+				Concat(new byte[] { 0 }).
+				ToArray();
+
+			var socket = this.GetServerSocket(serverResponse);
+			var request = new ServerRequest(new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 1000, (int)ServerQueryValues.TestingServer, (int)ChallengeValues.ServerChallenge, 5);
+			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socket));
+			var response = api.GetServerInfo(request);
+
+			Assert.IsFalse(response.IsTestingServer);
+			Assert.IsNull(response.TestingBinaryUrl);
 		}
 
 		private ISocket GetServerSocket(byte[] data) {
