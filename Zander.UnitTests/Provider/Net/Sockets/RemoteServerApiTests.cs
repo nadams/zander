@@ -596,6 +596,21 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 			Assert.IsNull(response.TestingBinaryUrl);
 		}
 
+		[TestMethod]
+		public void Get_DataChecksum_ChecksumReturned() {
+			var serverResponse =
+				BitConverter.GetBytes((int)ServerQueryValues.DataChecksum).
+				Concat(this.encoding.GetBytes("38794fhwergfbn234875bgf2387gbe8r\0")).
+				ToArray();
+
+			var socket = this.GetServerSocket(serverResponse);
+			var request = new ServerRequest(new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 1000, (int)ServerQueryValues.DataChecksum, (int)ChallengeValues.ServerChallenge, 5);
+			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socket));
+			var response = api.GetServerInfo(request);
+
+			Assert.AreEqual("38794fhwergfbn234875bgf2387gbe8r", response.Checksum);
+		}
+
 		private ISocket GetServerSocket(byte[] data) {
 			var headerInformation = 
 				BitConverter.GetBytes((int)ServerChallengeValues.BeginningOfData).
