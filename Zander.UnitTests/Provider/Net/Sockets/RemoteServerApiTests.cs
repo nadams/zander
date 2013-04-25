@@ -611,6 +611,36 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 			Assert.AreEqual("38794fhwergfbn234875bgf2387gbe8r", response.Checksum);
 		}
 
+		[TestMethod]
+		public void Get_AllFlagsRequested_AllFlagsReturned() {
+			var dmflags = (int)(DMFlags.NoExit | DMFlags.SpawnFarthest);
+			var dmflags2 = (int)(DMFlags2.LoseFragWhenKilled | DMFlags2.Degeneration | DMFlags2.BarrelsRespawn);
+			var dmflags3 = (int)DMFlags3.None;
+			var compatflags = (int)(CompatFlags.Invisibility | CompatFlags.LimitDehHelth);
+			var compatflags2 = (int)CompatFlags2.None;
+
+			var serverResponse =
+				BitConverter.GetBytes((int)ServerQueryValues.AllDMFlags).
+				Concat(new byte[] { 5 }).
+				Concat(BitConverter.GetBytes(dmflags)).
+				Concat(BitConverter.GetBytes(dmflags2)).
+				Concat(BitConverter.GetBytes(dmflags3)).
+				Concat(BitConverter.GetBytes(compatflags)).
+				Concat(BitConverter.GetBytes(compatflags2)).
+				ToArray();
+
+			var socket = this.GetServerSocket(serverResponse);
+			var request = new ServerRequest(new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 1000, (int)ServerQueryValues.AllDMFlags, (int)ChallengeValues.ServerChallenge, 5);
+			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socket));
+			var response = api.GetServerInfo(request);
+
+			Assert.AreEqual(dmflags, response.DMFlags);
+			Assert.AreEqual(dmflags2, response.DMFlags2);
+			Assert.AreEqual(dmflags3, response.DMFlags3);
+			Assert.AreEqual(compatflags, response.CompatFlags);
+			Assert.AreEqual(compatflags2, response.CompatFlags2);
+		}
+
 		private ISocket GetServerSocket(byte[] data) {
 			var headerInformation = 
 				BitConverter.GetBytes((int)ServerChallengeValues.BeginningOfData).
