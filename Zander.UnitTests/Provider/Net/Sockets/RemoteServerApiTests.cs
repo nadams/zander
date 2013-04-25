@@ -641,6 +641,21 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 			Assert.AreEqual(compatflags2, response.CompatFlags2);
 		}
 
+		[TestMethod]
+		public void Get_SecuritySettings_SecuritySettingReturned() {
+			var serverResponse =
+				BitConverter.GetBytes((int)ServerQueryValues.SecuritySettings).
+				Concat(new byte[] { 1 }).
+				ToArray();
+
+			var socket = this.GetServerSocket(serverResponse);
+			var request = new ServerRequest(new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 1000, (int)ServerQueryValues.SecuritySettings, (int)ChallengeValues.ServerChallenge, 5);
+			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socket));
+			var response = api.GetServerInfo(request);
+
+			Assert.AreEqual(true, response.UsesSecuritySettings);
+		}
+
 		private ISocket GetServerSocket(byte[] data) {
 			var headerInformation = 
 				BitConverter.GetBytes((int)ServerChallengeValues.BeginningOfData).
