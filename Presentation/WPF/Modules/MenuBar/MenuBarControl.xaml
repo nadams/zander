@@ -8,5 +8,17 @@
 		<MenuItem Header="{Binding Path=Strings.File}">
 			<MenuItem Header="{Binding Path=Strings.Quit}" Command="{Binding Path=Actions.Quit}" />
 		</MenuItem>
+		<MenuItem Header="{Binding Path=Strings.Edit}">
+			
+		</MenuItem>
+		<MenuItem Header="{Binding Path=Strings.Server}">
+			
+		</MenuItem>
+		<MenuItem Header="{Binding Path=Strings.Filter}">
+
+		</MenuItem>
+		<MenuItem Header="{Binding Path=Strings.Help}">
+
+		</MenuItem>
 	</Menu>
 </UserControl>
