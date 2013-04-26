@@ -1,4 +1,5 @@
 ﻿using System.Windows.Controls;
+using Zander.Modules.MenuBar.Models;
 
 namespace Zander.Modules.MenuBar {
 	public partial class MenuBarControl : UserControl, IMenuBarView {

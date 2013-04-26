@@ -1,11 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Practices.Prism.ViewModel;
 
 namespace Zander.Modules.MenuBar.Models {
-	public class MenuBarStrings {
-		string File { get; set; }
+	public class MenuBarStrings : NotificationObject {
+
+		private string file;
+		public string File {
+			get {
+				return this.file;
+			}
+
+			set {
+				this.file = value;
+				this.RaisePropertyChanged(() => this.File);
+			}
+		}
+
+		public MenuBarStrings() {
+			this.File = "File";
+		}
 	}
 }
