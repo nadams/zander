@@ -21,6 +21,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{02F1
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zander.Infrastructure", "Presentation\WPF\Infrastructure\Zander.Infrastructure.csproj", "{EA8B7577-6944-4AC5-B0B6-624A52AA18B7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MenuBar", "Presentation\WPF\Modules\MenuBar\MenuBar.csproj", "{D34E3825-D747-492D-A44A-CAD7769920ED}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +89,16 @@ Global
 		{EA8B7577-6944-4AC5-B0B6-624A52AA18B7}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{EA8B7577-6944-4AC5-B0B6-624A52AA18B7}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{EA8B7577-6944-4AC5-B0B6-624A52AA18B7}.Release|x86.ActiveCfg = Release|Any CPU
+		{D34E3825-D747-492D-A44A-CAD7769920ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D34E3825-D747-492D-A44A-CAD7769920ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D34E3825-D747-492D-A44A-CAD7769920ED}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{D34E3825-D747-492D-A44A-CAD7769920ED}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{D34E3825-D747-492D-A44A-CAD7769920ED}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D34E3825-D747-492D-A44A-CAD7769920ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D34E3825-D747-492D-A44A-CAD7769920ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D34E3825-D747-492D-A44A-CAD7769920ED}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{D34E3825-D747-492D-A44A-CAD7769920ED}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{D34E3825-D747-492D-A44A-CAD7769920ED}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -98,6 +110,7 @@ Global
 		{8D1BBA7D-7988-4B57-BCA5-2BBFBED2B92B} = {602AEE5C-B986-4FCE-8258-9F66E77936FB}
 		{02F19CF8-B617-48E8-B51D-793A4AE97EDE} = {602AEE5C-B986-4FCE-8258-9F66E77936FB}
 		{EA8B7577-6944-4AC5-B0B6-624A52AA18B7} = {602AEE5C-B986-4FCE-8258-9F66E77936FB}
+		{D34E3825-D747-492D-A44A-CAD7769920ED} = {02F19CF8-B617-48E8-B51D-793A4AE97EDE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35
