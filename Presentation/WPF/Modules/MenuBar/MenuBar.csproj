@@ -77,7 +77,8 @@
       <DependentUpon>MenuBarControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="MenuBarModule.cs" />
-    <Compile Include="MenuBarviewModel.cs" />
+    <Compile Include="Models\MenuBarStrings.cs" />
+    <Compile Include="Models\MenuBarViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
