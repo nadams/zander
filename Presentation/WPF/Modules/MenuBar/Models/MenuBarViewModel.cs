@@ -16,9 +16,21 @@ namespace Zander.Modules.MenuBar.Models {
 			}
 		}
 
-		public MenuBarViewModel(IEventAggregator eventAggregator) : base(eventAggregator) {
-			this.Strings = new MenuBarStrings();
+		private MenuBarActions actions;
+		public MenuBarActions Actions {
+			get {
+				return this.actions;
+			}
+
+			set {
+				this.actions = value;
+				this.RaisePropertyChanged(() => this.Actions);
+			}
 		}
 
+		public MenuBarViewModel(IEventAggregator eventAggregator) : base(eventAggregator) {
+			this.Strings = new MenuBarStrings();
+			this.Actions = new MenuBarActions(eventAggregator);
+		}
 	}
 }

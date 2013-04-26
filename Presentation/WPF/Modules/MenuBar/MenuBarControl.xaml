@@ -6,7 +6,7 @@
 			 mc:Ignorable="d">
 	<Menu>
 		<MenuItem Header="{Binding Path=Strings.File}">
-			<MenuItem Header="{Binding Path=Strings.Quit}" />
+			<MenuItem Header="{Binding Path=Strings.Quit}" Command="{Binding Path=Actions.Quit}" />
 		</MenuItem>
 	</Menu>
 </UserControl>

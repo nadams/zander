@@ -68,6 +68,8 @@
     <Compile Include="Base\IView.cs" />
     <Compile Include="Base\IViewModel.cs" />
     <Compile Include="Base\MessagingViewModel.cs" />
+    <Compile Include="Events\Empty.cs" />
+    <Compile Include="Events\QuitEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Regions.cs" />
   </ItemGroup>
