@@ -15,8 +15,21 @@ namespace Zander.Modules.MenuBar.Models {
 			}
 		}
 
+		private string quit;
+		public string Quit {
+			get {
+				return this.quit;
+			}
+
+			set {
+				this.quit = value;
+				this.RaisePropertyChanged(() => this.Quit);
+			}
+		}
+
 		public MenuBarStrings() {
 			this.File = "File";
+			this.Quit = "Quit";
 		}
 	}
 }
