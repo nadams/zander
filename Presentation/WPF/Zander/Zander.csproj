@@ -126,6 +126,10 @@
       <Project>{ea8b7577-6944-4ac5-b0b6-624a52aa18b7}</Project>
       <Name>Zander.Infrastructure</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Modules\MenuBar\MenuBar.csproj">
+      <Project>{d34e3825-d747-492d-a44a-cad7769920ed}</Project>
+      <Name>MenuBar</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

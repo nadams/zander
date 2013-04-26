@@ -7,7 +7,7 @@
     <ProjectGuid>{D34E3825-D747-492D-A44A-CAD7769920ED}</ProjectGuid>
     <OutputType>library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MenuBar</RootNamespace>
+    <RootNamespace>Zander.Modules.MenuBar</RootNamespace>
     <AssemblyName>MenuBar</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -71,7 +71,13 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IMenuBarView.cs" />
+    <Compile Include="IMenuBarViewModel.cs" />
+    <Compile Include="MenuBarControl.xaml.cs">
+      <DependentUpon>MenuBarControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MenuBarModule.cs" />
+    <Compile Include="MenuBarviewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -101,6 +107,12 @@
       <Project>{ea8b7577-6944-4ac5-b0b6-624a52aa18b7}</Project>
       <Name>Zander.Infrastructure</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="MenuBarControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
