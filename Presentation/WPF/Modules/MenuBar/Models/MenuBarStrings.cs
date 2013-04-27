@@ -173,10 +173,10 @@ namespace Zander.Modules.MenuBar.Models {
 			this.Help = "Help";
 			this.Refresh = "Refresh";
 			this.AddToIgnoreList = "Add server to ignore list";
-			this.EditCustomServers = "Edit custom servers";
-			this.EditIgnoreList = "Edit ignore list";
+			this.EditCustomServers = "Custom servers";
+			this.EditIgnoreList = "Ignore list";
+			this.EditFilters = "Filters";
 			this.Settings = "Settings";
-			this.EditFilters = "Edit Filters";
 		}
 	}
 }
