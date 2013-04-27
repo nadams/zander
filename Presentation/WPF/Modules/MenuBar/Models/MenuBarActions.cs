@@ -13,6 +13,30 @@ namespace Zander.Modules.MenuBar.Models {
 			}
 		}
 
+		public ICommand Refresh {
+			get {
+				return new DelegateCommand(() => this.eventAggregator.GetEvent<RefreshEvent>().Publish(Empty.Value));
+			}
+		}
+
+		public ICommand AddToIgnoreList {
+			get {
+				return new DelegateCommand(() => this.eventAggregator.GetEvent<AddServerToIgnoreListEvent>().Publish(Empty.Value));
+			}
+		}
+
+		public ICommand EditCustomServers {
+			get {
+				return new DelegateCommand(() => this.eventAggregator.GetEvent<EditCustomServersEvent>().Publish(Empty.Value));
+			}
+		}
+
+		public ICommand EditIgnoreList {
+			get {
+				return new DelegateCommand(() => this.eventAggregator.GetEvent<EditIgnoreListEvent>().Publish(Empty.Value));
+			}
+		}
+
 		public MenuBarActions(IEventAggregator eventAggregator) {
 			this.eventAggregator = eventAggregator;
 		}

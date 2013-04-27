@@ -9,7 +9,10 @@
 			<MenuItem Header="{Binding Path=Strings.Quit}" Command="{Binding Path=Actions.Quit}" />
 		</MenuItem>
 		<MenuItem Header="{Binding Path=Strings.Edit}">
-			
+			<MenuItem Header="{Binding Path=Strings.Refresh}" Command="{Binding Path=Actions.Refresh}" />
+			<MenuItem Header="{Binding Path=Strings.AddToIgnoreList}" Command="{Binding Path=Actions.AddToIgnoreList}" />
+			<MenuItem Header="{Binding Path=Strings.EditCustomServers}" Command="{Binding Path=Actions.EditCustomServers}" />
+			<MenuItem Header="{Binding Path=Strings.EditIgnoreList}" Command="{Binding Path=Actions.EditIgnoreList}" />
 		</MenuItem>
 		<MenuItem Header="{Binding Path=Strings.Server}">
 			
