@@ -37,6 +37,12 @@ namespace Zander.Modules.MenuBar.Models {
 			}
 		}
 
+		public ICommand About {
+			get {
+				return new DelegateCommand(() => this.eventAggregator.GetEvent<AboutEvent>().Publish(Empty.Value));
+			}
+		}
+
 		public MenuBarActions(IEventAggregator eventAggregator) {
 			this.eventAggregator = eventAggregator;
 		}

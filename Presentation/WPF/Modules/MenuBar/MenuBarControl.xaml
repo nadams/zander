@@ -21,7 +21,7 @@
 
 		</MenuItem>
 		<MenuItem Header="{Binding Path=Strings.Help}">
-
+			<MenuItem Header="{Binding Path=Strings.About}" Command="{Binding Path=Actions.About}" />
 		</MenuItem>
 	</Menu>
 </UserControl>

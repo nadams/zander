@@ -125,12 +125,25 @@ namespace Zander.Modules.MenuBar.Models {
 			}
 		}
 
+		private string about;
+		public string About {
+			get {
+				return this.about;
+			}
+
+			set {
+				this.about = value;
+				this.RaisePropertyChanged(() => this.About);
+			}
+		}
+
 		#endregion
 
 		public MenuBarStrings() {
 			this.File = "File";
 			this.Quit = "Quit";
 			this.Edit = "Edit";
+			this.About = "About";
 			this.Server = "Server";
 			this.Filter = "Filter";
 			this.Help = "Help";
