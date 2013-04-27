@@ -71,6 +71,8 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IServerBrowserView.cs" />
+    <Compile Include="IServerBrowserViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -84,7 +86,11 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="ServerBrowserControl.xaml.cs">
+      <DependentUpon>ServerBrowserControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ServerBrowserModule.cs" />
+    <Compile Include="ServerBrowserViewModel.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -101,6 +107,12 @@
       <Project>{ea8b7577-6944-4ac5-b0b6-624a52aa18b7}</Project>
       <Name>Zander.Infrastructure</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="ServerBrowserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
