@@ -15,7 +15,8 @@
 			<MenuItem Header="{Binding Path=Strings.Settings}" Command="{Binding Path=Actions.Settings}" />
 		</MenuItem>
 		<MenuItem Header="{Binding Path=Strings.Server}">
-			<MenuItem Header="{Binding Path=Strings.Refresh}" Command="{Binding Path=Actions.Refresh}" />
+			<MenuItem Header="{Binding Path=Strings.RefreshCurrentServer}" Command="{Binding Path=Actions.RefreshCurrentServer}" />
+			<MenuItem Header="{Binding Path=Strings.RefreshAllServers}" Command="{Binding Path=Actions.RefreshAllServers}" />
 			<MenuItem Header="{Binding Path=Strings.AddToIgnoreList}" Command="{Binding Path=Actions.AddToIgnoreList}" />
 		</MenuItem>
 		<MenuItem Header="{Binding Path=Strings.Help}">

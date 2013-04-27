@@ -77,15 +77,27 @@ namespace Zander.Modules.MenuBar.Models {
 			}
 		}
 
-		private string refresh;
-		public string Refresh {
+		private string refreshCurrentServer;
+		public string RefreshCurrentServer {
 			get {
-				return this.refresh;
+				return this.refreshCurrentServer;
 			}
 
 			set {
-				this.refresh = value;
-				this.RaisePropertyChanged(() => this.Refresh);
+				this.refreshCurrentServer = value;
+				this.RaisePropertyChanged(() => this.RefreshCurrentServer);
+			}
+		}
+
+		private string refreshAllServers;
+		public string RefreshAllServers {
+			get {
+				return this.refreshAllServers;
+			}
+
+			set {
+				this.refreshAllServers = value;
+				this.RaisePropertyChanged(() => this.RefreshAllServers);
 			}
 		}
 
@@ -171,7 +183,8 @@ namespace Zander.Modules.MenuBar.Models {
 			this.Server = "Server";
 			this.Filter = "Filter";
 			this.Help = "Help";
-			this.Refresh = "Refresh";
+			this.RefreshCurrentServer = "Refresh current server";
+			this.RefreshAllServers = "Refresh all servers";
 			this.AddToIgnoreList = "Add server to ignore list";
 			this.EditCustomServers = "Custom servers";
 			this.EditIgnoreList = "Ignore list";

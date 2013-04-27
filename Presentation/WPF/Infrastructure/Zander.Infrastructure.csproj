@@ -75,7 +75,8 @@
     <Compile Include="Events\EditIgnoreListEvent.cs" />
     <Compile Include="Events\Empty.cs" />
     <Compile Include="Events\QuitEvent.cs" />
-    <Compile Include="Events\RefreshEvent.cs" />
+    <Compile Include="Events\RefreshAllServersEvent.cs" />
+    <Compile Include="Events\RefreshCurrentServerEvent.cs" />
     <Compile Include="Events\SettingsEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Regions.cs" />

@@ -13,9 +13,15 @@ namespace Zander.Modules.MenuBar.Models {
 			}
 		}
 
-		public ICommand Refresh {
+		public ICommand RefreshCurrentServer {
 			get {
-				return new DelegateCommand(() => this.eventAggregator.GetEvent<RefreshEvent>().Publish(Empty.Value));
+				return new DelegateCommand(() => this.eventAggregator.GetEvent<RefreshCurrentServerEvent>().Publish(Empty.Value));
+			}
+		}
+
+		public ICommand RefreshAllServers {
+			get {
+				return new DelegateCommand(() => this.eventAggregator.GetEvent<RefreshAllServersEvent>().Publish(Empty.Value));
 			}
 		}
 
