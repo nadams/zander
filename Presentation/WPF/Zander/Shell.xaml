@@ -1,8 +1,11 @@
 ﻿<Window x:Class="Zander.Presentation.WPF.Zander.Shell"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="300" Width="300">
-    <Grid>
-        
-    </Grid>
+		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:prism="http://www.codeplex.com/prism"
+		xmlns:infrastructure="clr-namespace:Zander.Presentation.WPF.Zander.Infrastructure;assembly=Zander.Infrastructure"
+		Title="MainWindow" Height="300" Width="300">
+	<DockPanel LastChildFill="True">
+		<ContentControl prism:RegionManager.RegionName="{x:Static infrastructure:Regions.MenuBar}" DockPanel.Dock="Top" />
+		<ContentControl />
+	</DockPanel>
 </Window>
