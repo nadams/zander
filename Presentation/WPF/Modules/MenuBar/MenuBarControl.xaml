@@ -9,7 +9,7 @@
 			<MenuItem Header="{Binding Path=Strings.Quit}" Command="{Binding Path=Actions.Quit}" />
 		</MenuItem>
 		<MenuItem Header="{Binding Path=Strings.Edit}">
-			
+			<MenuItem Header="{Binding Path=Strings.Settings}" Command="{Binding Path=Actions.Settings}" />
 		</MenuItem>
 		<MenuItem Header="{Binding Path=Strings.Server}">
 			<MenuItem Header="{Binding Path=Strings.Refresh}" Command="{Binding Path=Actions.Refresh}" />

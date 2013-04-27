@@ -137,6 +137,18 @@ namespace Zander.Modules.MenuBar.Models {
 			}
 		}
 
+		private string settings;
+		public string Settings {
+			get {
+				return this.settings;
+			}
+
+			set {
+				this.settings = value;
+				this.RaisePropertyChanged(() => this.Settings);
+			}
+		}
+
 		#endregion
 
 		public MenuBarStrings() {
@@ -151,6 +163,7 @@ namespace Zander.Modules.MenuBar.Models {
 			this.AddToIgnoreList = "Add server to ignore list";
 			this.EditCustomServers = "Edit custom servers";
 			this.EditIgnoreList = "Edit ignore list";
+			this.Settings = "Settings";
 		}
 	}
 }

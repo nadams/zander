@@ -68,6 +68,7 @@
     <Compile Include="Base\IView.cs" />
     <Compile Include="Base\IViewModel.cs" />
     <Compile Include="Base\MessagingViewModel.cs" />
+    <Compile Include="Events\AboutEvent.cs" />
     <Compile Include="Events\EditCustomServersEvent.cs" />
     <Compile Include="Events\AddServerToIgnoreListEvent.cs" />
     <Compile Include="Events\EditIgnoreListEvent.cs" />
