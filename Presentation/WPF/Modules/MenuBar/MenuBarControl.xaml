@@ -11,6 +11,7 @@
 		<MenuItem Header="{Binding Path=Strings.Edit}">
 			<MenuItem Header="{Binding Path=Strings.EditCustomServers}" Command="{Binding Path=Actions.EditCustomServers}" />
 			<MenuItem Header="{Binding Path=Strings.EditIgnoreList}" Command="{Binding Path=Actions.EditIgnoreList}" />
+			<MenuItem Header="{Binding Path=Strings.EditFilters}" Command="{Binding Path=Actions.EditFilters}" />
 			<MenuItem Header="{Binding Path=Strings.Settings}" Command="{Binding Path=Actions.Settings}" />
 		</MenuItem>
 		<MenuItem Header="{Binding Path=Strings.Server}">

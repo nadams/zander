@@ -49,6 +49,12 @@ namespace Zander.Modules.MenuBar.Models {
 			}
 		}
 
+		public ICommand EditFilters {
+			get {
+				return new DelegateCommand(() => this.eventAggregator.GetEvent<EditFiltersEvent>().Publish(Empty.Value));
+			}
+		}
+
 		public MenuBarActions(IEventAggregator eventAggregator) {
 			this.eventAggregator = eventAggregator;
 		}
