@@ -17,9 +17,6 @@
 			<MenuItem Header="{Binding Path=Strings.EditCustomServers}" Command="{Binding Path=Actions.EditCustomServers}" />
 			<MenuItem Header="{Binding Path=Strings.EditIgnoreList}" Command="{Binding Path=Actions.EditIgnoreList}" />
 		</MenuItem>
-		<MenuItem Header="{Binding Path=Strings.Filter}">
-
-		</MenuItem>
 		<MenuItem Header="{Binding Path=Strings.Help}">
 			<MenuItem Header="{Binding Path=Strings.About}" Command="{Binding Path=Actions.About}" />
 		</MenuItem>
