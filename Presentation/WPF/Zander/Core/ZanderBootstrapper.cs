@@ -2,6 +2,7 @@
 using Microsoft.Practices.Prism.UnityExtensions;
 using Microsoft.Practices.Unity;
 using Zander.Modules.MenuBar;
+using Zander.Modules.ServerBrowser;
 using Zander.Presentation.WPF.Zander.Extensions;
 
 namespace Zander.Presentation.WPF.Zander.Core {
@@ -21,6 +22,7 @@ namespace Zander.Presentation.WPF.Zander.Core {
 			base.ConfigureModuleCatalog();
 
 			this.ModuleCatalog.RegisterModule<MenuBarModule>();
+			this.ModuleCatalog.RegisterModule<ServerBrowserModule>();
 		}
 	}
 }
