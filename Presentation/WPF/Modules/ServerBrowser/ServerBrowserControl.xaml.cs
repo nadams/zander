@@ -17,7 +17,6 @@ namespace Zander.Modules.ServerBrowser {
 
 		public ServerBrowserControl() {
 			InitializeComponent();
-			this.ViewModel = new ServerBrowserViewModel();
 		}
 
 		public ServerBrowserControl(IServerBrowserViewModel viewModel) : this() {
