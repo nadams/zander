@@ -37,6 +37,8 @@ namespace Zander.Modules.ServerBrowser {
 			this.Model = new ServerBrowserModel();
 			this.masterServerRepository = masterServerRepository;
 			this.serverRepository = serverRepository;
+			var repo = this.MasterServerRepository.Get("64.15.129.183:15300", 10000);
+			System.Console.WriteLine();
 		}
 	}
 }

@@ -82,12 +82,10 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 			var masterResponse =
 				BitConverter.GetBytes((int)MasterChallengeValues.BeginningOfServerList).
 				Concat(new byte[] { 0 }).
-				Concat(BitConverter.GetBytes((int)MasterChallengeValues.ServerBlock)).
-				Concat(new byte[] { 1 }).
+				Concat(new byte[] { (byte)MasterChallengeValues.ServerBlock, 1 }).
 				Concat(new byte[] { 10, 0, 0, 1 }).
 				Concat(BitConverter.GetBytes((ushort)10666)).
 				Concat(new byte[] { 0 }).
-				Concat(new byte[] { (byte)MasterChallengeValues.EndOfServerList }).
 				ToArray();
 
 			var socket = this.GetSocket(masterResponse);
@@ -102,21 +100,15 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 		}
 
 		[TestMethod]
-		public void ChallengeMasterServer_TwoPagesOfServersAvailable_TwoServersReturned() {
+		public void ChallengeMasterServer_TwoServersInIPAvailable_TwoServersReturned() {
 			var masterResponse =
 				BitConverter.GetBytes((int)MasterChallengeValues.BeginningOfServerList).
 				Concat(new byte[] { 0 }).
-				Concat(BitConverter.GetBytes((int)MasterChallengeValues.ServerBlock)).
-				Concat(new byte[] { 1 }).
+				Concat(new byte[] { (byte)MasterChallengeValues.ServerBlock, 2 }).
 				Concat(new byte[] { 10, 0, 0, 1 }).
 				Concat(BitConverter.GetBytes((ushort)10666)).
-				Concat(new byte[] { 0 }).
-				Concat(new byte[] { (byte)MasterChallengeValues.EndOfCurrentList }).
-				Concat(new byte[] { 1 }).
-				Concat(new byte[] { 10, 0, 0, 2 }).
 				Concat(BitConverter.GetBytes((ushort)10667)).
 				Concat(new byte[] { 0 }).
-				Concat(new byte[] { (byte)MasterChallengeValues.EndOfServerList }).
 				ToArray();
 
 			var socket = this.GetSocket(masterResponse);
@@ -128,7 +120,34 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 
 			Assert.AreEqual(2, response.Servers.Count());
 			Assert.AreEqual("10.0.0.1:10666", response.Servers.ElementAt(0).ToString());
-			Assert.AreEqual("10.0.0.2:10667", response.Servers.ElementAt(1).ToString());
+			Assert.AreEqual("10.0.0.1:10667", response.Servers.ElementAt(1).ToString());
+		}
+
+		[TestMethod]
+		public void ChallengeMasterServer_MultipleServersInMultipleAddressRanges_MultipleServersReturned() {
+			var masterResponse =
+				BitConverter.GetBytes((int)MasterChallengeValues.BeginningOfServerList).
+				Concat(new byte[] { 0 }).
+				Concat(new byte[] { (byte)MasterChallengeValues.ServerBlock, 2 }).
+				Concat(new byte[] { 10, 0, 0, 1 }).
+				Concat(BitConverter.GetBytes((ushort)10666)).
+				Concat(BitConverter.GetBytes((ushort)10667)).
+				Concat(new byte[] { 3 }).
+				Concat(new byte[] { 10, 0, 0, 10 }).
+				Concat(BitConverter.GetBytes((ushort)10666)).
+				Concat(BitConverter.GetBytes((ushort)10667)).
+				Concat(BitConverter.GetBytes((ushort)10668)).
+				Concat(new byte[] { 0 }).
+				ToArray();
+
+			var socket = this.GetSocket(masterResponse);
+
+			var request = new MasterChallengeRequest(new IPEndPoint(IPAddress.Parse("10.0.0.1"), 15300), 0, (int)ChallengeValues.MasterChallenge, (short)ChallengeValues.MasterProtocol);
+
+			var api = new RemoteServerApi(new EmptyCompressor(), new FakeSocketProvider(socket));
+			var response = api.ChallengeMasterServer(request);
+
+			Assert.AreEqual(5, response.Servers.Count());
 		}
 
 		[TestMethod]

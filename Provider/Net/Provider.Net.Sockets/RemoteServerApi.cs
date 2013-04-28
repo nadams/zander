@@ -12,7 +12,7 @@ namespace Zander.Provider.Net.Sockets {
 	public class RemoteServerApi : IRemoteServerApi {
 		private delegate void LoadServerInfo(ServerResponse response, ServerQueryValues flags, BinaryReader reader);
 
-		private const int BufferSize = 0x10000;
+		private const int BufferSize = 0x1000;
 
 		private readonly INetworkCompressor huffman;
 		private readonly ISocketProvider socketProvider;
@@ -38,14 +38,15 @@ namespace Zander.Provider.Net.Sockets {
 
 				if(response.Status == MasterChallengeValues.BeginningOfServerList) {
 					response.PacketNumber = reader.ReadByte();
-					response.ServerBlock = (MasterChallengeValues)reader.ReadInt32();
+					response.ServerBlock = (MasterChallengeValues)reader.ReadByte();
 
 					if(response.ServerBlock == MasterChallengeValues.ServerBlock) {
 						var servers = new List<ServerListResponse>();
 
-						do {
-							this.ReadServers(reader, servers);
-						} while(((MasterChallengeValues)reader.ReadByte()) == MasterChallengeValues.EndOfCurrentList);
+						byte numberOfServers;
+						while((numberOfServers = reader.ReadByte()) > 0) {
+							this.ReadServers(numberOfServers, reader, servers);
+						}
 
 						response.Servers = servers;
 					}
@@ -55,14 +56,13 @@ namespace Zander.Provider.Net.Sockets {
 			return response;
 		}
 
-		private void ReadServers(BinaryReader reader, List<ServerListResponse> servers) {
-			byte numberOfServers;
+		private void ReadServers(byte numberOfServers, BinaryReader reader, List<ServerListResponse> servers) {
+			byte octet1 = reader.ReadByte();
+			byte octet2 = reader.ReadByte();
+			byte octet3 = reader.ReadByte();
+			byte octet4 = reader.ReadByte();
 
-			while((numberOfServers = reader.ReadByte()) > 0) {
-				byte octet1 = reader.ReadByte();
-				byte octet2 = reader.ReadByte();
-				byte octet3 = reader.ReadByte();
-				byte octet4 = reader.ReadByte();
+			for(int i = 0; i < numberOfServers; i++) {
 				ushort port = reader.ReadUInt16();
 
 				var response = new ServerListResponse(octet1, octet2, octet3, octet4, port);
