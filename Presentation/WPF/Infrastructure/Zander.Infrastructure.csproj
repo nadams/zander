@@ -83,6 +83,7 @@
   <ItemGroup>
     <Compile Include="Base\BaseModule.cs" />
     <Compile Include="Base\BaseViewModel.cs" />
+    <Compile Include="Base\IEntityMapper.cs" />
     <Compile Include="Base\IView.cs" />
     <Compile Include="Base\IViewModel.cs" />
     <Compile Include="Base\MessagingViewModel.cs" />

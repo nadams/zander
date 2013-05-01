@@ -27,7 +27,7 @@ namespace Zander.Provider.Net.Sockets {
 			var request = new ServerRequest(endpoint, timeout, (int)query, this.ServerChallenge, Environment.TickCount);
 			var response = api.GetServerInfo(request);
 
-			var server = new Server {
+			var server = new Server(endpoint) {
 				AdminEmail = response.Email,
 				BotSkill = (BotSkill)response.BotSkill,
 				CompatFlags = (CompatFlags)response.CompatFlags,

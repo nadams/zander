@@ -90,6 +90,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Converters\CollectionToCommaList.cs" />
+    <Compile Include="Converters\ServerEntityMapper.cs" />
     <Compile Include="IServerBrowserView.cs" />
     <Compile Include="IServerBrowserViewModel.cs" />
     <Compile Include="Models\ServerBrowserModel.cs" />
