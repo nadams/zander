@@ -16,6 +16,7 @@
 			<DataGridTextColumn Header="IWad" Binding="{Binding Path=IWad}" />
 			<DataGridTextColumn Header="Game Name" Binding="{Binding Path=GameName}" />
 			<DataGridTextColumn Header="PWads" Binding="{Binding Path=PWads, Converter={StaticResource ResourceKey=CollectionToCommaList}}" />
+			<DataGridTextColumn Header="Address" Binding="{Binding Path=Address}" />
 		</DataGrid.Columns>
 	</DataGrid>
 </UserControl>
