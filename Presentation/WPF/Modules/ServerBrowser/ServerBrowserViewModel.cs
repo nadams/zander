@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Net;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using Microsoft.Practices.Prism.Events;
 using Microsoft.Practices.Prism.ViewModel;
 using Zander.Domain;
 using Zander.Domain.Entities;
 using Zander.Domain.Remote;
-using Zander.Modules.ServerBrowser.Converters;
 using Zander.Modules.ServerBrowser.Models;
 using Zander.Presentation.WPF.Zander.Infrastructure.Events;
 
@@ -52,6 +47,17 @@ namespace Zander.Modules.ServerBrowser {
 			this.eventAggregator.GetEvent<QueryAllServersEvent>().Subscribe(empty => {
 				var masterServer = this.GetMasterServer();
 
+                var servers = masterServer.Servers.Take(10);
+
+                foreach(var server in servers) {
+                    var address = server.Address.ToString() + ":" + server.Port;
+
+                    try {
+                        var entity = this.serverRepository.Get(address, 1000, ServerQueryValues.AllData);
+
+                        this.Model.AddServer(entity);
+                    } catch { }
+                }
 			});
 		}
 

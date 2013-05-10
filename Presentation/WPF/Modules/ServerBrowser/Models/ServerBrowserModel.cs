@@ -1,6 +1,8 @@
 ﻿using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using Microsoft.Practices.Prism.ViewModel;
+using Zander.Domain.Entities;
+using Zander.Modules.ServerBrowser.Converters;
 
 namespace Zander.Modules.ServerBrowser.Models {
 	public class ServerBrowserModel : NotificationObject {
@@ -35,5 +37,13 @@ namespace Zander.Modules.ServerBrowser.Models {
 
 			return servers;
 		}
+
+        public void AddServer(Server server) {
+            var mapper = new ServerEntityMapper();
+
+            var model = mapper.ModelFromEntity(server);
+
+            this.Servers.Add(model);
+        }
 	}
 }

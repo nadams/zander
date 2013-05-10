@@ -12,7 +12,7 @@ namespace Zander.Modules.ServerBrowser.Converters {
 				Address = e.IPEndPoint.ToString(),
 				CurrentMap = e.CurrentMap,
 				DisplayName = e.DisplayName,
-				GameName = e.DisplayName,
+				GameName = e.GameName,
 				IWad = e.IWad.Name,
 				MaxClients = e.MaxClients,
 				MaxPlayers = e.MaxPlayers,
