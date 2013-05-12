@@ -6,6 +6,7 @@
 		Title="MainWindow" Height="300" Width="300">
 	<DockPanel LastChildFill="True">
 		<ContentControl prism:RegionManager.RegionName="{x:Static infrastructure:Regions.MenuBar}" DockPanel.Dock="Top" />
+		<ContentControl prism:RegionManager.RegionName="{x:Static infrastructure:Regions.StatusBar}" DockPanel.Dock="Bottom" />
 		<ContentControl prism:RegionManager.RegionName="{x:Static infrastructure:Regions.ServerBrowser}" />
 	</DockPanel>
 </Window>
