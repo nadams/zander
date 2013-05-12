@@ -38,12 +38,12 @@ namespace Zander.Modules.ServerBrowser.Models {
 			return servers;
 		}
 
-        public void AddServer(Server server) {
-            var mapper = new ServerEntityMapper();
+		public void AddServer(Server server) {
+			var mapper = new ServerEntityMapper();
 
-            var model = mapper.ModelFromEntity(server);
+			var model = mapper.ModelFromEntity(server);
 
-            this.Servers.Add(model);
-        }
+			this.Servers.Add(model);
+		}
 	}
 }

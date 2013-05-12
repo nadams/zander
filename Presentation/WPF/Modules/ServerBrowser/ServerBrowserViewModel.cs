@@ -47,17 +47,17 @@ namespace Zander.Modules.ServerBrowser {
 			this.eventAggregator.GetEvent<QueryAllServersEvent>().Subscribe(empty => {
 				var masterServer = this.GetMasterServer();
 
-                var servers = masterServer.Servers.Take(10);
+				var servers = masterServer.Servers.Take(10);
 
-                foreach(var server in servers) {
-                    var address = server.Address.ToString() + ":" + server.Port;
+				foreach(var server in servers) {
+					var address = server.Address.ToString() + ":" + server.Port;
 
-                    try {
-                        var entity = this.serverRepository.Get(address, 1000, ServerQueryValues.AllData);
+					try {
+						var entity = this.serverRepository.Get(address, 1000, ServerQueryValues.AllData);
 
-                        this.Model.AddServer(entity);
-                    } catch { }
-                }
+						this.Model.AddServer(entity);
+					} catch { }
+				}
 			});
 		}
 
