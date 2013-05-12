@@ -73,6 +73,7 @@
   <ItemGroup>
     <Compile Include="IStatusBarView.cs" />
     <Compile Include="IStatusBarViewModel.cs" />
+    <Compile Include="Models\StatusBarModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
