@@ -14,5 +14,17 @@ namespace Zander.Modules.StatusBar.Models {
 				this.RaisePropertyChanged(() => this.TotalServers);
 			}
 		}
+
+		private int serversQueried;
+		public int ServersQueried {
+			get {
+				return this.serversQueried;
+			}
+
+			set {
+				this.serversQueried = value;
+				this.RaisePropertyChanged(() => this.ServersQueried);
+			}
+		}
 	}
 }
