@@ -27,7 +27,7 @@ namespace Zander.Provider.Net.Sockets {
 			var request = new ServerRequest(endpoint, timeout, (int)query, this.ServerChallenge, Environment.TickCount);
 			var response = api.GetServerInfo(request);
 
-			var server = new Server {
+			var server = new Server(endpoint) {
 				AdminEmail = response.Email,
 				BotSkill = (BotSkill)response.BotSkill,
 				CompatFlags = (CompatFlags)response.CompatFlags,
@@ -68,14 +68,21 @@ namespace Zander.Provider.Net.Sockets {
 				Score = x.Score
 			}).ToList();
 
-			server.Players = response.PlayerData.Select(x => new Player {
-				IsBot = x.IsBot,
-				IsSpectating = x.IsSpectating,
-				Name = x.Name,
-				Ping = x.Ping,
-				PointCount = x.PointCount,
-				Team = teams[x.TeamId],
-				TimeOnServer = x.TimeOnServer
+			server.Players = response.PlayerData.Select(x => {
+				var player = new Player {
+					IsBot = x.IsBot,
+					IsSpectating = x.IsSpectating,
+					Name = x.Name,
+					Ping = x.Ping,
+					PointCount = x.PointCount,
+					TimeOnServer = x.TimeOnServer
+				};
+
+				if(x.TeamId < teams.Count) {
+					player.Team = teams[x.TeamId];
+				}
+
+				return player;
 			});
 
 			server.Teams = teams;

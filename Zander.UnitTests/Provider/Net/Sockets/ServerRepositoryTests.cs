@@ -104,6 +104,46 @@ namespace Zander.UnitTests.Provider.Net.Sockets {
 		}
 
 		[TestMethod]
+		public void Get_NoTeamsExist_TeamsOnPlayerAreNull() {
+			var remoteApiMock = new Mock<IRemoteServerApi>();
+
+			remoteApiMock.Setup(x => x.GetServerInfo(It.IsAny<ServerRequest>())).Returns(() => {
+				var teams = Enumerable.Empty<TeamInfoResponse>();
+
+				var players = new List<PlayerDataResponse> { 
+					new PlayerDataResponse {
+						Name = "Bob",
+						Ping = 45,
+						PointCount = 1,
+						TimeOnServer = 5
+					},
+					new PlayerDataResponse {
+						Name = "Joe",
+						Ping = 243,
+						PointCount = 2,
+						TimeOnServer = 10
+					}
+				};
+
+				var serverResponse = new ServerResponse {
+					Teams = teams,
+					PlayerData = players
+				};
+
+				return serverResponse;
+			});
+
+			var api = new ServerRepository(new FakeServerProvider(remoteApiMock.Object));
+			var response = api.Get("10.0.0.1:15300", 1000, ServerQueryValues.PlayerData | ServerQueryValues.TeamInfo);
+
+			var bob = response.Players.ElementAt(0);
+			var joe = response.Players.ElementAt(1);
+
+			Assert.IsNull(bob.Team);
+			Assert.IsNull(joe.Team);
+		}
+
+		[TestMethod]
 		public void Get_PWads_PWadsConvertedToWad() {
 			var remoteApiMock = new Mock<IRemoteServerApi>();
 
