@@ -1,5 +1,9 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Data;
+using System.Windows.Threading;
 using Microsoft.Practices.Prism.Events;
 using Microsoft.Practices.Prism.ViewModel;
 using Zander.Domain;
@@ -10,7 +14,6 @@ using Zander.Presentation.WPF.Zander.Infrastructure.Events;
 
 namespace Zander.Modules.ServerBrowser {
 	public class ServerBrowserViewModel : NotificationObject, IServerBrowserViewModel {
-
 		private readonly IMasterServerRepository masterServerRepository;
 		private readonly IServerRepository serverRepository;
 		private readonly IEventAggregator eventAggregator;
@@ -46,21 +49,24 @@ namespace Zander.Modules.ServerBrowser {
 			this.eventAggregator = eventAggregator;
 
 			this.eventAggregator.GetEvent<QueryAllServersEvent>().Subscribe(empty => {
-				var masterServer = this.GetMasterServer();
+				Task.Factory.StartNew(() => {
+					var masterServer = this.GetMasterServer();
+				
+					var servers = masterServer.Servers.Take(50);
 
-				var servers = masterServer.Servers.Take(10);
-				Task.Run(() => { 
 					foreach(var server in servers) {
 						var address = server.Address.ToString() + ":" + server.Port;
 
 						try {
 							var entity = this.serverRepository.Get(address, 1000, ServerQueryValues.AllData);
 
-							this.Model.AddServer(entity);
+							this.eventAggregator.GetEvent<ServerQueriedEvent>().Publish(entity);
 						} catch { }
 					}
 				});
 			});
+
+			this.eventAggregator.GetEvent<ServerQueriedEvent>().Subscribe(server => this.model.AddServer(server), ThreadOption.PublisherThread);
 		}
 
 		private IMasterServer GetMasterServer() {
@@ -69,4 +75,6 @@ namespace Zander.Modules.ServerBrowser {
 			return masterServer;
 		}
 	}
+
+	public class ServerQueriedEvent : CompositePresentationEvent<Server> { }
 }

@@ -7,6 +7,8 @@ using Zander.Modules.ServerBrowser.Converters;
 namespace Zander.Modules.ServerBrowser.Models {
 	public class ServerBrowserModel : NotificationObject {
 
+		private readonly object serversLock;
+
 		private ObservableCollection<ServerModel> servers;
 		public ObservableCollection<ServerModel> Servers {
 			get {
@@ -20,6 +22,7 @@ namespace Zander.Modules.ServerBrowser.Models {
 		}
 
 		public ServerBrowserModel() {
+			this.serversLock = new object();
 			this.Servers = this.GetNewServersModel();
 		}
 
@@ -43,7 +46,9 @@ namespace Zander.Modules.ServerBrowser.Models {
 
 			var model = mapper.ModelFromEntity(server);
 
-			this.Servers.Add(model);
+			lock(this.serversLock) {
+				this.Servers.Add(model);
+			}
 		}
 	}
 }
