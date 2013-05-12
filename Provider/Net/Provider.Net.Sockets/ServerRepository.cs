@@ -68,14 +68,21 @@ namespace Zander.Provider.Net.Sockets {
 				Score = x.Score
 			}).ToList();
 
-			server.Players = response.PlayerData.Select(x => new Player {
-				IsBot = x.IsBot,
-				IsSpectating = x.IsSpectating,
-				Name = x.Name,
-				Ping = x.Ping,
-				PointCount = x.PointCount,
-				Team = teams[x.TeamId],
-				TimeOnServer = x.TimeOnServer
+			server.Players = response.PlayerData.Select(x => {
+				var player = new Player {
+					IsBot = x.IsBot,
+					IsSpectating = x.IsSpectating,
+					Name = x.Name,
+					Ping = x.Ping,
+					PointCount = x.PointCount,
+					TimeOnServer = x.TimeOnServer
+				};
+
+				if(x.TeamId < teams.Count) {
+					player.Team = teams[x.TeamId];
+				}
+
+				return player;
 			});
 
 			server.Teams = teams;
