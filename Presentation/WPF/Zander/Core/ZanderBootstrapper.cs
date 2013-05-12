@@ -19,9 +19,12 @@ namespace Zander.Presentation.WPF.Zander.Core {
 			base.InitializeShell();
 
 			App.Current.MainWindow = (Window)this.Shell;
+
+			this.Container.Resolve<IEventAggregator>().GetEvent<QuitEvent>().Subscribe(empty => App.Current.MainWindow.Close());
+
 			App.Current.MainWindow.Show();
 
-			var queryAllServers = new Action(() => this.Container.Resolve<IEventAggregator>().GetEvent<QueryAllServersEvent>().Publish(Empty.Value));
+			Action queryAllServers = () => this.Container.Resolve<IEventAggregator>().GetEvent<QueryAllServersEvent>().Publish(Empty.Value);
 
 			Dispatcher.CurrentDispatcher.BeginInvoke(queryAllServers, DispatcherPriority.ContextIdle);
 		}
