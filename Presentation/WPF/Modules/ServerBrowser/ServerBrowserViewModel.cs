@@ -54,7 +54,7 @@ namespace Zander.Modules.ServerBrowser {
 				
 					var servers = masterServer.Servers.Take(50);
 
-					foreach(var server in servers) {
+					Parallel.ForEach(servers, (server, status) => {
 						var address = server.Address.ToString() + ":" + server.Port;
 
 						try {
@@ -62,11 +62,11 @@ namespace Zander.Modules.ServerBrowser {
 
 							this.eventAggregator.GetEvent<ServerQueriedEvent>().Publish(entity);
 						} catch { }
-					}
+					});
 				});
 			});
 
-			this.eventAggregator.GetEvent<ServerQueriedEvent>().Subscribe(server => this.model.AddServer(server), ThreadOption.PublisherThread);
+			this.eventAggregator.GetEvent<ServerQueriedEvent>().Subscribe(server => this.model.AddServer(server), ThreadOption.UIThread);
 		}
 
 		private IMasterServer GetMasterServer() {
