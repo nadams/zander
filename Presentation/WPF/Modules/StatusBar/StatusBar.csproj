@@ -71,6 +71,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IStatusBarView.cs" />
     <Compile Include="IStatusBarViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -84,6 +85,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="StatusBarControl.xaml.cs">
+      <DependentUpon>StatusBarControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="StatusBarModule.cs" />
     <Compile Include="StatusBarViewModel.cs" />
@@ -103,6 +107,12 @@
       <Project>{ea8b7577-6944-4ac5-b0b6-624a52aa18b7}</Project>
       <Name>Zander.Infrastructure</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="StatusBarControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
