@@ -1,12 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Practices.Prism.ViewModel;
+﻿using Microsoft.Practices.Prism.ViewModel;
 
 namespace Zander.Modules.StatusBar.Models {
-	public class StatusBarModel {
+	public class StatusBarModel : NotificationObject {
 
+		private int totalServers;
+		public int TotalServers {
+			get {
+				return this.totalServers;
+			}
+
+			set {
+				this.totalServers = value;
+				this.RaisePropertyChanged(() => this.TotalServers);
+			}
+		}
 	}
 }
