@@ -4,18 +4,17 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{8D1BBA7D-7988-4B57-BCA5-2BBFBED2B92B}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <ProjectGuid>{2773F698-F610-4E21-87AF-54C3B1F74D71}</ProjectGuid>
+    <OutputType>library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Zander.Presentation.WPF.Zander</RootNamespace>
-    <AssemblyName>Zander</AssemblyName>
+    <RootNamespace>Zander.Modules.ServerBrowser</RootNamespace>
+    <AssemblyName>ServerBrowser</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -25,7 +24,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -41,7 +39,6 @@
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
@@ -51,34 +48,33 @@
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Expression.Interactions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Prism.4.1.0.0\lib\NET40\Microsoft.Expression.Interactions.dll</HintPath>
+      <HintPath>..\..\..\..\packages\Prism.4.1.0.0\lib\NET40\Microsoft.Expression.Interactions.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.Prism">
-      <HintPath>..\..\..\packages\Prism.4.1.0.0\lib\NET40\Microsoft.Practices.Prism.dll</HintPath>
+      <HintPath>..\..\..\..\packages\Prism.4.1.0.0\lib\NET40\Microsoft.Practices.Prism.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.Prism.Interactivity">
-      <HintPath>..\..\..\packages\Prism.4.1.0.0\lib\NET40\Microsoft.Practices.Prism.Interactivity.dll</HintPath>
+      <HintPath>..\..\..\..\packages\Prism.4.1.0.0\lib\NET40\Microsoft.Practices.Prism.Interactivity.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.Prism.UnityExtensions">
-      <HintPath>..\..\..\packages\Prism.UnityExtensions.4.1.0.0\lib\NET40\Microsoft.Practices.Prism.UnityExtensions.dll</HintPath>
+      <HintPath>..\..\..\..\packages\Prism.UnityExtensions.4.1.0.0\lib\NET40\Microsoft.Practices.Prism.UnityExtensions.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation">
-      <HintPath>..\..\..\packages\CommonServiceLocator.1.0\lib\NET35\Microsoft.Practices.ServiceLocation.dll</HintPath>
+      <HintPath>..\..\..\..\packages\CommonServiceLocator.1.0\lib\NET35\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.Unity">
-      <HintPath>..\..\..\packages\Unity.2.1.505.2\lib\NET35\Microsoft.Practices.Unity.dll</HintPath>
+      <HintPath>..\..\..\..\packages\Unity.2.1.505.2\lib\NET35\Microsoft.Practices.Unity.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.Unity.Configuration">
-      <HintPath>..\..\..\packages\Unity.2.1.505.2\lib\NET35\Microsoft.Practices.Unity.Configuration.dll</HintPath>
+      <HintPath>..\..\..\..\packages\Unity.2.1.505.2\lib\NET35\Microsoft.Practices.Unity.Configuration.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Prism.4.1.0.0\lib\NET40\System.Windows.Interactivity.dll</HintPath>
+      <HintPath>..\..\..\..\packages\Prism.4.1.0.0\lib\NET40\System.Windows.Interactivity.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -93,21 +89,14 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </ApplicationDefinition>
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Core\ZanderBootstrapper.cs" />
-    <Compile Include="Extensions\ModuleCatalogExtensions.cs" />
-    <Compile Include="Shell.xaml.cs">
-      <DependentUpon>Shell.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Converters\CollectionToCommaList.cs" />
+    <Compile Include="Converters\PlayerEntityMapper.cs" />
+    <Compile Include="Converters\ServerEntityMapper.cs" />
+    <Compile Include="IServerBrowserView.cs" />
+    <Compile Include="IServerBrowserViewModel.cs" />
+    <Compile Include="Models\PlayerModel.cs" />
+    <Compile Include="Models\ServerBrowserModel.cs" />
+    <Compile Include="Models\ServerModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -121,6 +110,11 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="ServerBrowserControl.xaml.cs">
+      <DependentUpon>ServerBrowserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ServerBrowserModule.cs" />
+    <Compile Include="ServerBrowserViewModel.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -133,27 +127,24 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="Shell.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Infrastructure\Zander.Infrastructure.csproj">
+    <ProjectReference Include="..\..\..\..\Provider\Net\Provider.Net.Sockets\Provider.Net.Sockets.csproj">
+      <Project>{a37346c3-b2bc-4682-b298-a2da7ba3869f}</Project>
+      <Name>Provider.Net.Sockets</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Zander.Domain\Zander.Domain.csproj">
+      <Project>{36875e09-d758-43fd-bd07-698182ef6f9f}</Project>
+      <Name>Zander.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Infrastructure\Zander.Infrastructure.csproj">
       <Project>{ea8b7577-6944-4ac5-b0b6-624a52aa18b7}</Project>
       <Name>Zander.Infrastructure</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Modules\MenuBar\MenuBar.csproj">
-      <Project>{d34e3825-d747-492d-a44a-cad7769920ed}</Project>
-      <Name>MenuBar</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Modules\ServerBrowser\ServerBrowser.csproj">
-      <Project>{2773f698-f610-4e21-87af-54c3b1f74d71}</Project>
-      <Name>ServerBrowser</Name>
-    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="ServerBrowserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
