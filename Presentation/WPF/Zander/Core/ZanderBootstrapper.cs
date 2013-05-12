@@ -6,6 +6,7 @@ using Microsoft.Practices.Prism.UnityExtensions;
 using Microsoft.Practices.Unity;
 using Zander.Modules.MenuBar;
 using Zander.Modules.ServerBrowser;
+using Zander.Modules.StatusBar;
 using Zander.Presentation.WPF.Zander.Extensions;
 using Zander.Presentation.WPF.Zander.Infrastructure.Events;
 
@@ -33,6 +34,7 @@ namespace Zander.Presentation.WPF.Zander.Core {
 			base.ConfigureModuleCatalog();
 
 			this.ModuleCatalog.RegisterModule<MenuBarModule>();
+			this.ModuleCatalog.RegisterModule<StatusBarModule>();
 			this.ModuleCatalog.RegisterModule<ServerBrowserModule>();
 		}
 	}
