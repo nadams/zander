@@ -27,6 +27,10 @@ namespace Zander.Modules.StatusBar {
 			this.eventAggregator.GetEvent<TotalServersUpdatedEvent>().Subscribe(count => {
 				this.StatusBarModel.TotalServers = count;
 			});
+
+			this.eventAggregator.GetEvent<CurrentServerQueryCountEvent>().Subscribe(count => {
+				this.StatusBarModel.ServersQueried = count;
+			});
 		}
 	}
 }
