@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Practices.Prism.Events;
 using Microsoft.Practices.Prism.ViewModel;
 using Zander.Domain;
@@ -48,16 +49,17 @@ namespace Zander.Modules.ServerBrowser {
 				var masterServer = this.GetMasterServer();
 
 				var servers = masterServer.Servers.Take(10);
+				Task.Run(() => { 
+					foreach(var server in servers) {
+						var address = server.Address.ToString() + ":" + server.Port;
 
-				foreach(var server in servers) {
-					var address = server.Address.ToString() + ":" + server.Port;
+						try {
+							var entity = this.serverRepository.Get(address, 1000, ServerQueryValues.AllData);
 
-					try {
-						var entity = this.serverRepository.Get(address, 1000, ServerQueryValues.AllData);
-
-						this.Model.AddServer(entity);
-					} catch { }
-				}
+							this.Model.AddServer(entity);
+						} catch { }
+					}
+				});
 			});
 		}
 
