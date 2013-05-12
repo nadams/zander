@@ -98,6 +98,7 @@
     <Compile Include="Events\RefreshAllServersEvent.cs" />
     <Compile Include="Events\RefreshCurrentServerEvent.cs" />
     <Compile Include="Events\SettingsEvent.cs" />
+    <Compile Include="Events\TotalServersUpdatedEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Regions.cs" />
   </ItemGroup>
