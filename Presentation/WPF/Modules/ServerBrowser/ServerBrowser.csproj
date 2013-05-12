@@ -90,9 +90,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Converters\CollectionToCommaList.cs" />
+    <Compile Include="Converters\PlayerEntityMapper.cs" />
     <Compile Include="Converters\ServerEntityMapper.cs" />
     <Compile Include="IServerBrowserView.cs" />
     <Compile Include="IServerBrowserViewModel.cs" />
+    <Compile Include="Models\PlayerModel.cs" />
     <Compile Include="Models\ServerBrowserModel.cs" />
     <Compile Include="Models\ServerModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">

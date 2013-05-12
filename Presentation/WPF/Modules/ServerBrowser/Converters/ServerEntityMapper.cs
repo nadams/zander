@@ -8,12 +8,16 @@ namespace Zander.Modules.ServerBrowser.Converters {
 	public class ServerEntityMapper : IEntityMapper<Server, ServerModel> {
 
 		public ServerModel ModelFromEntity(Server e) {
+			var playerMapper = new PlayerEntityMapper();
+			var currentPlayers = e.Players.Select(x => playerMapper.ModelFromEntity(x));
+
 			return new ServerModel {
 				Address = e.IPEndPoint.ToString(),
 				CurrentMap = e.CurrentMap,
 				DisplayName = e.DisplayName,
 				GameName = e.GameName,
 				IWad = e.IWad.Name,
+				CurrentPlayers = currentPlayers,
 				MaxClients = e.MaxClients,
 				MaxPlayers = e.MaxPlayers,
 				PWads = e.PWads.Select(x => x.Name)

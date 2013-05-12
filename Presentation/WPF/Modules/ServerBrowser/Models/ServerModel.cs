@@ -11,15 +11,17 @@ namespace Zander.Modules.ServerBrowser.Models {
 		public string GameName { get; set; }
 		public string Address { get; set; }
 		public IEnumerable<string> PWads { get; set; }
+		public IEnumerable<PlayerModel> CurrentPlayers { get; set; }
 
 		public string Players {
 			get {
-				return this.MaxPlayers + " / " + this.MaxPlayers;
+				return this.CurrentPlayers.Count() + " / " + this.MaxPlayers;
 			}
 		}
 
 		public ServerModel() {
 			this.PWads = Enumerable.Empty<string>();
+			this.CurrentPlayers = Enumerable.Empty<PlayerModel>();
 		}
 	}
 }
