@@ -12,6 +12,7 @@ namespace Zander.Modules.StatusBar.Models {
 			set {
 				this.totalServers = value;
 				this.RaisePropertyChanged(() => this.TotalServers);
+				this.RaisePropertyChanged(() => this.ServerQueryStatus);
 			}
 		}
 
@@ -24,6 +25,13 @@ namespace Zander.Modules.StatusBar.Models {
 			set {
 				this.serversQueried = value;
 				this.RaisePropertyChanged(() => this.ServersQueried);
+				this.RaisePropertyChanged(() => this.ServerQueryStatus);
+			}
+		}
+
+		public string ServerQueryStatus {
+			get {
+				return this.ServersQueried + " / " + this.TotalServers;
 			}
 		}
 	}
