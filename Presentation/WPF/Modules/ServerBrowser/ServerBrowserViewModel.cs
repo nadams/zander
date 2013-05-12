@@ -52,9 +52,7 @@ namespace Zander.Modules.ServerBrowser {
 				Task.Factory.StartNew(() => {
 					var masterServer = this.GetMasterServer();
 				
-					var servers = masterServer.Servers.Take(50);
-
-					Parallel.ForEach(servers, (server, status) => {
+					Parallel.ForEach(masterServer.Servers, (server, status) => {
 						var address = server.Address.ToString() + ":" + server.Port;
 
 						try {
