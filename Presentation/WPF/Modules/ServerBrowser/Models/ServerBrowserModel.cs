@@ -71,5 +71,10 @@ namespace Zander.Modules.ServerBrowser.Models {
 				this.Servers.Add(model);
 			}
 		}
+
+        public void ResetServerList() {
+            this.SelectedServer = null;
+            this.Servers.Clear();
+        }
 	}
 }
