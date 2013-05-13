@@ -82,6 +82,8 @@ namespace Zander.Modules.ServerBrowser {
 						this.eventAggregator.GetEvent<ServerQueriedEvent>().Publish(entity);
 					} catch { }
 				});
+
+                this.eventAggregator.GetEvent<DoneQueryingServersEvent>().Publish(Empty.Value);
 			});
 		}
 

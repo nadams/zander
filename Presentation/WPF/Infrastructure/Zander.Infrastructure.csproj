@@ -89,6 +89,7 @@
     <Compile Include="Base\MessagingViewModel.cs" />
     <Compile Include="Events\AboutEvent.cs" />
     <Compile Include="Events\CurrentServerQueryCountEvent.cs" />
+    <Compile Include="Events\DoneQueryingServersEvent.cs" />
     <Compile Include="Events\EditCustomServersEvent.cs" />
     <Compile Include="Events\AddServerToIgnoreListEvent.cs" />
     <Compile Include="Events\EditFiltersEvent.cs" />
