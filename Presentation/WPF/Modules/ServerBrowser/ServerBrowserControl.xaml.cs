@@ -28,5 +28,13 @@ namespace Zander.Modules.ServerBrowser {
                 viewmodel.LaunchSelectedServer.Execute(null);
             }
         }
+
+        private void DataGridPreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e) {
+            var viewmodel = this.ViewModel;
+
+            if(viewmodel.QueryCurrentServer.CanExecute(null)) {
+                viewmodel.QueryCurrentServer.Execute(null);
+            }
+        }
 	}
 }

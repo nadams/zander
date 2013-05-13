@@ -12,7 +12,8 @@
         IsReadOnly="True" 
         SelectionMode="Single"
         HeadersVisibility="Column"
-        MouseDoubleClick="DataGridMouseDoubleClick">
+        MouseDoubleClick="DataGridMouseDoubleClick"
+        PreviewMouseRightButtonDown="DataGridPreviewMouseRightButtonDown">
 		<DataGrid.Columns>
 			<DataGridTextColumn Header="Name" Binding="{Binding Path=DisplayName}" />
 			<DataGridTextColumn Header="Players" Binding="{Binding Path=Players}" />
