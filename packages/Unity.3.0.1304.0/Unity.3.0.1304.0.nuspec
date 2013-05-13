@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
-<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Unity</id>
-    <version>2.1.505.2</version>
-    <title />
+    <version>3.0.1304.0</version>
+    <title>Unity</title>
     <authors>Microsoft</authors>
     <owners>Microsoft</owners>
     <licenseUrl>http://www.opensource.org/licenses/ms-pl</licenseUrl>
@@ -12,17 +12,6 @@
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>The Unity Application Block (Unity) is a lightweight extensible dependency injection container with support for constructor, property, and method call injection. It facilitates loosely-coupled design.</description>
     <summary>The Unity Application Block (Unity) is a lightweight extensible dependency injection container with support for constructor, property, and method call injection.</summary>
-    <tags>Unity EntLib IoC DI container dependency injection inversion of control LOB</tags>
-    <dependencies>
-      <dependency id="CommonServiceLocator" version="1.0" />
-    </dependencies>
-    <frameworkAssemblies>
-      <frameworkAssembly assemblyName="mscorlib" targetFramework=".NETFramework3.5, .NETFramework4.0, Silverlight3.0" />
-    </frameworkAssemblies>
-    <references>
-      <reference file="Microsoft.Practices.Unity.Configuration.dll" />
-      <reference file="Microsoft.Practices.Unity.dll" />
-      <reference file="Microsoft.Practices.Unity.Silverlight.dll" />
-    </references>
+    <tags>Unity Unity3 EntLib EntLib6 IoC DI container dependency injection inversion control LOB WinRT Win8 Windows8 NetCore WindowsStoreApps WindowsStore</tags>
   </metadata>
 </package>
