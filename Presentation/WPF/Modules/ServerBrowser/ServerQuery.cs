@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Practices.Prism.Events;
 using Zander.Domain;
 using Zander.Domain.Entities;
 using Zander.Domain.Remote;
+using Zander.Modules.ServerBrowser.Converters;
 using Zander.Modules.ServerBrowser.Models;
 using Zander.Presentation.WPF.Zander.Infrastructure.Events;
 
@@ -41,6 +43,21 @@ namespace Zander.Modules.ServerBrowser {
             this.Model = model;
         }
 
+        public void RefreshCurrentServer() {
+            var selectedServer = this.Model.SelectedServer;
+
+            if(selectedServer != null) {
+                Task.Factory.StartNew(() => {
+                    var entity = this.serverRepository.Get(selectedServer.Address, 1000, ServerQueryValues.AllData);
+
+                    var mapper = new ServerEntityMapper();
+                    var model = mapper.ModelFromEntity(entity);
+
+                    mapper.CopyModel(selectedServer, model);
+                });
+            }
+        }
+
         public void QueryAllServers() {
             if(this.CanRefresh) {
                 this.Model.ResetServerList();
@@ -53,7 +70,7 @@ namespace Zander.Modules.ServerBrowser {
                     this.eventAggregator.GetEvent<TotalServersUpdatedEvent>().Publish(masterServer.Servers.Count());
 
                     Parallel.ForEach(masterServer.Servers, (server, status) => {
-                        var address = server.Address.ToString() + ":" + server.Port;
+                        var address = this.GetAddress(server.Address, server.Port);
 
                         try {
                             var entity = this.serverRepository.Get(address, 1000, ServerQueryValues.AllData);
@@ -74,6 +91,10 @@ namespace Zander.Modules.ServerBrowser {
             var masterServer = this.masterServerRepository.Get("64.15.129.183:15300", 5000);
 
             return masterServer;
+        }
+
+        private string GetAddress(IPAddress address, int port) {
+            return address.ToString() + ":" + port;
         }
     }
 }

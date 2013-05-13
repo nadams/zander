@@ -19,5 +19,9 @@ namespace Zander.Modules.ServerBrowser.Converters {
 		public Player EntityFromModel(PlayerModel e) {
 			throw new NotImplementedException();
 		}
-	}
+
+        public void CopyModel(PlayerModel m1, PlayerModel m2) {
+            throw new NotImplementedException();
+        }
+    }
 }

@@ -34,6 +34,12 @@ namespace Zander.Modules.ServerBrowser {
 			}
 		}
 
+        public ICommand QueryCurrentServer {
+            get {
+                return new DelegateCommand(this.serverQuery.RefreshCurrentServer);
+            }
+        }
+
         public ICommand LaunchSelectedServer {
             get { 
                 return new DelegateCommand(this.LaunchSelectedServerCommand); 
@@ -48,6 +54,7 @@ namespace Zander.Modules.ServerBrowser {
             this.serverQuery = new ServerQuery(this.eventAggregator, this.serverRepository, this.masterServerRepository, this.Model);
 
 			this.eventAggregator.GetEvent<QueryAllServersEvent>().Subscribe(empty => this.QueryAllServers.Execute(null));
+            this.eventAggregator.GetEvent<RefreshCurrentServerEvent>().Subscribe(empty => this.QueryCurrentServer.Execute(null));
 			this.eventAggregator.GetEvent<ServerQueriedEvent>().Subscribe(server => {
 				this.Model.AddServer(server);
 
