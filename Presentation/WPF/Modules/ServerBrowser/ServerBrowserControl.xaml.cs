@@ -21,7 +21,7 @@ namespace Zander.Modules.ServerBrowser {
 			this.ViewModel = viewModel;
 		}
 
-        private void MouseDoubleClick(object sender, MouseButtonEventArgs e) {
+        private void DataGridMouseDoubleClick(object sender, MouseButtonEventArgs e) {
             var viewmodel = this.ViewModel;
 
             if(viewmodel.LaunchSelectedServer.CanExecute(null)) {

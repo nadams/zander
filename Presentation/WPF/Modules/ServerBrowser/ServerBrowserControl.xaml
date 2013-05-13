@@ -11,7 +11,7 @@
         IsReadOnly="True" 
         HeadersVisibility="Column"
         SelectedItem="{Binding Path=Model.SelectedServer}"
-        MouseDoubleClick="MouseDoubleClick">
+        MouseDoubleClick="DataGridMouseDoubleClick">
 		<DataGrid.Columns>
 			<DataGridTextColumn Header="Name" Binding="{Binding Path=DisplayName}" />
 			<DataGridTextColumn Header="Players" Binding="{Binding Path=Players}" />
