@@ -9,7 +9,8 @@
         AutoGenerateColumns="False" 
         ItemsSource="{Binding Path=Model.Servers}" 
         IsReadOnly="True" 
-        HeadersVisibility="Column">
+        HeadersVisibility="Column"
+        SelectedItem="{Binding Path=Model.SelectedServer}">
 		<DataGrid.Columns>
 			<DataGridTextColumn Header="Name" Binding="{Binding Path=DisplayName}" />
 			<DataGridTextColumn Header="Players" Binding="{Binding Path=Players}" />

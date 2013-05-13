@@ -32,7 +32,7 @@ namespace Zander.Modules.ServerBrowser {
 			}
 		}
 
-		public IMasterServerRepository MasterServerRepository {
+        public IMasterServerRepository MasterServerRepository {
 			get {
 				return this.masterServerRepository;
 			}

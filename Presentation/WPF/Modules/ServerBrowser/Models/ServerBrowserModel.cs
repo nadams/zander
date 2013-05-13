@@ -21,6 +21,18 @@ namespace Zander.Modules.ServerBrowser.Models {
 			}
 		}
 
+        private ServerModel selectedServer;
+        public ServerModel SelectedServer {
+            get {
+                return this.selectedServer;
+            }
+
+            set {
+                this.selectedServer = value;
+                this.RaisePropertyChanged(() => this.SelectedServer);
+            }
+        }
+
 		public int QueriedServers {
 			get {
 				lock(this.serversLock) {
