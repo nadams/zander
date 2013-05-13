@@ -13,6 +13,7 @@ namespace Zander.Modules.StatusBar.Models {
 				this.totalServers = value;
 				this.RaisePropertyChanged(() => this.TotalServers);
 				this.RaisePropertyChanged(() => this.ServerQueryStatus);
+                this.RaisePropertyChanged(() => this.IsQuerying);
 			}
 		}
 
@@ -26,6 +27,7 @@ namespace Zander.Modules.StatusBar.Models {
 				this.serversQueried = value;
 				this.RaisePropertyChanged(() => this.ServersQueried);
 				this.RaisePropertyChanged(() => this.ServerQueryStatus);
+                this.RaisePropertyChanged(() => this.IsQuerying);
 			}
 		}
 
@@ -34,5 +36,11 @@ namespace Zander.Modules.StatusBar.Models {
 				return this.ServersQueried + " / " + this.TotalServers;
 			}
 		}
+
+        private bool IsQuerying {
+            get {
+                return this.ServersQueried < this.TotalServers;
+            }
+        }
 	}
 }
