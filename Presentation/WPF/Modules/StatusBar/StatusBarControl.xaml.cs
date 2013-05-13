@@ -11,10 +11,12 @@ namespace Zander.Modules.StatusBar {
 			}
 		}
 
-		public StatusBarControl(IStatusBarViewModel viewModel) {
+		public StatusBarControl() {
 			InitializeComponent();
-
-			this.ViewModel = viewModel;
 		}
+
+        public StatusBarControl(IStatusBarViewModel viewModel) : this() {
+			this.ViewModel = viewModel;
+        }
 	}
 }
