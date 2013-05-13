@@ -6,10 +6,10 @@
 		<conv:CollectionToCommaList x:Key="CollectionToCommaList" />
 	</UserControl.Resources>
 	<DataGrid 
-        AutoGenerateColumns="False" 
         ItemsSource="{Binding Path=Model.Servers}" 
-        IsReadOnly="True" 
         SelectedItem="{Binding Path=Model.SelectedServer}"
+        AutoGenerateColumns="False" 
+        IsReadOnly="True" 
         SelectionMode="Single"
         HeadersVisibility="Column"
         MouseDoubleClick="DataGridMouseDoubleClick">
