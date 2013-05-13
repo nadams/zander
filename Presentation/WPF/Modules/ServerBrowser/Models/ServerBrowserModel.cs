@@ -8,6 +8,7 @@ namespace Zander.Modules.ServerBrowser.Models {
 	public class ServerBrowserModel : NotificationObject {
 
 		private readonly object serversLock;
+        private readonly ServerEntityMapper serverMapper;
 
 		private ObservableCollection<ServerModel> servers;
 		public ObservableCollection<ServerModel> Servers {
@@ -43,6 +44,8 @@ namespace Zander.Modules.ServerBrowser.Models {
 
 		public ServerBrowserModel() {
 			this.serversLock = new object();
+            this.serverMapper = new ServerEntityMapper();
+
 			this.Servers = this.GetNewServersModel();
 		}
 
@@ -62,9 +65,7 @@ namespace Zander.Modules.ServerBrowser.Models {
 		}
 
 		public void AddServer(Server server) {
-			var mapper = new ServerEntityMapper();
-
-			var model = mapper.ModelFromEntity(server);
+			var model = this.serverMapper.ModelFromEntity(server);
 
 			lock(this.serversLock) {
 				this.Servers.Add(model);
