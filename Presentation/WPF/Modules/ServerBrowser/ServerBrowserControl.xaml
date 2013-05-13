@@ -8,7 +8,11 @@
 	<UserControl.Resources>
 		<conv:CollectionToCommaList x:Key="CollectionToCommaList" />
 	</UserControl.Resources>
-	<DataGrid AutoGenerateColumns="False" ItemsSource="{Binding Path=Model.Servers}" IsReadOnly="True">
+	<DataGrid 
+        AutoGenerateColumns="False" 
+        ItemsSource="{Binding Path=Model.Servers}" 
+        IsReadOnly="True" 
+        RowHeaderWidth="0">
 		<DataGrid.Columns>
 			<DataGridTextColumn Header="Name" Binding="{Binding Path=DisplayName}" />
 			<DataGridTextColumn Header="Players" Binding="{Binding Path=Players}" />
