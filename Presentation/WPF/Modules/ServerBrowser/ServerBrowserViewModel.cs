@@ -1,10 +1,6 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Data;
 using System.Windows.Input;
-using System.Windows.Threading;
 using Microsoft.Practices.Prism.Commands;
 using Microsoft.Practices.Prism.Events;
 using Microsoft.Practices.Prism.ViewModel;
@@ -46,9 +42,15 @@ namespace Zander.Modules.ServerBrowser {
 
 		public ICommand QueryAllServers {
 			get {
-				return new DelegateCommand(this.queryAllServers);
+				return new DelegateCommand(this.QueryAllServersCommand);
 			}
 		}
+
+        public ICommand LaunchSelectedServer {
+            get { 
+                return new DelegateCommand(this.LaunchSelectedServerCommand); 
+            }
+        }
 
 		public ServerBrowserViewModel(IEventAggregator eventAggregator, IMasterServerRepository masterServerRepository, IServerRepository serverRepository) {
 			this.Model = new ServerBrowserModel();
@@ -67,7 +69,7 @@ namespace Zander.Modules.ServerBrowser {
 			}, ThreadOption.UIThread);
 		}
 
-		private void queryAllServers() {
+		private void QueryAllServersCommand() {
 			Task.Factory.StartNew(() => {
 				var masterServer = this.GetMasterServer();
 
@@ -92,7 +94,11 @@ namespace Zander.Modules.ServerBrowser {
 
 			return masterServer;
 		}
-	}
+
+        private void LaunchSelectedServerCommand() {
+
+        }
+    }
 
 	public class ServerQueriedEvent : CompositePresentationEvent<Server> { }
 }

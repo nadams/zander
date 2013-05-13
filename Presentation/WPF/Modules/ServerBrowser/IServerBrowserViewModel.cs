@@ -9,5 +9,6 @@ namespace Zander.Modules.ServerBrowser {
 		IMasterServerRepository MasterServerRepository { get; }
 		IServerRepository ServerRepository { get; }
 		ICommand QueryAllServers { get; }
+        ICommand LaunchSelectedServer { get; }
 	}
 }

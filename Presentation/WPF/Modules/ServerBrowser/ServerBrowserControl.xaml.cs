@@ -1,4 +1,5 @@
 ﻿using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace Zander.Modules.ServerBrowser {
 	public partial class ServerBrowserControl : UserControl, IServerBrowserView {
@@ -19,5 +20,13 @@ namespace Zander.Modules.ServerBrowser {
 		public ServerBrowserControl(IServerBrowserViewModel viewModel) : this() {
 			this.ViewModel = viewModel;
 		}
+
+        private void MouseDoubleClick(object sender, MouseButtonEventArgs e) {
+            var viewmodel = this.ViewModel;
+
+            if(viewmodel.LaunchSelectedServer.CanExecute(null)) {
+                viewmodel.LaunchSelectedServer.Execute(null);
+            }
+        }
 	}
 }
