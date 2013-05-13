@@ -3,15 +3,15 @@
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006">
 	<StatusBar>
-        <StatusBarItem>
-            <ProgressBar 
-                Width="96px" 
-                Height="16px"
-                Maximum="{Binding Path=StatusBarModel.TotalServers}" 
-                Value="{Binding Path=StatusBarModel.ServersQueried}" />
-        </StatusBarItem>
-		<StatusBarItem>
-			<TextBlock Text="{Binding Path=StatusBarModel.ServerQueryStatus, Mode=OneWay}" />
+		<StatusBarItem HorizontalAlignment="Right">
+            <StackPanel Orientation="Horizontal">
+			    <TextBlock Text="{Binding Path=Model.ServerQueryStatus, Mode=OneWay}" Margin="0 0 8 0" />
+                <ProgressBar 
+                    Width="96px" 
+                    Height="16px"
+                    Maximum="{Binding Path=Model.TotalServers, Mode=OneWay}" 
+                    Value="{Binding Path=Model.QueryProgress, Mode=OneWay}" />
+            </StackPanel>
 		</StatusBarItem>
 	</StatusBar>
 </UserControl>

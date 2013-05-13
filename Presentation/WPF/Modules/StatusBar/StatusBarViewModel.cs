@@ -7,26 +7,26 @@ namespace Zander.Modules.StatusBar {
 	public class StatusBarViewModel : NotificationObject, IStatusBarViewModel {
 		private readonly IEventAggregator eventAggregator;
 
-		private StatusBarModel statusBarModel;
-		public StatusBarModel StatusBarModel {
+		private StatusBarModel model;
+		public StatusBarModel Model {
 			get {
-				return this.statusBarModel;
+				return this.model;
 			}
 
 			set {
-				this.statusBarModel = value;
-				this.RaisePropertyChanged(() => this.StatusBarModel);
+				this.model = value;
+				this.RaisePropertyChanged(() => this.Model);
 			}
 		}
 
 		public StatusBarViewModel(IEventAggregator eventAggregator) {
 			this.eventAggregator = eventAggregator;
 
-			this.StatusBarModel = new StatusBarModel();
+			this.Model = new StatusBarModel();
 
-			this.eventAggregator.GetEvent<TotalServersUpdatedEvent>().Subscribe(count => this.StatusBarModel.TotalServers = count);
-			this.eventAggregator.GetEvent<CurrentServerQueryCountEvent>().Subscribe(count => this.StatusBarModel.ServersQueried = count);
-            this.eventAggregator.GetEvent<DoneQueryingServersEvent>().Subscribe(empty => this.StatusBarModel.TotalServers = this.StatusBarModel.ServersQueried);
+			this.eventAggregator.GetEvent<TotalServersUpdatedEvent>().Subscribe(count => this.Model.TotalServers = count);
+			this.eventAggregator.GetEvent<CurrentServerQueryCountEvent>().Subscribe(count => this.Model.ServersQueried = count);
+            this.eventAggregator.GetEvent<DoneQueryingServersEvent>().Subscribe(empty => this.Model.TotalServers = this.Model.ServersQueried);
 		}
 	}
 }
