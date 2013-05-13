@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Practices.Prism.Commands;
@@ -12,9 +13,14 @@ using Zander.Presentation.WPF.Zander.Infrastructure.Events;
 
 namespace Zander.Modules.ServerBrowser {
 	public class ServerBrowserViewModel : NotificationObject, IServerBrowserViewModel {
+        private const int RefreshRestTime = 15;
+
 		private readonly IMasterServerRepository masterServerRepository;
 		private readonly IServerRepository serverRepository;
 		private readonly IEventAggregator eventAggregator;
+
+        private DateTime lastQueriedTime;
+        private bool isQuerying;
 
 		private ServerBrowserModel model;
 		public ServerBrowserModel Model {
@@ -58,8 +64,9 @@ namespace Zander.Modules.ServerBrowser {
 			this.serverRepository = serverRepository;
 			this.eventAggregator = eventAggregator;
 
-			this.eventAggregator.GetEvent<QueryAllServersEvent>().Subscribe(empty => this.QueryAllServers.Execute(null));
+            this.lastQueriedTime = DateTime.MinValue;
 
+			this.eventAggregator.GetEvent<QueryAllServersEvent>().Subscribe(empty => this.QueryAllServers.Execute(null));
 			this.eventAggregator.GetEvent<ServerQueriedEvent>().Subscribe(server => {
 				this.model.AddServer(server);
 
@@ -68,23 +75,29 @@ namespace Zander.Modules.ServerBrowser {
 		}
 
 		private void QueryAllServersCommand() {
-			Task.Factory.StartNew(() => {
-				var masterServer = this.GetMasterServer();
+            if(!this.isQuerying && this.lastQueriedTime < DateTime.UtcNow.AddSeconds(RefreshRestTime)) {
+			    Task.Factory.StartNew(() => {
+                    this.isQuerying = true;
 
-				this.eventAggregator.GetEvent<TotalServersUpdatedEvent>().Publish(masterServer.Servers.Count());
+				    var masterServer = this.GetMasterServer();
 
-				Parallel.ForEach(masterServer.Servers, (server, status) => {
-					var address = server.Address.ToString() + ":" + server.Port;
+				    this.eventAggregator.GetEvent<TotalServersUpdatedEvent>().Publish(masterServer.Servers.Count());
 
-					try {
-						var entity = this.serverRepository.Get(address, 1000, ServerQueryValues.AllData);
+				    Parallel.ForEach(masterServer.Servers, (server, status) => {
+					    var address = server.Address.ToString() + ":" + server.Port;
 
-						this.eventAggregator.GetEvent<ServerQueriedEvent>().Publish(entity);
-					} catch { }
-				});
+					    try {
+						    var entity = this.serverRepository.Get(address, 1000, ServerQueryValues.AllData);
 
-                this.eventAggregator.GetEvent<DoneQueryingServersEvent>().Publish(Empty.Value);
-			});
+						    this.eventAggregator.GetEvent<ServerQueriedEvent>().Publish(entity);
+					    } catch { }
+				    });
+
+                    this.eventAggregator.GetEvent<DoneQueryingServersEvent>().Publish(Empty.Value);
+                    this.isQuerying = false;
+                    this.lastQueriedTime = DateTime.UtcNow;
+			    });
+            }
 		}
 
 		private IMasterServer GetMasterServer() {

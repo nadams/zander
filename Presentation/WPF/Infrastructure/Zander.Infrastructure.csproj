@@ -99,7 +99,6 @@
     <Compile Include="Events\Empty.cs" />
     <Compile Include="Events\QueryAllServersEvent.cs" />
     <Compile Include="Events\QuitEvent.cs" />
-    <Compile Include="Events\RefreshAllServersEvent.cs" />
     <Compile Include="Events\RefreshCurrentServerEvent.cs" />
     <Compile Include="Events\SettingsEvent.cs" />
     <Compile Include="Events\TotalServersUpdatedEvent.cs" />

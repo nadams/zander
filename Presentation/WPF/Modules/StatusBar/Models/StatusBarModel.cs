@@ -53,5 +53,10 @@ namespace Zander.Modules.StatusBar.Models {
                 return this.ServersQueried < this.TotalServers;
             }
         }
-	}
+
+        public void ResetCounts() {
+            this.TotalServers = 0;
+            this.ServersQueried = 0;
+        }
+    }
 }
