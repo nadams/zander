@@ -4,11 +4,14 @@ using System.Windows.Threading;
 using Microsoft.Practices.Prism.Events;
 using Microsoft.Practices.Prism.UnityExtensions;
 using Microsoft.Practices.Unity;
+using Zander.Domain;
+using Zander.Domain.Remote;
 using Zander.Modules.MenuBar;
 using Zander.Modules.ServerBrowser;
 using Zander.Modules.StatusBar;
 using Zander.Presentation.WPF.Zander.Extensions;
 using Zander.Presentation.WPF.Zander.Infrastructure.Events;
+using Zander.Provider.Net.Sockets;
 
 namespace Zander.Presentation.WPF.Zander.Core {
 	public class ZanderBootstrapper : UnityBootstrapper {
@@ -29,6 +32,14 @@ namespace Zander.Presentation.WPF.Zander.Core {
 
 			Dispatcher.CurrentDispatcher.BeginInvoke(queryAllServers, DispatcherPriority.ContextIdle);
 		}
+
+        protected override void ConfigureContainer() {
+            base.ConfigureContainer();
+
+            this.Container.RegisterType<IMasterServerRepository, ZandronumMasterServerRepository>();
+            this.Container.RegisterType<IServerRepository, ServerRepository>();
+            this.Container.RegisterType<IRemoteServerApiProvider, RemoteServerApiProvider>();
+        }
 
 		protected override void ConfigureModuleCatalog() {
 			base.ConfigureModuleCatalog();

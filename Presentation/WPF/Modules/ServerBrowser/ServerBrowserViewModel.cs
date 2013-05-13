@@ -58,9 +58,7 @@ namespace Zander.Modules.ServerBrowser {
 			this.serverRepository = serverRepository;
 			this.eventAggregator = eventAggregator;
 
-			this.eventAggregator.GetEvent<QueryAllServersEvent>().Subscribe(empty => {
-				this.QueryAllServers.Execute(null);
-			});
+			this.eventAggregator.GetEvent<QueryAllServersEvent>().Subscribe(empty => this.QueryAllServers.Execute(null));
 
 			this.eventAggregator.GetEvent<ServerQueriedEvent>().Subscribe(server => {
 				this.model.AddServer(server);

@@ -142,6 +142,14 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Provider\Net\Provider.Net.Sockets\Provider.Net.Sockets.csproj">
+      <Project>{a37346c3-b2bc-4682-b298-a2da7ba3869f}</Project>
+      <Name>Provider.Net.Sockets</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Zander.Domain\Zander.Domain.csproj">
+      <Project>{36875e09-d758-43fd-bd07-698182ef6f9f}</Project>
+      <Name>Zander.Domain</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Infrastructure\Zander.Infrastructure.csproj">
       <Project>{ea8b7577-6944-4ac5-b0b6-624a52aa18b7}</Project>
       <Name>Zander.Infrastructure</Name>
