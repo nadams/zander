@@ -7,7 +7,7 @@
 			 d:DesignHeight="300" d:DesignWidth="300">
 	<StatusBar>
 		<StatusBarItem>
-			<TextBlock Text="{Binding Path=Model.ServerQueryStatus, Mode=OneWay}" />
+			<TextBlock Text="{Binding Path=StatusBarModel.ServerQueryStatus, Mode=OneWay}" />
 		</StatusBarItem>
 	</StatusBar>
 </UserControl>
