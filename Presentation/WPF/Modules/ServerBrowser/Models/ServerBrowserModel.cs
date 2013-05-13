@@ -21,6 +21,14 @@ namespace Zander.Modules.ServerBrowser.Models {
 			}
 		}
 
+		public int QueriedServers {
+			get {
+				lock(this.serversLock) {
+					return this.Servers.Count;
+				}
+			}
+		}
+
 		public ServerBrowserModel() {
 			this.serversLock = new object();
 			this.Servers = this.GetNewServersModel();

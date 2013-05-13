@@ -60,13 +60,19 @@ namespace Zander.Modules.ServerBrowser {
 				this.QueryAllServers.Execute(null);
 			});
 
-			this.eventAggregator.GetEvent<ServerQueriedEvent>().Subscribe(server => this.model.AddServer(server), ThreadOption.UIThread);
+			this.eventAggregator.GetEvent<ServerQueriedEvent>().Subscribe(server => {
+				this.model.AddServer(server);
+
+				this.eventAggregator.GetEvent<CurrentServerQueryCountEvent>().Publish(this.model.QueriedServers);
+			}, ThreadOption.UIThread);
 		}
 
 		private void queryAllServers() {
 			Task.Factory.StartNew(() => {
 				var masterServer = this.GetMasterServer();
-				
+
+				this.eventAggregator.GetEvent<TotalServersUpdatedEvent>().Publish(masterServer.Servers.Count());
+
 				Parallel.ForEach(masterServer.Servers, (server, status) => {
 					var address = server.Address.ToString() + ":" + server.Port;
 
