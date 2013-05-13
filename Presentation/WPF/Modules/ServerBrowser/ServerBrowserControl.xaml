@@ -9,8 +9,9 @@
         AutoGenerateColumns="False" 
         ItemsSource="{Binding Path=Model.Servers}" 
         IsReadOnly="True" 
-        HeadersVisibility="Column"
         SelectedItem="{Binding Path=Model.SelectedServer}"
+        SelectionMode="Single"
+        HeadersVisibility="Column"
         MouseDoubleClick="DataGridMouseDoubleClick">
 		<DataGrid.Columns>
 			<DataGridTextColumn Header="Name" Binding="{Binding Path=DisplayName}" />
