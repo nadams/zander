@@ -1,8 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 
 namespace Zander.Domain.Entities {
 	public class Server {
+		private readonly IPEndPoint ipEndPoint;
+		public IPEndPoint IPEndPoint {
+			get {
+				return this.ipEndPoint;
+			}
+		}
+
 		public bool RequiresPassword { get; set; }
 		public bool RequiresJoinPassword { get; set; }
 		public bool EnforceMasterBanlist { get; set; }
@@ -36,10 +44,11 @@ namespace Zander.Domain.Entities {
 		public IEnumerable<Player> Players { get; set; }
 		public IEnumerable<Team> Teams { get; set; }
 
-		public Server() {
+		public Server(IPEndPoint endPoint) {
 			this.PWads = Enumerable.Empty<Wad>();
 			this.Players = Enumerable.Empty<Player>();
 			this.Teams = Enumerable.Empty<Team>();
+			this.ipEndPoint = endPoint;
 		}
 	}
 }
