@@ -52,15 +52,15 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
             this.servers = new Dictionary<string, Server>();
         }
 
-        public void RefreshServer(Server server) {
+        public void RefreshServer(IPEndPoint endPoint) {
             Task.Factory.StartNew(() => {
-                var serverToModify = this.servers[server.IPEndPoint.ToString()];
+                var serverToModify = this.servers[endPoint.ToString()];
 
-                var updatedInformation = this.GetServer(server.IPEndPoint.ToString());
+                var updatedInformation = this.GetServer(endPoint.ToString());
 
-                server.CopyData(updatedInformation);
+                serverToModify.CopyData(updatedInformation);
 
-                this.HandleServersChange(ServersCollectionChangedActions.Update, server);
+                this.HandleServersChange(ServersCollectionChangedActions.Update, serverToModify);
             });
         }
 
@@ -103,9 +103,12 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
             this.HandleServersChange(ServersCollectionChangedActions.Add, server);
         }
 
-        public void RemoveServer(Server server) {
+        public void RemoveServer(IPEndPoint endPoint) {
+            string address = endPoint.ToString();
+            Server server;
             lock(this.serversLock) {
-                this.servers.Remove(server.IPEndPoint.ToString());
+                server = this.servers[address];
+                this.servers.Remove(address);
             }
 
             this.HandleServersChange(ServersCollectionChangedActions.Remove, server);

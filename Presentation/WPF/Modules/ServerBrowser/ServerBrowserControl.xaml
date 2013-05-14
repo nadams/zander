@@ -4,10 +4,9 @@
 			 xmlns:conv="clr-namespace:Zander.Modules.ServerBrowser.Converters">
 	<UserControl.Resources>
 		<conv:CollectionToCommaList x:Key="CollectionToCommaList" />
-        <conv:ServerConverter x:Key="ServerConverter" />
 	</UserControl.Resources>
 	<DataGrid 
-        ItemsSource="{Binding Path=Model.Servers, Converter={StaticResource ResourceKey=ServerConverter}}" 
+        ItemsSource="{Binding Path=Model.Servers}" 
         SelectedItem="{Binding Path=Model.SelectedServer}"
         AutoGenerateColumns="False" 
         IsReadOnly="True" 

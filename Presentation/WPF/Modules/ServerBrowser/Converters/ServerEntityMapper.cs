@@ -12,7 +12,7 @@ namespace Zander.Modules.ServerBrowser.Converters {
 			var currentPlayers = e.Players.Select(x => playerMapper.ModelFromEntity(x));
 
 			return new ServerModel {
-				Address = e.IPEndPoint.ToString(),
+				Address = e.IPEndPoint,
 				CurrentMap = e.CurrentMap,
 				DisplayName = e.DisplayName,
 				GameName = e.GameName,

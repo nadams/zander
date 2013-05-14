@@ -23,7 +23,7 @@ namespace Zander.Modules.ServerBrowser {
 
         public ICommand QueryCurrentServer {
             get {
-                return new DelegateCommand(() => this.serverBrowserService.RefreshServer(this.Model.SelectedServer));
+                return new DelegateCommand(() => this.serverBrowserService.RefreshServer(this.Model.SelectedServer.Address));
             }
         }
 
@@ -40,6 +40,7 @@ namespace Zander.Modules.ServerBrowser {
 
 			this.eventAggregator.GetEvent<QueryAllServersEvent>().Subscribe(empty => this.QueryAllServers.Execute(null));
             this.eventAggregator.GetEvent<RefreshCurrentServerEvent>().Subscribe(empty => this.QueryCurrentServer.Execute(null));
+
 			this.eventAggregator.GetEvent<ServerQueriedEvent>().Subscribe(server => {
 				this.Model.AddServer(server);
 
@@ -50,8 +51,20 @@ namespace Zander.Modules.ServerBrowser {
 		}
 
         private void CollectionChanged(object sender, ServersCollectionChangedEventArgs args) {
-            if(args.Action == ServersCollectionChangedActions.Add) {
-                
+            var changedValue = args.ChangedValue;
+
+            switch(args.Action) {
+                case ServersCollectionChangedActions.Add:
+                    this.eventAggregator.GetEvent<ServerQueriedEvent>().Publish(changedValue);
+                    break;
+
+                case ServersCollectionChangedActions.Update:
+                    this.Model.UpdateServer(changedValue);
+                    break;
+
+                case ServersCollectionChangedActions.Remove:
+                    this.Model.RemoveServer(changedValue);
+                    break;
             }
         }
 
