@@ -7,7 +7,7 @@
         <conv:ServerConverter x:Key="ServerConverter" />
 	</UserControl.Resources>
 	<DataGrid 
-        ItemsSource="{Binding Path=Model.Servers}" 
+        ItemsSource="{Binding Path=Model.Servers, Converter={StaticResource ResourceKey=ServerConverter}}" 
         SelectedItem="{Binding Path=Model.SelectedServer}"
         AutoGenerateColumns="False" 
         IsReadOnly="True" 
