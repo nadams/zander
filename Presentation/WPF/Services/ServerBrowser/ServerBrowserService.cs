@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
         private readonly object serversLock;
         private readonly IServerRepository serverRepository;
         private readonly IMasterServerRepository masterServerRepository;
-        private readonly ObservableCollection<Server> servers;
+        private readonly IDictionary<string, Server> servers;
 
         private DateTime lastQueriedTime;
         private bool isQuerying;
@@ -41,16 +42,22 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
             this.masterServerRepository = masterRepo;
             this.lastQueriedTime = DateTime.MinValue;
 
-            this.servers = this.GetServersCollection();
+            this.servers = new Dictionary<string, Server>();
         }
 
         public void RefreshServer(Server server) {
             Task.Factory.StartNew(() => {
-                var serverToModify = this.servers.Single(x => x.IPEndPoint.ToString() == server.IPEndPoint.ToString());
+                var serverToModify = this.servers[server.IPEndPoint.ToString()];
 
                 var updatedInformation = this.GetServer(server.IPEndPoint.ToString());
 
                 server.CopyData(updatedInformation);
+
+                if(this.CollectionChanged != null) {
+                    var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, server);
+
+                    this.CollectionChanged(this, args);
+                }
             });
         }
 
@@ -71,6 +78,8 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
                         var address = this.GetAddress(server.Address, server.Port);
 
                         var entity = this.GetServer(address);
+
+                        this.AddServer(entity);
                     });
 
                     if(this.DoneQueryingServers != null) {
@@ -85,7 +94,25 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
 
         public void AddServer(Server server) {
             lock(this.serversLock) {
-                this.servers.Add(server);
+                this.servers.Add(server.IPEndPoint.ToString(), server);
+            }
+
+            if(this.CollectionChanged != null) {
+                var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, server);
+
+                this.CollectionChanged(this, args);
+            }
+        }
+
+        public void RemoveServer(Server server) {
+            lock(this.serversLock) {
+                this.servers.Remove(server.IPEndPoint.ToString());
+            }
+
+            if(this.CollectionChanged != null) {
+                var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, server);
+
+                this.CollectionChanged(this, args);
             }
         }
 
