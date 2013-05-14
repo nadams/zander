@@ -64,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServerBrowser\ServersCollectionChangedEvent.cs" />
     <Compile Include="ServerBrowser\DoneQueryingServersEvent.cs" />
     <Compile Include="ServerBrowser\IServerBrowserService.cs" />
     <Compile Include="ServerBrowser\ServerBrowserService.cs" />

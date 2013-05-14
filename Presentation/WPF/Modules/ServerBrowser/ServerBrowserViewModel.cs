@@ -1,7 +1,9 @@
-﻿using System.Windows.Input;
+﻿using System.Collections.Specialized;
+using System.Windows.Input;
 using Microsoft.Practices.Prism.Commands;
 using Microsoft.Practices.Prism.Events;
 using Microsoft.Practices.Prism.ViewModel;
+using Zander.Domain.Entities;
 using Zander.Modules.ServerBrowser.Models;
 using Zander.Presentation.WPF.Zander.Infrastructure.Events;
 using Zander.Presentation.WPF.Zander.Services.ServerBrowser;
@@ -43,7 +45,15 @@ namespace Zander.Modules.ServerBrowser {
 
 				this.eventAggregator.GetEvent<CurrentServerQueryCountEvent>().Publish(this.Model.QueriedServers);
 			}, ThreadOption.UIThread);
+
+            this.serverBrowserService.ServersChanged += this.CollectionChanged;
 		}
+
+        private void CollectionChanged(object sender, ServersCollectionChangedEventArgs args) {
+            if(args.Action == ServersCollectionChangedActions.Add) {
+                
+            }
+        }
 
         private void LaunchSelectedServerCommand() {
 

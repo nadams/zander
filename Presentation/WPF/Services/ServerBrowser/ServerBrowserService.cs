@@ -12,7 +12,7 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
     public class ServerBrowserService : IServerBrowserService { 
         private const int RefreshRestTime = 15;
 
-        public event NotifyCollectionChangedEventHandler CollectionChanged;
+        public event ServersCollectionChangedEventHandler ServersChanged;
         public event TotalServersUpdatedEventHandler TotalServersUpdated;
         public event DoneQueryingServersEventHandler DoneQueryingServers;
 
@@ -60,11 +60,7 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
 
                 server.CopyData(updatedInformation);
 
-                if(this.CollectionChanged != null) {
-                    var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, server);
-
-                    this.CollectionChanged(this, args);
-                }
+                this.HandleServersChange(ServersCollectionChangedActions.Update, server);
             });
         }
 
@@ -104,11 +100,7 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
                 this.servers.Add(server.IPEndPoint.ToString(), server);
             }
 
-            if(this.CollectionChanged != null) {
-                var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, server);
-
-                this.CollectionChanged(this, args);
-            }
+            this.HandleServersChange(ServersCollectionChangedActions.Add, server);
         }
 
         public void RemoveServer(Server server) {
@@ -116,11 +108,7 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
                 this.servers.Remove(server.IPEndPoint.ToString());
             }
 
-            if(this.CollectionChanged != null) {
-                var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, server);
-
-                this.CollectionChanged(this, args);
-            }
+            this.HandleServersChange(ServersCollectionChangedActions.Remove, server);
         }
 
         private IMasterServer GetMasterServer() {
@@ -145,6 +133,14 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
             } catch { }
 
             return entity;
+        }
+
+        private void HandleServersChange(ServersCollectionChangedActions action, Server server) {
+            if(this.ServersChanged != null) {
+                var args = new ServersCollectionChangedEventArgs(action, server);
+
+                this.ServersChanged(this, args);
+            }
         }
     }
 }

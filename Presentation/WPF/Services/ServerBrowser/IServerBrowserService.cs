@@ -4,7 +4,7 @@ using Zander.Domain.Entities;
 
 namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
     public interface IServerBrowserService {
-        event NotifyCollectionChangedEventHandler CollectionChanged;
+        event ServersCollectionChangedEventHandler ServersChanged;
         event TotalServersUpdatedEventHandler TotalServersUpdated;
         event DoneQueryingServersEventHandler DoneQueryingServers;
 
