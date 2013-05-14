@@ -48,6 +48,8 @@ namespace Zander.Modules.ServerBrowser {
 			}, ThreadOption.UIThread);
 
             this.serverBrowserService.ServersChanged += this.CollectionChanged;
+            this.serverBrowserService.DoneQueryingServers += o => this.eventAggregator.GetEvent<DoneQueryingServersEvent>().Publish(Empty.Value);
+            this.serverBrowserService.TotalServersUpdated += (o, e) => this.eventAggregator.GetEvent<TotalServersUpdatedEvent>().Publish(e.TotalServers);
 		}
 
         private void CollectionChanged(object sender, ServersCollectionChangedEventArgs args) {
