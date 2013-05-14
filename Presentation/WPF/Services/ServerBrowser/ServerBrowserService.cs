@@ -14,9 +14,9 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;
         public event TotalServersUpdatedEventHandler TotalServersUpdated;
-        public event ServerQueriedEventHandler ServerQueried;
         public event DoneQueryingServersEventHandler DoneQueryingServers;
 
+        private readonly object serversLock;
         private readonly IServerRepository serverRepository;
         private readonly IMasterServerRepository masterServerRepository;
         private readonly ObservableCollection<Server> servers;
@@ -36,6 +36,7 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
         }
 
         public ServerBrowserService(IServerRepository serverRepo, IMasterServerRepository masterRepo) {
+            this.serversLock = new object();
             this.serverRepository = serverRepo;
             this.masterServerRepository = masterRepo;
             this.lastQueriedTime = DateTime.MinValue;
@@ -73,11 +74,7 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
                         try {
                             var entity = this.serverRepository.Get(address, 1000, ServerQueryValues.AllData);
 
-                            if(this.ServerQueried != null) {
-                                var args = new ServerQueriedEventArgs(entity);
-
-                                this.ServerQueried(this, args);
-                            }
+                            this.AddServer(entity);
                         } catch { }
                     });
 
@@ -88,6 +85,12 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
                     this.isQuerying = false;
                     this.lastQueriedTime = DateTime.UtcNow;
                 });
+            }
+        }
+
+        public void AddServer(Server server) {
+            lock(this.serversLock) {
+                this.servers.Add(server);
             }
         }
 
