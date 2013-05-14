@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Net;
@@ -25,7 +24,7 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
         private DateTime lastQueriedTime;
         private bool isQuerying;
 
-        private bool CanRefresh {
+        public bool CanRefresh {
             get {
                 var refreshAtTime = DateTime.UtcNow.AddSeconds(RefreshRestTime);
                 var duration = refreshAtTime - this.lastQueriedTime;

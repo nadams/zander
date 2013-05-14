@@ -9,6 +9,7 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
         event DoneQueryingServersEventHandler DoneQueryingServers;
 
         IEnumerable<Server> Servers { get; }
+        bool CanRefresh { get; }
 
         void QueryAllServers();
         void RefreshServer(Server server);
