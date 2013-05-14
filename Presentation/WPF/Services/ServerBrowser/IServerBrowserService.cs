@@ -10,5 +10,6 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
         void QueryAllServers();
         void RefreshServer(Server server);
         void AddServer(Server server);
+        void RemoveServer(Server server);
     }
 }
