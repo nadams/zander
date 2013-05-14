@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -16,7 +16,6 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
         public event TotalServersUpdatedEventHandler TotalServersUpdated;
         public event DoneQueryingServersEventHandler DoneQueryingServers;
 
-        private readonly object serversLock;
         private readonly IServerRepository serverRepository;
         private readonly IMasterServerRepository masterServerRepository;
         private readonly IDictionary<string, Server> servers;
@@ -37,19 +36,16 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
 
         public IEnumerable<Server> Servers {
             get {
-                lock(this.serversLock) {
-                    return this.servers.Values.AsEnumerable();
-                }
+                return this.servers.Values.AsEnumerable();
             }
         }
 
         public ServerBrowserService(IServerRepository serverRepo, IMasterServerRepository masterRepo) {
-            this.serversLock = new object();
             this.serverRepository = serverRepo;
             this.masterServerRepository = masterRepo;
             this.lastQueriedTime = DateTime.MinValue;
 
-            this.servers = new Dictionary<string, Server>();
+            this.servers = new ConcurrentDictionary<string, Server>();
         }
 
         public void RefreshServer(IPEndPoint endPoint) {
@@ -96,20 +92,15 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
         }
 
         public void AddServer(Server server) {
-            lock(this.serversLock) {
-                this.servers.Add(server.IPEndPoint.ToString(), server);
-            }
+            this.servers.Add(server.IPEndPoint.ToString(), server);
 
             this.HandleServersChange(ServersCollectionChangedActions.Add, server);
         }
 
         public void RemoveServer(IPEndPoint endPoint) {
             string address = endPoint.ToString();
-            Server server;
-            lock(this.serversLock) {
-                server = this.servers[address];
-                this.servers.Remove(address);
-            }
+            Server server = this.servers[address];
+            this.servers.Remove(address);
 
             this.HandleServersChange(ServersCollectionChangedActions.Remove, server);
         }
