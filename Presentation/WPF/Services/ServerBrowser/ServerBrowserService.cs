@@ -83,10 +83,6 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
             }
         }
 
-        public void AlterServer(IPEndPoint serverAddress, Server newData) {
-
-        }
-
         public void AddServer(Server server) {
             lock(this.serversLock) {
                 this.servers.Add(server);
