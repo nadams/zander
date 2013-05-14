@@ -29,7 +29,7 @@ namespace Zander.Modules.ServerBrowser {
             }
         }
 
-        private void DataGridPreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e) {
+        private void DataGridMouseRightButtonDown(object sender, MouseButtonEventArgs e) {
             var viewmodel = this.ViewModel;
 
             if(viewmodel.QueryCurrentServer.CanExecute(null)) {
