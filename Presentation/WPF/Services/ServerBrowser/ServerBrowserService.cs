@@ -64,6 +64,8 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
 
         public void QueryAllServers() {
             if(this.CanRefresh) {
+                this.servers.Clear();
+
                 Task.Factory.StartNew(() => {
                     this.isQuerying = true;
 

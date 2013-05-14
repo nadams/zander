@@ -23,7 +23,11 @@ namespace Zander.Modules.ServerBrowser {
 
         public ICommand QueryCurrentServer {
             get {
-                return new DelegateCommand(() => this.serverBrowserService.RefreshServer(this.Model.SelectedServer.Address));
+                return new DelegateCommand(() => {
+                    if(this.Model.SelectedServer != null) {
+                        this.serverBrowserService.RefreshServer(this.Model.SelectedServer.Address); 
+                    }
+                });
             }
         }
 
