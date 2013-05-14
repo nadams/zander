@@ -64,8 +64,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServerBrowser\DoneQueryingServersEvent.cs" />
     <Compile Include="ServerBrowser\IServerBrowserService.cs" />
     <Compile Include="ServerBrowser\ServerBrowserService.cs" />
+    <Compile Include="ServerBrowser\ServerQueriedEvent.cs" />
+    <Compile Include="ServerBrowser\TotalServersUpdatedEvent.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

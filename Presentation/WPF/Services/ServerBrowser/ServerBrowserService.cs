@@ -1,20 +1,25 @@
 ﻿using System;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.Practices.Prism.Events;
 using Zander.Domain;
 using Zander.Domain.Entities;
 using Zander.Domain.Remote;
-using Zander.Presentation.WPF.Zander.Infrastructure.Events;
 
 namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
     public class ServerBrowserService : IServerBrowserService { 
         private const int RefreshRestTime = 15;
 
-        private readonly IEventAggregator eventAggregator;
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
+        public event TotalServersUpdatedEventHandler TotalServersUpdated;
+        public event ServerQueriedEventHandler ServerQueried;
+        public event DoneQueryingServersEventHandler DoneQueryingServers;
+
         private readonly IServerRepository serverRepository;
         private readonly IMasterServerRepository masterServerRepository;
+        private readonly ObservableCollection<Server> servers;
 
         private DateTime lastQueriedTime;
         private bool isQuerying;
@@ -30,11 +35,12 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
             }
         }
 
-        public ServerBrowserService(IEventAggregator eventAggregator, IServerRepository serverRepo, IMasterServerRepository masterRepo) {
-            this.eventAggregator = eventAggregator;
+        public ServerBrowserService(IServerRepository serverRepo, IMasterServerRepository masterRepo) {
             this.serverRepository = serverRepo;
             this.masterServerRepository = masterRepo;
             this.lastQueriedTime = DateTime.MinValue;
+
+            this.servers = this.GetServersCollection();
         }
 
         public void RefreshServer(Server server) {
@@ -55,7 +61,11 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
 
                     var masterServer = this.GetMasterServer();
 
-                    this.eventAggregator.GetEvent<TotalServersUpdatedEvent>().Publish(masterServer.Servers.Count());
+                    if(this.TotalServersUpdated != null) {
+                        var args = new TotalServersUpdatedEventArgs(masterServer.Servers.Count());
+
+                        this.TotalServersUpdated(this, args);
+                    }
 
                     Parallel.ForEach(masterServer.Servers, (server, status) => {
                         var address = this.GetAddress(server.Address, server.Port);
@@ -63,11 +73,17 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
                         try {
                             var entity = this.serverRepository.Get(address, 1000, ServerQueryValues.AllData);
 
-                            this.eventAggregator.GetEvent<ServerQueriedEvent>().Publish(entity);
+                            if(this.ServerQueried != null) {
+                                var args = new ServerQueriedEventArgs(entity);
+
+                                this.ServerQueried(this, args);
+                            }
                         } catch { }
                     });
 
-                    this.eventAggregator.GetEvent<DoneQueryingServersEvent>().Publish(Empty.Value);
+                    if(this.DoneQueryingServers != null) {
+                        this.DoneQueryingServers(this);
+                    }
 
                     this.isQuerying = false;
                     this.lastQueriedTime = DateTime.UtcNow;
@@ -83,6 +99,14 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
 
         private string GetAddress(IPAddress address, int port) {
             return address.ToString() + ":" + port;
+        }
+
+        private ObservableCollection<Server> GetServersCollection() {
+            var collection = new ObservableCollection<Server>();
+
+            collection.CollectionChanged += (o, e) => this.CollectionChanged(o, e);
+
+            return collection;
         }
     }
 }
