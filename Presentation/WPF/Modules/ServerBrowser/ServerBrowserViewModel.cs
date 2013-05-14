@@ -66,6 +66,4 @@ namespace Zander.Modules.ServerBrowser {
 
         }
     }
-
-	public class ServerQueriedEvent : CompositePresentationEvent<Server> { }
 }

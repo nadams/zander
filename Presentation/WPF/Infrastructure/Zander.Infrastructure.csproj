@@ -100,6 +100,7 @@
     <Compile Include="Events\QueryAllServersEvent.cs" />
     <Compile Include="Events\QuitEvent.cs" />
     <Compile Include="Events\RefreshCurrentServerEvent.cs" />
+    <Compile Include="Events\ServerQueriedEvent.cs" />
     <Compile Include="Events\SettingsEvent.cs" />
     <Compile Include="Events\TotalServersUpdatedEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -107,6 +108,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Zander.Domain\Zander.Domain.csproj">
+      <Project>{36875e09-d758-43fd-bd07-698182ef6f9f}</Project>
+      <Name>Zander.Domain</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
