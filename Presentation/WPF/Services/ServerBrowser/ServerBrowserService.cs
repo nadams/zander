@@ -120,10 +120,6 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
 
             try {
                 entity = this.serverRepository.Get(address, 1000, ServerQueryValues.AllData);
-
-                this.AddServer(entity);
-
-                return entity;
             } catch { }
 
             return entity;
