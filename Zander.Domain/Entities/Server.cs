@@ -50,5 +50,40 @@ namespace Zander.Domain.Entities {
 			this.Teams = Enumerable.Empty<Team>();
 			this.ipEndPoint = endPoint;
 		}
+
+        public void CopyData(Server other) {
+            this.AdminEmail = other.AdminEmail;
+            this.BotSkill = other.BotSkill;
+            this.CompatFlags = other.CompatFlags;
+            this.CompatFlags2 = other.CompatFlags2;
+            this.CurrentMap = other.CurrentMap;
+            this.DataChecksum = other.DataChecksum;
+            this.DisplayName = other.DisplayName;
+            this.DMFlags = other.DMFlags;
+            this.DMFlags2 = other.DMFlags2;
+            this.DMFlags3 = other.DMFlags3;
+            this.DuelLimit = other.DuelLimit;
+            this.EnforceMasterBanlist = other.EnforceMasterBanlist;
+            this.FragLimit = other.FragLimit;
+            this.GameName = other.GameName;
+            this.IsTestingServer = other.IsTestingServer;
+            this.IWad = other.IWad;
+            this.MaxClients = other.MaxClients;
+            this.MaxPlayers = other.MaxPlayers;
+            this.NumberOfTeams = other.NumberOfTeams;
+            this.Players = other.Players;
+            this.PointLimit = other.PointLimit;
+            this.PWads = other.PWads;
+            this.RequiresJoinPassword = other.RequiresJoinPassword;
+            this.RequiresPassword = other.RequiresPassword;
+            this.Skill = other.Skill;
+            this.TeamDamage = other.TeamDamage;
+            this.Teams = other.Teams;
+            this.TestingServer = other.TestingServer;
+            this.TimeLeft = other.TimeLeft;
+            this.TimeLimit = other.TimeLimit;
+            this.WadUrl = other.WadUrl;
+            this.WinLimit = other.WinLimit;
+        }
 	}
 }

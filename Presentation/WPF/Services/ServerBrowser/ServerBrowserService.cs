@@ -46,12 +46,11 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
 
         public void RefreshServer(Server server) {
             Task.Factory.StartNew(() => {
-                //var entity = this.serverRepository.Get(selectedServer.Address, 1000, ServerQueryValues.AllData);
+                var serverToModify = this.servers.Single(x => x.IPEndPoint.ToString() == server.IPEndPoint.ToString());
 
-                //var mapper = new ServerEntityMapper();
-                //var model = mapper.ModelFromEntity(entity);
+                var updatedInformation = this.GetServer(server.IPEndPoint.ToString());
 
-                //mapper.CopyModel(selectedServer, model);
+                server.CopyData(updatedInformation);
             });
         }
 
@@ -71,11 +70,7 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
                     Parallel.ForEach(masterServer.Servers, (server, status) => {
                         var address = this.GetAddress(server.Address, server.Port);
 
-                        try {
-                            var entity = this.serverRepository.Get(address, 1000, ServerQueryValues.AllData);
-
-                            this.AddServer(entity);
-                        } catch { }
+                        var entity = this.GetServer(address);
                     });
 
                     if(this.DoneQueryingServers != null) {
@@ -86,6 +81,10 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
                     this.lastQueriedTime = DateTime.UtcNow;
                 });
             }
+        }
+
+        public void AlterServer(IPEndPoint serverAddress, Server newData) {
+
         }
 
         public void AddServer(Server server) {
@@ -110,6 +109,20 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
             collection.CollectionChanged += (o, e) => this.CollectionChanged(o, e);
 
             return collection;
+        }
+
+        private Server GetServer(string address) {
+            Server entity = null;
+
+            try {
+                entity = this.serverRepository.Get(address, 1000, ServerQueryValues.AllData);
+
+                this.AddServer(entity);
+
+                return entity;
+            } catch { }
+
+            return entity;
         }
     }
 }
