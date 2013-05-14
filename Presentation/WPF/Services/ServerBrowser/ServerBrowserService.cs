@@ -54,7 +54,9 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
 
                 var updatedInformation = this.GetServer(endPoint.ToString());
 
-                serverToModify.CopyData(updatedInformation);
+                if(updatedInformation != null) {
+                    serverToModify.CopyData(updatedInformation);
+                }
 
                 this.HandleServersChange(ServersCollectionChangedActions.Update, serverToModify);
             });
@@ -78,7 +80,9 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
 
                         var entity = this.GetServer(address);
 
-                        this.AddServer(entity);
+                        if(entity != null) {
+                            this.AddServer(entity);
+                        }
                     });
 
                     if(this.DoneQueryingServers != null) {
