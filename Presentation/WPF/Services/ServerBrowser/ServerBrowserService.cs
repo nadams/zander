@@ -37,7 +37,7 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
             this.lastQueriedTime = DateTime.MinValue;
         }
 
-        public Server RefreshServerAsync(Server server) {
+        public void RefreshServerAsync(Server server) {
             Task.Factory.StartNew(() => {
                 //var entity = this.serverRepository.Get(selectedServer.Address, 1000, ServerQueryValues.AllData);
 
@@ -46,8 +46,6 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
 
                 //mapper.CopyModel(selectedServer, model);
             });
-
-            return null;
         }
 
         public void QueryAllServersAsync() {
