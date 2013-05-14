@@ -36,6 +36,14 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
             }
         }
 
+        public IEnumerable<Server> Servers {
+            get {
+                lock(this.serversLock) {
+                    return this.servers.Values.AsEnumerable();
+                }
+            }
+        }
+
         public ServerBrowserService(IServerRepository serverRepo, IMasterServerRepository masterRepo) {
             this.serversLock = new object();
             this.serverRepository = serverRepo;
@@ -124,14 +132,6 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
 
         private string GetAddress(IPAddress address, int port) {
             return address.ToString() + ":" + port;
-        }
-
-        private ObservableCollection<Server> GetServersCollection() {
-            var collection = new ObservableCollection<Server>();
-
-            collection.CollectionChanged += (o, e) => this.CollectionChanged(o, e);
-
-            return collection;
         }
 
         private Server GetServer(string address) {

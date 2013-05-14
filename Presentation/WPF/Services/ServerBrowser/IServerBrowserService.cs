@@ -1,4 +1,5 @@
-﻿using System.Collections.Specialized;
+﻿using System.Collections.Generic;
+using System.Collections.Specialized;
 using Zander.Domain.Entities;
 
 namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
@@ -6,6 +7,8 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
         event NotifyCollectionChangedEventHandler CollectionChanged;
         event TotalServersUpdatedEventHandler TotalServersUpdated;
         event DoneQueryingServersEventHandler DoneQueryingServers;
+
+        IEnumerable<Server> Servers { get; }
 
         void QueryAllServers();
         void RefreshServer(Server server);
