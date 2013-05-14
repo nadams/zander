@@ -2,41 +2,26 @@
 using Microsoft.Practices.Prism.Commands;
 using Microsoft.Practices.Prism.Events;
 using Microsoft.Practices.Prism.ViewModel;
-using Zander.Domain;
-using Zander.Domain.Entities;
 using Zander.Modules.ServerBrowser.Models;
 using Zander.Presentation.WPF.Zander.Infrastructure.Events;
+using Zander.Presentation.WPF.Zander.Services.ServerBrowser;
 
 namespace Zander.Modules.ServerBrowser {
 	public class ServerBrowserViewModel : NotificationObject, IServerBrowserViewModel {
-		private readonly IMasterServerRepository masterServerRepository;
-		private readonly IServerRepository serverRepository;
 		private readonly IEventAggregator eventAggregator;
-        private readonly ServerQuery serverQuery;
+        private readonly IServerBrowserService serverBrowserService;
         
         public ServerBrowserModel Model { get; set; }
 
-        public IMasterServerRepository MasterServerRepository {
-			get {
-				return this.masterServerRepository;
-			}
-		}
-
-		public IServerRepository ServerRepository {
-			get {
-				return this.serverRepository;
-			}
-		}
-
 		public ICommand QueryAllServers {
 			get {
-                return new DelegateCommand(this.serverQuery.QueryAllServers);
+                return new DelegateCommand(this.serverBrowserService.QueryAllServers);
 			}
 		}
 
         public ICommand QueryCurrentServer {
             get {
-                return new DelegateCommand(this.serverQuery.RefreshCurrentServer);
+                return new DelegateCommand(() => this.serverBrowserService.RefreshServer(this.Model.SelectedServer));
             }
         }
 
@@ -46,12 +31,10 @@ namespace Zander.Modules.ServerBrowser {
             }
         }
 
-		public ServerBrowserViewModel(IEventAggregator eventAggregator, IMasterServerRepository masterServerRepository, IServerRepository serverRepository) {
+		public ServerBrowserViewModel(IEventAggregator eventAggregator, IServerBrowserService serverBrowserService) {
 			this.Model = new ServerBrowserModel();
-			this.masterServerRepository = masterServerRepository;
-			this.serverRepository = serverRepository;
 			this.eventAggregator = eventAggregator;
-            this.serverQuery = new ServerQuery(this.eventAggregator, this.serverRepository, this.masterServerRepository, this.Model);
+            this.serverBrowserService = serverBrowserService;
 
 			this.eventAggregator.GetEvent<QueryAllServersEvent>().Subscribe(empty => this.QueryAllServers.Execute(null));
             this.eventAggregator.GetEvent<RefreshCurrentServerEvent>().Subscribe(empty => this.QueryCurrentServer.Execute(null));

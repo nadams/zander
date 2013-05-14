@@ -93,6 +93,7 @@
   <ItemGroup>
     <Compile Include="Converters\CollectionToCommaList.cs" />
     <Compile Include="Converters\PlayerEntityMapper.cs" />
+    <Compile Include="Converters\ServerConverter.cs" />
     <Compile Include="Converters\ServerEntityMapper.cs" />
     <Compile Include="IServerBrowserView.cs" />
     <Compile Include="IServerBrowserViewModel.cs" />
@@ -117,7 +118,6 @@
     </Compile>
     <Compile Include="ServerBrowserModule.cs" />
     <Compile Include="ServerBrowserViewModel.cs" />
-    <Compile Include="ServerQuery.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -138,6 +138,10 @@
     <ProjectReference Include="..\..\Infrastructure\Zander.Infrastructure.csproj">
       <Project>{ea8b7577-6944-4ac5-b0b6-624a52aa18b7}</Project>
       <Name>Zander.Infrastructure</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Services\Zander.Services.csproj">
+      <Project>{796a3973-78d4-4d8d-8db3-64f71ceb1611}</Project>
+      <Name>Zander.Services</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

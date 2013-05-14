@@ -10,8 +10,8 @@ namespace Zander.Modules.ServerBrowser.Models {
 		private readonly object serversLock;
         private readonly ServerEntityMapper serverMapper;
 
-		private ObservableCollection<ServerModel> servers;
-		public ObservableCollection<ServerModel> Servers {
+		private ObservableCollection<Server> servers;
+		public ObservableCollection<Server> Servers {
 			get {
 				return this.servers;
 			}
@@ -22,8 +22,8 @@ namespace Zander.Modules.ServerBrowser.Models {
 			}
 		}
 
-        private ServerModel selectedServer;
-        public ServerModel SelectedServer {
+        private Server selectedServer;
+        public Server SelectedServer {
             get {
                 return this.selectedServer;
             }
@@ -53,22 +53,20 @@ namespace Zander.Modules.ServerBrowser.Models {
 			this.RaisePropertyChanged(() => this.Servers);
 		}
 
-		private ObservableCollection<ServerModel> GetNewServersModel() {
+		private ObservableCollection<Server> GetNewServersModel() {
 			if(this.Servers != null) {
 				this.Servers.CollectionChanged -= this.ServersChanged;
 			}
 
-			var servers = new ObservableCollection<ServerModel>();
+			var servers = new ObservableCollection<Server>();
 			servers.CollectionChanged += this.ServersChanged;
 
 			return servers;
 		}
 
 		public void AddServer(Server server) {
-			var model = this.serverMapper.ModelFromEntity(server);
-
 			lock(this.serversLock) {
-				this.Servers.Add(model);
+				this.Servers.Add(server);
 			}
 		}
 
