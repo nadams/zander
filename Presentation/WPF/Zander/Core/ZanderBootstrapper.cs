@@ -11,6 +11,7 @@ using Zander.Modules.ServerBrowser;
 using Zander.Modules.StatusBar;
 using Zander.Presentation.WPF.Zander.Extensions;
 using Zander.Presentation.WPF.Zander.Infrastructure.Events;
+using Zander.Presentation.WPF.Zander.Services.ServerBrowser;
 using Zander.Provider.Net.Sockets;
 
 namespace Zander.Presentation.WPF.Zander.Core {
@@ -39,6 +40,7 @@ namespace Zander.Presentation.WPF.Zander.Core {
             this.Container.RegisterType<IMasterServerRepository, ZandronumMasterServerRepository>();
             this.Container.RegisterType<IServerRepository, ServerRepository>();
             this.Container.RegisterType<IRemoteServerApiProvider, RemoteServerApiProvider>();
+            this.Container.RegisterType<IServerBrowserService, ServerBrowserService>(new ContainerControlledLifetimeManager());
         }
 
 		protected override void ConfigureModuleCatalog() {

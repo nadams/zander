@@ -168,6 +168,10 @@
       <Project>{2773f698-f610-4e21-87af-54c3b1f74d71}</Project>
       <Name>ServerBrowser</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Services\Zander.Services.csproj">
+      <Project>{796a3973-78d4-4d8d-8db3-64f71ceb1611}</Project>
+      <Name>Zander.Services</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
