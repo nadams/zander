@@ -17,10 +17,10 @@ namespace Zander.Modules.ServerBrowser.Converters {
 				DisplayName = e.DisplayName,
 				GameName = e.GameName,
 				IWad = e.IWad.Name,
-				CurrentPlayers = currentPlayers,
 				MaxClients = e.MaxClients,
 				MaxPlayers = e.MaxPlayers,
-				PWads = e.PWads.Select(x => x.Name)
+				CurrentPlayers = currentPlayers.ToList(),
+				PWads = e.PWads.Select(x => x.Name).ToList()
 			};
 		}
 
