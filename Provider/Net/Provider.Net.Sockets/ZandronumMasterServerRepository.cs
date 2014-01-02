@@ -8,6 +8,8 @@ using Zander.Domain.Remote;
 
 namespace Zander.Provider.Net.Sockets {
 	public class ZandronumMasterServerRepository : IMasterServerRepository {
+        private const int DefaultPort = 15300;
+
 		private readonly IRemoteServerApiProvider serverApiProvider;
 
 		public int MasterChallenge {
@@ -45,7 +47,7 @@ namespace Zander.Provider.Net.Sockets {
                 ipAddress = Dns.GetHostAddresses(parts[0]).First();
             }
 
-            int port = 15300;
+            int port = DefaultPort;
             if(parts.Length > 1) {
                 port = int.Parse(parts[1]);
             }
