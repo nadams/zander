@@ -112,7 +112,14 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
         }
 
         private IMasterServer GetMasterServer() {
-            var masterServer = this.masterServerRepository.Get("64.15.129.183:15300", 5000);
+            var hostname = "master.zandronum.com:15300";
+            var parts = hostname.Split(':');
+            IPAddress address;
+            if(!IPAddress.TryParse(parts[0], out address)) {
+                address = Dns.GetHostAddresses(parts[0]).First();
+            }
+
+            var masterServer = this.masterServerRepository.Get(address.ToString() + ":" + parts[1], 5000);
 
             return masterServer;
         }
