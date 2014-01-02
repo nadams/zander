@@ -1,8 +1,19 @@
 ﻿<Window x:Class="Settings.SettingsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="SettingsWindow" Height="300" Width="300">
-    <Grid>
-        
-    </Grid>
+        xmlns:settings="clr-namespace:Settings"
+        Title="Settings" Height="444" Width="652">
+    <Window.Resources>
+        <settings:SettingViewConverter x:Key="SettingViewConverter" />
+    </Window.Resources>
+    <DockPanel LastChildFill="True">
+        <TreeView DockPanel.Dock="Left" MinWidth="192px" ItemsSource="{Binding Path=Views}">
+            <TreeView.ItemTemplate>
+                <HierarchicalDataTemplate ItemsSource="{Binding Path=ChildViews}">
+                    <TreeViewItem Header="{Binding Path=SectionName}" />
+                </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
+        </TreeView>
+        <StackPanel />
+    </DockPanel>
 </Window>
