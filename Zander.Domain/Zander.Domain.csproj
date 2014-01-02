@@ -61,7 +61,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Config\IZanderConfig.cs" />
     <Compile Include="Config\ZanderConfig.cs" />
     <Compile Include="Entities\BotSkill.cs" />
     <Compile Include="Entities\CompatFlags.cs" />

@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Zander.Domain.Config {
+    public class ZanderConfig {
+        public string ZandronumMasterAddress { get; set; }
 
-namespace Zander.Domain.Config {
-    public class ZanderConfig : IZanderConfig {
+
+        public ZanderConfig() {
+            this.ZandronumMasterAddress = "master.zandronum.com:15300";
+
+        }
     }
 }

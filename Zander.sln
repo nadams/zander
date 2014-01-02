@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zander.Domain", "Zander.Domain\Zander.Domain.csproj", "{36875E09-D758-43FD-BD07-698182EF6F9F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zander.UnitTests", "Zander.UnitTests\Zander.UnitTests.csproj", "{09C906C8-715C-41E0-BA37-B6D632FB94AA}"
@@ -31,6 +33,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerBrowser", "Presentation\WPF\Modules\ServerBrowser\ServerBrowser.csproj", "{2773F698-F610-4E21-87AF-54C3B1F74D71}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zander.Services", "Presentation\WPF\Services\Zander.Services.csproj", "{796A3973-78D4-4D8D-8DB3-64F71CEB1611}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Local", "Local", "{253DB742-5966-4100-82FD-FF7EDC45D698}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Provider.Local.Disk", "Provider\Local\Provider.Local.Disk\Provider.Local.Disk.csproj", "{50CBFAE7-7A2B-41CD-AD86-0F2226A8C78E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -138,12 +144,23 @@ Global
 		{796A3973-78D4-4D8D-8DB3-64F71CEB1611}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{796A3973-78D4-4D8D-8DB3-64F71CEB1611}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{796A3973-78D4-4D8D-8DB3-64F71CEB1611}.Release|x86.ActiveCfg = Release|Any CPU
+		{50CBFAE7-7A2B-41CD-AD86-0F2226A8C78E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50CBFAE7-7A2B-41CD-AD86-0F2226A8C78E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50CBFAE7-7A2B-41CD-AD86-0F2226A8C78E}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{50CBFAE7-7A2B-41CD-AD86-0F2226A8C78E}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{50CBFAE7-7A2B-41CD-AD86-0F2226A8C78E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{50CBFAE7-7A2B-41CD-AD86-0F2226A8C78E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50CBFAE7-7A2B-41CD-AD86-0F2226A8C78E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50CBFAE7-7A2B-41CD-AD86-0F2226A8C78E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{50CBFAE7-7A2B-41CD-AD86-0F2226A8C78E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{50CBFAE7-7A2B-41CD-AD86-0F2226A8C78E}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{AF7C2C09-52BD-48A2-A3FD-927DC76C4DAF} = {8F39A304-CFB1-4216-8B92-DD7BD05E1A96}
+		{253DB742-5966-4100-82FD-FF7EDC45D698} = {8F39A304-CFB1-4216-8B92-DD7BD05E1A96}
 		{A37346C3-B2BC-4682-B298-A2DA7BA3869F} = {AF7C2C09-52BD-48A2-A3FD-927DC76C4DAF}
 		{602AEE5C-B986-4FCE-8258-9F66E77936FB} = {0189334C-06B1-4EDA-A483-993236F30635}
 		{8D1BBA7D-7988-4B57-BCA5-2BBFBED2B92B} = {602AEE5C-B986-4FCE-8258-9F66E77936FB}
@@ -153,6 +170,7 @@ Global
 		{D34E3825-D747-492D-A44A-CAD7769920ED} = {02F19CF8-B617-48E8-B51D-793A4AE97EDE}
 		{C8CE9F35-BB12-41BF-978A-522F37EB74DD} = {02F19CF8-B617-48E8-B51D-793A4AE97EDE}
 		{2773F698-F610-4E21-87AF-54C3B1F74D71} = {02F19CF8-B617-48E8-B51D-793A4AE97EDE}
+		{50CBFAE7-7A2B-41CD-AD86-0F2226A8C78E} = {253DB742-5966-4100-82FD-FF7EDC45D698}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35
