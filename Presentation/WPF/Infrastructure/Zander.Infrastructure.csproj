@@ -89,6 +89,7 @@
     <Compile Include="Base\IEntityMapper.cs" />
     <Compile Include="Base\IView.cs" />
     <Compile Include="Base\IViewModel.cs" />
+    <Compile Include="Base\IWindow.cs" />
     <Compile Include="Base\MessagingViewModel.cs" />
     <Compile Include="Events\AboutEvent.cs" />
     <Compile Include="Events\CurrentServerQueryCountEvent.cs" />

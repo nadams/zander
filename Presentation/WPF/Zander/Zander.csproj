@@ -165,6 +165,10 @@
       <Project>{d34e3825-d747-492d-a44a-cad7769920ed}</Project>
       <Name>MenuBar</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Modules\Settings\Settings.csproj">
+      <Project>{6a0fc6cf-3ca2-450d-b243-d267137417d8}</Project>
+      <Name>Settings</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Modules\StatusBar\StatusBar.csproj">
       <Project>{c8ce9f35-bb12-41bf-978a-522f37eb74dd}</Project>
       <Name>StatusBar</Name>

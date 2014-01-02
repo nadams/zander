@@ -5,6 +5,7 @@ using Microsoft.Practices.Prism.Events;
 using Microsoft.Practices.Prism.UnityExtensions;
 using Microsoft.Practices.Unity;
 using Provider.Local.Disk;
+using Settings;
 using Zander.Domain;
 using Zander.Domain.Config;
 using Zander.Domain.Remote;
@@ -54,6 +55,7 @@ namespace Zander.Presentation.WPF.Zander.Core {
 			this.ModuleCatalog.RegisterModule<MenuBarModule>();
 			this.ModuleCatalog.RegisterModule<StatusBarModule>();
 			this.ModuleCatalog.RegisterModule<ServerBrowserModule>();
+            this.ModuleCatalog.RegisterModule<SettingsModule>();
 		}
 	}
 }
