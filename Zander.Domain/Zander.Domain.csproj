@@ -59,7 +59,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Config\IZanderConfigRepository.cs" />
+    <Compile Include="Config\IZanderConfigService.cs" />
     <Compile Include="Config\ZanderConfig.cs" />
+    <Compile Include="Config\ZanderConfigService.cs" />
     <Compile Include="Entities\BotSkill.cs" />
     <Compile Include="Entities\CompatFlags.cs" />
     <Compile Include="Entities\CompatFlags2.cs" />

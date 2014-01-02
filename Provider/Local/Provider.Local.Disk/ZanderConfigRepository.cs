@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Text;
 using Newtonsoft.Json;
 using Zander.Domain.Config;
 
@@ -11,22 +12,12 @@ namespace Provider.Local.Disk {
         }
 
         public ZanderConfig GetDefaultConfig() {
-            ZanderConfig config;
+            ZanderConfig config = null;
             var configPath = this.ConfigPath;
 
             if(File.Exists(configPath)) {
-                using(var stream = File.OpenRead(configPath)) {
-                    var reader = new JsonTextReader(new StreamReader(stream));
-                    var settings = new JsonSerializerSettings {
-                        ObjectCreationHandling = ObjectCreationHandling.Replace,
-                        DefaultValueHandling = DefaultValueHandling.Include
-                    };
-
-                    config = JsonSerializer.Create().Deserialize<ZanderConfig>(reader);
-                }
-            } else {
-                config = new ZanderConfig();
-                this.SaveConfig(config);
+                var json = File.ReadAllText(configPath, Encoding.UTF8);
+                config = JsonConvert.DeserializeObject<ZanderConfig>(json);
             }
 
             return config;
@@ -34,19 +25,12 @@ namespace Provider.Local.Disk {
 
         public void SaveConfig(ZanderConfig config) {
             var configPath = this.ConfigPath;
+            var settings = new JsonSerializerSettings {
+                Formatting = Formatting.Indented
+            };
 
-            if(!File.Exists(configPath)) {
-                File.Create(configPath);
-            }
-
-            using(var stream = File.Open(configPath, FileMode.Truncate)) {
-                var writer = new JsonTextWriter(new StreamWriter(stream));
-                var settings = new JsonSerializerSettings {
-                    Formatting = Formatting.Indented
-                };
-
-                JsonSerializer.Create(settings).Serialize(writer, config);
-            }
+            var json = JsonConvert.SerializeObject(config, settings);
+            File.WriteAllText(configPath, json, Encoding.UTF8);
         }
     }
 }

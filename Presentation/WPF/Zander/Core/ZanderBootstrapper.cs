@@ -4,7 +4,9 @@ using System.Windows.Threading;
 using Microsoft.Practices.Prism.Events;
 using Microsoft.Practices.Prism.UnityExtensions;
 using Microsoft.Practices.Unity;
+using Provider.Local.Disk;
 using Zander.Domain;
+using Zander.Domain.Config;
 using Zander.Domain.Remote;
 using Zander.Modules.MenuBar;
 using Zander.Modules.ServerBrowser;
@@ -41,6 +43,9 @@ namespace Zander.Presentation.WPF.Zander.Core {
             this.Container.RegisterType<IServerRepository, ServerRepository>();
             this.Container.RegisterType<IRemoteServerApiProvider, RemoteServerApiProvider>();
             this.Container.RegisterType<IServerBrowserService, ServerBrowserService>(new ContainerControlledLifetimeManager());
+
+            this.Container.RegisterType<IZanderConfigRepository, ZanderConfigRepository>();
+            this.Container.RegisterType<IZanderConfigService, ZanderConfigService>(new ContainerControlledLifetimeManager());
         }
 
 		protected override void ConfigureModuleCatalog() {

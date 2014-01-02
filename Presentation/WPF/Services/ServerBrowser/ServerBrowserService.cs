@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Zander.Domain;
+using Zander.Domain.Config;
 using Zander.Domain.Entities;
 using Zander.Domain.Remote;
 
@@ -18,6 +19,7 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
 
         private readonly IServerRepository serverRepository;
         private readonly IMasterServerRepository masterServerRepository;
+        private readonly IZanderConfigService configService;
         private readonly IDictionary<string, Server> servers;
 
         private DateTime lastQueriedTime;
@@ -40,10 +42,10 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
             }
         }
 
-        public ServerBrowserService(IServerRepository serverRepo, IMasterServerRepository masterRepo) {
+        public ServerBrowserService(IServerRepository serverRepo, IMasterServerRepository masterRepo, IZanderConfigService configService) {
             this.serverRepository = serverRepo;
             this.masterServerRepository = masterRepo;
-            this.lastQueriedTime = DateTime.MinValue;
+            this.configService = configService;
 
             this.servers = new ConcurrentDictionary<string, Server>();
         }
@@ -112,7 +114,7 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
         }
 
         private IMasterServer GetMasterServer() {
-            var hostname = "master.zandronum.com:15300";
+            var hostname = this.configService.GetDefaultConfig().ZandronumMasterAddress;
 
             var masterServer = this.masterServerRepository.Get(hostname, 5000);
 

@@ -145,6 +145,10 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Provider\Local\Provider.Local.Disk\Provider.Local.Disk.csproj">
+      <Project>{50cbfae7-7a2b-41cd-ad86-0f2226a8c78e}</Project>
+      <Name>Provider.Local.Disk</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Provider\Net\Provider.Net.Sockets\Provider.Net.Sockets.csproj">
       <Project>{a37346c3-b2bc-4682-b298-a2da7ba3869f}</Project>
       <Name>Provider.Net.Sockets</Name>
