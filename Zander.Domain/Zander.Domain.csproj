@@ -58,6 +58,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Config\IZanderConfigRepository.cs" />
+    <Compile Include="Config\IZanderConfigService.cs" />
+    <Compile Include="Config\ZanderConfig.cs" />
+    <Compile Include="Config\ZanderConfigService.cs" />
     <Compile Include="Entities\BotSkill.cs" />
     <Compile Include="Entities\CompatFlags.cs" />
     <Compile Include="Entities\CompatFlags2.cs" />
@@ -99,7 +103,6 @@
     <Compile Include="Remote\ServerRequest.cs" />
     <Compile Include="Remote\ServerResponse.cs" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
