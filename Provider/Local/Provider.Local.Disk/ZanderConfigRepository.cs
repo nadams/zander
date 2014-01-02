@@ -17,6 +17,11 @@ namespace Provider.Local.Disk {
             if(File.Exists(configPath)) {
                 using(var stream = File.OpenRead(configPath)) {
                     var reader = new JsonTextReader(new StreamReader(stream));
+                    var settings = new JsonSerializerSettings {
+                        ObjectCreationHandling = ObjectCreationHandling.Replace,
+                        DefaultValueHandling = DefaultValueHandling.Include
+                    };
+
                     config = JsonSerializer.Create().Deserialize<ZanderConfig>(reader);
                 }
             } else {
@@ -36,8 +41,11 @@ namespace Provider.Local.Disk {
 
             using(var stream = File.Open(configPath, FileMode.Truncate)) {
                 var writer = new JsonTextWriter(new StreamWriter(stream));
+                var settings = new JsonSerializerSettings {
+                    Formatting = Formatting.Indented
+                };
 
-                JsonSerializer.Create().Serialize(writer, config);
+                JsonSerializer.Create(settings).Serialize(writer, config);
             }
         }
     }
