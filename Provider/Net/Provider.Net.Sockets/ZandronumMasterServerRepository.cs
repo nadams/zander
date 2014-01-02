@@ -27,7 +27,7 @@ namespace Zander.Provider.Net.Sockets {
 			var masterServer = new MasterServer(address, servers);
 
 			var split = address.Split(':');
-			var endpoint = new IPEndPoint(IPAddress.Parse(split[0]), int.Parse(split[1]));
+            var endpoint = this.ResolveHostname(address);
 
 			var serverApi = this.serverApiProvider.GetInstance();
 			var response = this.ChallengeMaster(serverApi, endpoint, timeout);
@@ -37,6 +37,21 @@ namespace Zander.Provider.Net.Sockets {
 
 			return masterServer;
 		}
+
+        private IPEndPoint ResolveHostname(string address) {
+            var parts = address.Split(':');
+            IPAddress ipAddress;
+            if(!IPAddress.TryParse(parts[0], out ipAddress)) {
+                ipAddress = Dns.GetHostAddresses(parts[0]).First();
+            }
+
+            int port = 15300;
+            if(parts.Length > 1) {
+                port = int.Parse(parts[1]);
+            }
+
+            return new IPEndPoint(ipAddress, port);
+        }
 
 		private MasterChallengeResponse ChallengeMaster(IRemoteServerApi api, IPEndPoint endpoint, int timeout) {
 			var request = new MasterChallengeRequest(endpoint, timeout, this.MasterChallenge, this.ProtocolVersion);
