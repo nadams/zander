@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Practices.Unity;
 using Settings.General;
 
@@ -10,6 +11,13 @@ namespace Settings {
             this.Views = new List<ISettingView> {
                 container.Resolve<IGeneralView>()
             };
+
+            var firstView = this.Views.FirstOrDefault();
+
+            if(firstView != null) {
+                firstView.IsSelected = true;
+                firstView.IsExpanded = true;
+            }
         }
     }
 }
