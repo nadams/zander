@@ -12,6 +12,10 @@ namespace Settings {
                 container.Resolve<IGeneralView>()
             };
 
+            this.SelectAndExpandFirstView();
+        }
+
+        private void SelectAndExpandFirstView() {
             var firstView = this.Views.FirstOrDefault();
 
             if(firstView != null) {
