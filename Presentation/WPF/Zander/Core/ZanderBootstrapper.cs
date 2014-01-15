@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Windows;
 using System.Windows.Threading;
 using Microsoft.Practices.Prism.Events;
@@ -16,6 +17,7 @@ using Zander.Presentation.WPF.Zander.Extensions;
 using Zander.Presentation.WPF.Zander.Infrastructure.Events;
 using Zander.Presentation.WPF.Zander.Services.ServerBrowser;
 using Zander.Provider.Net.Sockets;
+using Zander.Provider.Net.Sockets.Fake;
 
 namespace Zander.Presentation.WPF.Zander.Core {
 	public class ZanderBootstrapper : UnityBootstrapper {
@@ -40,11 +42,16 @@ namespace Zander.Presentation.WPF.Zander.Core {
         protected override void ConfigureContainer() {
             base.ConfigureContainer();
 
-            this.Container.RegisterType<IMasterServerRepository, ZandronumMasterServerRepository>();
-            this.Container.RegisterType<IServerRepository, ServerRepository>();
-            this.Container.RegisterType<IRemoteServerApiProvider, RemoteServerApiProvider>();
-            this.Container.RegisterType<IServerBrowserService, ServerBrowserService>(new ContainerControlledLifetimeManager());
+            if(Convert.ToBoolean(ConfigurationManager.AppSettings["useFakeServers"])) {
+                this.Container.RegisterType<IServerRepository, FakeServerRepository>();
+                this.Container.RegisterType<IMasterServerRepository, FakeMasterServerRepository>();
+            } else {
+                this.Container.RegisterType<IMasterServerRepository, ZandronumMasterServerRepository>();
+                this.Container.RegisterType<IServerRepository, ServerRepository>();
+            }
 
+            this.Container.RegisterType<IServerBrowserService, ServerBrowserService>(new ContainerControlledLifetimeManager());
+            this.Container.RegisterType<IRemoteServerApiProvider, RemoteServerApiProvider>();
             this.Container.RegisterType<IZanderConfigRepository, ZanderConfigRepository>();
             this.Container.RegisterType<IZanderConfigService, ZanderConfigService>(new ContainerControlledLifetimeManager());
         }

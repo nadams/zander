@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
+
 namespace Settings {
-    public interface ISettingView {
+    public interface ISettingView : INotifyPropertyChanged {
         string SectionName { get; }
         IEnumerable<ISettingView> ChildViews { get; }
         bool IsSelected { get; set; }

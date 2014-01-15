@@ -4,7 +4,7 @@ using System.Linq;
 using System.Windows.Controls;
 
 namespace Settings.General {
-    public partial class GeneralView : UserControl, IGeneralView, INotifyPropertyChanged {
+    public partial class GeneralView : UserControl, IGeneralView {
         public event PropertyChangedEventHandler PropertyChanged;
 
         public IGeneralViewModel ViewModel {
@@ -45,13 +45,8 @@ namespace Settings.General {
         }
 
         public IEnumerable<ISettingView> ChildViews {
-            get { 
-                return new List<ISettingView> { 
-                    new GeneralView(new GeneralViewModel()),
-                    new GeneralView(new GeneralViewModel()),
-                    new GeneralView(new GeneralViewModel()),
-                    new GeneralView(new GeneralViewModel()),
-                }; 
+            get {
+                return Enumerable.Empty<ISettingView>();
             }
         }
 

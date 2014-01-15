@@ -79,7 +79,7 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
                         this.TotalServersUpdated(this, args);
                     }
 
-                    Parallel.ForEach(masterServer.Servers, (server, status) => {
+                    Parallel.ForEach(masterServer.Servers, new ParallelOptions { MaxDegreeOfParallelism = 4 }, (server, status) => {
                         var address = this.GetAddress(server.Address, server.Port);
 
                         var entity = this.GetServer(address);
