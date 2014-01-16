@@ -1,5 +1,5 @@
 ﻿using Zander.Presentation.WPF.Zander.Infrastructure.Base;
 
-namespace Settings {
+namespace Zander.Modules.Settings {
     public interface ISettingsWindow : IWindow<ISettingsViewModel> { }
 }

@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace Settings {
+namespace Zander.Modules.Settings {
     public partial class SettingsWindow : Window, ISettingsWindow {
         public ISettingsViewModel ViewModel {
             get {

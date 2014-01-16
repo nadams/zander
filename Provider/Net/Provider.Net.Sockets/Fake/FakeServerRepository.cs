@@ -24,7 +24,7 @@ namespace Zander.Provider.Net.Sockets.Fake {
             var server = new Server(endpoint);
             this.PopluateServerWithFakeData(server);
             
-            Thread.Sleep(random.Next(250, timeout));
+            Thread.Sleep(random.Next(50, timeout));
 
             return server;
         }

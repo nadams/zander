@@ -7,7 +7,7 @@
     <ProjectGuid>{6A0FC6CF-3CA2-450D-B243-D267137417D8}</ProjectGuid>
     <OutputType>library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Settings</RootNamespace>
+    <RootNamespace>Zander.Modules.Settings</RootNamespace>
     <AssemblyName>Settings</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -71,12 +71,6 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="General\GeneralView.xaml.cs">
-      <DependentUpon>GeneralView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="General\GeneralViewModel.cs" />
-    <Compile Include="General\IGeneralView.cs" />
-    <Compile Include="General\IGeneralViewModel.cs" />
     <Compile Include="ISettingsWindow.cs" />
     <Compile Include="ISettingsViewModel.cs" />
     <Compile Include="ISettingView.cs" />
@@ -113,10 +107,6 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="General\GeneralView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="SettingsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
