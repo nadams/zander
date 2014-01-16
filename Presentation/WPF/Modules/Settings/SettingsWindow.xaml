@@ -17,7 +17,7 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <ScrollViewer  Grid.Column="0">
+            <ScrollViewer Grid.Column="0">
                 <TreeView ItemsSource="{Binding Path=Views}">
                     <TreeView.ItemTemplate>
                         <HierarchicalDataTemplate ItemsSource="{Binding Path=ChildViews}">
@@ -44,7 +44,7 @@
                 VerticalAlignment="Stretch" 
                 Width="5" 
                 ResizeBehavior="PreviousAndNext" />
-            <StackPanel Grid.Column="2" />
+            <ContentControl Grid.Column="2" />
         </Grid>
     </DockPanel>
 </Window>

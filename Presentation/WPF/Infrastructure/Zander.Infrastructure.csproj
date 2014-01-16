@@ -92,6 +92,7 @@
     <Compile Include="Base\IWindow.cs" />
     <Compile Include="Base\MessagingViewModel.cs" />
     <Compile Include="Events\AboutEvent.cs" />
+    <Compile Include="Events\CloseWindowEventHandler.cs" />
     <Compile Include="Events\CurrentServerQueryCountEvent.cs" />
     <Compile Include="Events\DoneQueryingServersEvent.cs" />
     <Compile Include="Events\EditCustomServersEvent.cs" />

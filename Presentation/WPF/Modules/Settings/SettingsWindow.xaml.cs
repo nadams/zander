@@ -16,6 +16,7 @@ namespace Zander.Modules.Settings {
             InitializeComponent();
 
             this.ViewModel = viewModel;
+            this.ViewModel.CloseWindowEvent += sender => this.Close();
         }
     }
 }
