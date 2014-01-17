@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Practices.Prism.Commands;
 using Microsoft.Practices.Unity;
+using Zander.Modules.Settings.General;
 using Zander.Presentation.WPF.Zander.Infrastructure.Base;
 using Zander.Presentation.WPF.Zander.Infrastructure.Events;
 
@@ -31,7 +32,9 @@ namespace Zander.Modules.Settings {
         }
 
         public SettingsViewModel(IUnityContainer container) {
-            this.Views = new List<ISettingView>();
+            this.Views = new List<ISettingView> {
+                new GeneralView(new GeneralViewModel())
+            };
         }
 
         private void HandleCloseWindowEvent() {
