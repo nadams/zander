@@ -17,7 +17,6 @@ namespace Zander.Presentation.WPF.Zander.Extensions {
 			};
 
 			catalog.AddModule(module);
-
 		}
 	}
 }

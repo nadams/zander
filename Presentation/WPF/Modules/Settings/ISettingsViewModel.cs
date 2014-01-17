@@ -8,6 +8,7 @@ namespace Zander.Modules.Settings {
         event CloseWindowEventHandler CloseWindowEvent;
 
         IEnumerable<ISettingView> Views { get; set; }
+        ISettingView CurrentView { get; set; }
         DelegateCommand OkCommand { get; }
         DelegateCommand CancelCommand { get; }
     }

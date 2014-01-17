@@ -18,7 +18,7 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <ScrollViewer Grid.Column="0">
-                <TreeView ItemsSource="{Binding Path=Views}">
+                <TreeView ItemsSource="{Binding Path=Views}" settings:TreeViewSelectedItemBehavior.TreeViewSelectedItem="{Binding Path=CurrentView}">
                     <TreeView.ItemTemplate>
                         <HierarchicalDataTemplate ItemsSource="{Binding Path=ChildViews}">
                             <TreeViewItem Header="{Binding Path=SectionName}" />
