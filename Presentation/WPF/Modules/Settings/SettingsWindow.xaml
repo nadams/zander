@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 		xmlns:prism="http://www.codeplex.com/prism"
         xmlns:settings="clr-namespace:Zander.Modules.Settings"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         Title="Settings" Height="444" Width="652">
     <Window.Resources>
         <settings:SettingViewConverter x:Key="SettingViewConverter" />
@@ -19,10 +20,17 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <ScrollViewer Grid.Column="0">
-                <TreeView ItemsSource="{Binding Path=Views}" settings:TreeViewSelectedItemBehavior.TreeViewSelectedItem="{Binding Path=CurrentView, Mode=OneWayToSource}">
+                <TreeView ItemsSource="{Binding Path=Views}" x:Name="SettingsList">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="SelectedItemChanged">
+                            <i:InvokeCommandAction 
+                                Command="{Binding Path=ChangeSelectedItem}" 
+                                CommandParameter="{Binding Path=SelectedItem, RelativeSource={RelativeSource AncestorType=TreeView}}" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                     <TreeView.ItemTemplate>
                         <HierarchicalDataTemplate ItemsSource="{Binding Path=ChildViews}">
-                            <TreeViewItem Header="{Binding Path=SectionName}" />
+                            <TextBlock Text="{Binding Path=SectionName}" />
                         </HierarchicalDataTemplate>
                     </TreeView.ItemTemplate>
                     <TreeView.ItemContainerStyle>

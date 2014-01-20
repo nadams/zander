@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Windows.Controls;
 
 namespace Zander.Modules.Settings.General {
@@ -19,7 +18,15 @@ namespace Zander.Modules.Settings.General {
         }
 
         public IEnumerable<ISettingView> ChildViews {
-            get { return Enumerable.Empty<ISettingView>(); }
+            get { 
+                return new List<ISettingView> { 
+                    new GeneralView(new GeneralViewModel()),
+                    new GeneralView(new GeneralViewModel()),
+                    new GeneralView(new GeneralViewModel()),
+                    new GeneralView(new GeneralViewModel()),
+                    new GeneralView(new GeneralViewModel()),
+                }; 
+            }
         }
 
         public bool IsSelected { get; set; }
