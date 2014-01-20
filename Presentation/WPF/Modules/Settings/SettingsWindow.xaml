@@ -45,7 +45,7 @@
                 VerticalAlignment="Stretch" 
                 Width="5" 
                 ResizeBehavior="PreviousAndNext" />
-            <ContentControl Grid.Column="2" prism:RegionManager.RegionName="SettingsContent" />
+            <ContentControl Grid.Column="2" prism:RegionManager.RegionName="{x:Static settings:SettingsRegions.SettingsContent}" />
         </Grid>
     </DockPanel>
 </Window>
