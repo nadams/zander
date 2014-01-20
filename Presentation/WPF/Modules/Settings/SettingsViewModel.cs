@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Controls;
 using Microsoft.Practices.Prism.Commands;
-using Microsoft.Practices.Prism.Regions;
+using Zander.Domain.Config;
 using Zander.Presentation.WPF.Zander.Infrastructure.Base;
 using Zander.Presentation.WPF.Zander.Infrastructure.Events;
-using System.Linq;
-using Zander.Domain.Config;
 
 namespace Zander.Modules.Settings {
     public class SettingsViewModel : BaseViewModel, ISettingsViewModel {
