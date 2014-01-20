@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Controls;
+using Microsoft.Practices.Prism.Regions;
 
 namespace Zander.Modules.Settings.Appearance {
     public partial class AppearanceView : UserControl, IAppearanceView {

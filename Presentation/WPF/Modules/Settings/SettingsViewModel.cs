@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Practices.Prism.Commands;
 using Microsoft.Practices.Prism.Regions;
 using Zander.Presentation.WPF.Zander.Infrastructure.Base;
@@ -25,12 +26,7 @@ namespace Zander.Modules.Settings {
             set {
                 this.currentView = value;
                 if(value != null) {
-                    var region = this.regionManager.Regions[SettingsRegions.SettingsContent];
-                    if(!region.Views.Contains(value)) {
-                        region.Add(value);
-                    }
-
-                    region.Activate(value);
+                    this.regionManager.Regions[SettingsRegions.SettingsContent].Activate(value);
                 }
             }
         }
