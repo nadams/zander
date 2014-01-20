@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Zander.Domain.Config {
+﻿namespace Zander.Domain.Config {
     public interface IZanderConfigService {
         ZanderConfig GetDefaultConfig();
+        ZanderConfig CloneConfig(ZanderConfig config);
         void SaveConfig(ZanderConfig config);
     }
 }

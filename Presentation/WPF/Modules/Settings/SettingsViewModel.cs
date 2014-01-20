@@ -6,11 +6,13 @@ using Microsoft.Practices.Prism.Regions;
 using Zander.Presentation.WPF.Zander.Infrastructure.Base;
 using Zander.Presentation.WPF.Zander.Infrastructure.Events;
 using System.Linq;
+using Zander.Domain.Config;
 
 namespace Zander.Modules.Settings {
     public class SettingsViewModel : BaseViewModel, ISettingsViewModel {
         public event CloseWindowEventHandler CloseWindowEvent;
-        private readonly IRegionManager regionManager;
+
+        private readonly IZanderConfigService configService;
 
         private ISettingViewCollection views;
         public IEnumerable<ISettingView> Views {
@@ -45,9 +47,9 @@ namespace Zander.Modules.Settings {
             }
         }
 
-        public SettingsViewModel(IRegionManager regionManager, ISettingViewCollection views) {
-            this.regionManager = regionManager;
+        public SettingsViewModel(ISettingViewCollection views, IZanderConfigService configService) {
             this.views = views;
+            this.configService = configService;
 
             var firstView = this.Views.FirstOrDefault();
             if(firstView != null) {

@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-namespace Zander.Domain.Config {
+﻿namespace Zander.Domain.Config {
     public class ZanderConfig {
         public const string FileName = "zander.config";
 

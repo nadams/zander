@@ -27,7 +27,6 @@ namespace Zander.Modules.Settings.Appearance {
             get { return Enumerable.Empty<ISettingView>(); }
         }
 
-
         public UserControl View {
             get { return this; }
         }
