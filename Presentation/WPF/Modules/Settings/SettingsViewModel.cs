@@ -19,7 +19,6 @@ namespace Zander.Modules.Settings {
             set {
                 this.currentView = value;
                 this.RaisePropertyChanged(() => this.CurrentView);
-                System.Console.WriteLine("View Changed to: {0}", value.SectionName);
             }
         }
 
