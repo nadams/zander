@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Practices.Prism.Commands;
 using Microsoft.Practices.Prism.Regions;
-using Zander.Modules.Settings.General;
 using Zander.Presentation.WPF.Zander.Infrastructure.Base;
 using Zander.Presentation.WPF.Zander.Infrastructure.Events;
 
@@ -10,7 +9,12 @@ namespace Zander.Modules.Settings {
         public event CloseWindowEventHandler CloseWindowEvent;
         private readonly IRegionManager regionManager;
 
-        public IEnumerable<ISettingView> Views { get; set; }
+        private ISettingViewCollection views;
+        public IEnumerable<ISettingView> Views {
+            get {
+                return this.views.Views;
+            }
+        }
 
         private ISettingView currentView;
         public ISettingView CurrentView {
@@ -20,9 +24,13 @@ namespace Zander.Modules.Settings {
 
             set {
                 this.currentView = value;
-                this.RaisePropertyChanged(() => this.CurrentView);
                 if(value != null) {
-                    this.regionManager.Regions[SettingsRegions.SettingsContent].Activate(value);
+                    var region = this.regionManager.Regions[SettingsRegions.SettingsContent];
+                    if(!region.Views.Contains(value)) {
+                        region.Add(value);
+                    }
+
+                    region.Activate(value);
                 }
             }
         }
@@ -41,14 +49,9 @@ namespace Zander.Modules.Settings {
             }
         }
 
-        public SettingsViewModel(IRegionManager regionManager) {
+        public SettingsViewModel(IRegionManager regionManager, ISettingViewCollection views) {
             this.regionManager = regionManager;
-            this.Views = new List<ISettingView> {
-                new GeneralView(new GeneralViewModel()),
-                new GeneralView(new GeneralViewModel()),
-                new GeneralView(new GeneralViewModel()),
-                new GeneralView(new GeneralViewModel()),
-            };
+            this.views = views;
         }
 
         private void HandleCloseWindowEvent() {

@@ -7,9 +7,11 @@ namespace Zander.Modules.Settings {
     public interface ISettingsViewModel : IViewModel {
         event CloseWindowEventHandler CloseWindowEvent;
 
-        IEnumerable<ISettingView> Views { get; set; }
+        IEnumerable<ISettingView> Views { get; }
         ISettingView CurrentView { get; set; }
+
         DelegateCommand OkCommand { get; }
         DelegateCommand CancelCommand { get; }
+        DelegateCommand<ISettingView> ChangeSelectedItem { get; }
     }
 }
