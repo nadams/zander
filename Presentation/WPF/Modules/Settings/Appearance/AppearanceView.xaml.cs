@@ -26,5 +26,10 @@ namespace Zander.Modules.Settings.Appearance {
         public IEnumerable<ISettingView> ChildViews {
             get { return Enumerable.Empty<ISettingView>(); }
         }
+
+
+        public UserControl View {
+            get { return this; }
+        }
     }
 }

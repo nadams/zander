@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Windows.Controls;
 
@@ -29,6 +28,10 @@ namespace Zander.Modules.Settings.General {
             InitializeComponent();
 
             this.ViewModel = viewModel;
+        }
+
+        public UserControl View {
+            get { return this; }
         }
     }
 }
