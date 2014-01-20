@@ -25,8 +25,6 @@ namespace Zander.Modules.Settings.General {
         public bool IsSelected { get; set; }
         public bool IsExpanded { get; set; }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
         public GeneralView(IGeneralViewModel viewModel) {
             InitializeComponent();
 

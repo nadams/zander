@@ -12,15 +12,13 @@ namespace Zander.Modules.Settings {
 
         public override void Initialize() {
             this.container.RegisterType<ISettingViewCollection, SettingViewCollection>();
-            this.container.RegisterType<ISettingsViewModel, SettingsViewModel>();
-            this.container.RegisterType<ISettingsWindow, SettingsWindow>();
-
             this.container.RegisterType<IGeneralViewModel, GeneralViewModel>();
             this.container.RegisterType<IGeneralView, GeneralView>();
             this.container.RegisterType<IAppearanceViewModel, AppearanceViewModel>();
             this.container.RegisterType<IAppearanceView, AppearanceView>();
 
-            this.regionManager.Regions.Add(SettingsRegions.SettingsContent, new SingleActiveRegion());
+            this.container.RegisterType<ISettingsViewModel, SettingsViewModel>();
+            this.container.RegisterType<ISettingsWindow, SettingsWindow>();
 
             var eventAggregator = this.container.Resolve<IEventAggregator>();
             eventAggregator.GetEvent<SettingsEvent>().Subscribe(empty => this.container.Resolve<ISettingsWindow>().ShowDialog());

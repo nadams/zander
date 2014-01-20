@@ -102,7 +102,6 @@
     </Compile>
     <Compile Include="Regions.cs" />
     <Compile Include="SettingsModule.cs" />
-    <Compile Include="SettingsRegions.cs" />
     <Compile Include="SettingsViewModel.cs" />
     <Compile Include="SettingsWindow.xaml.cs">
       <DependentUpon>SettingsWindow.xaml</DependentUpon>

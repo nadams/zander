@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Windows.Controls;
 using Microsoft.Practices.Prism.Commands;
 using Zander.Presentation.WPF.Zander.Infrastructure.Base;
 using Zander.Presentation.WPF.Zander.Infrastructure.Events;
@@ -8,7 +9,7 @@ namespace Zander.Modules.Settings {
         event CloseWindowEventHandler CloseWindowEvent;
 
         IEnumerable<ISettingView> Views { get; }
-        ISettingView CurrentView { get; set; }
+        UserControl CurrentView { get; set; }
 
         DelegateCommand OkCommand { get; }
         DelegateCommand CancelCommand { get; }

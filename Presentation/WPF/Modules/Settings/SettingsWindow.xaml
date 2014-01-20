@@ -53,7 +53,7 @@
                 VerticalAlignment="Stretch" 
                 Width="5" 
                 ResizeBehavior="PreviousAndNext" />
-            <ContentControl Grid.Column="2" prism:RegionManager.RegionName="{x:Static settings:SettingsRegions.SettingsContent}" />
+            <ContentControl Grid.Column="2" Content="{Binding Path=CurrentView}" />
         </Grid>
     </DockPanel>
 </Window>

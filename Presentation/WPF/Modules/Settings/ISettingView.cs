@@ -2,7 +2,7 @@
 using System.ComponentModel;
 
 namespace Zander.Modules.Settings {
-    public interface ISettingView : INotifyPropertyChanged {
+    public interface ISettingView {
         string SectionName { get; }
         IEnumerable<ISettingView> ChildViews { get; }
     }

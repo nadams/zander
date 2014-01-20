@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows.Controls;
 using Microsoft.Practices.Prism.Commands;
 using Microsoft.Practices.Prism.Regions;
 using Zander.Presentation.WPF.Zander.Infrastructure.Base;
 using Zander.Presentation.WPF.Zander.Infrastructure.Events;
+using System.Linq;
 
 namespace Zander.Modules.Settings {
     public class SettingsViewModel : BaseViewModel, ISettingsViewModel {
@@ -17,17 +19,15 @@ namespace Zander.Modules.Settings {
             }
         }
 
-        private ISettingView currentView;
-        public ISettingView CurrentView {
+        private UserControl currentView;
+        public UserControl CurrentView {
             get {
                 return this.currentView;
             }
 
             set {
                 this.currentView = value;
-                if(value != null) {
-                    this.regionManager.Regions[SettingsRegions.SettingsContent].Activate(value);
-                }
+                this.RaisePropertyChanged(() => this.CurrentView);
             }
         }
 
@@ -41,13 +41,18 @@ namespace Zander.Modules.Settings {
 
         public DelegateCommand<ISettingView> ChangeSelectedItem {
             get {
-                return new DelegateCommand<ISettingView>(view => this.CurrentView = view);
+                return new DelegateCommand<ISettingView>(view => this.CurrentView = (UserControl)view);
             }
         }
 
         public SettingsViewModel(IRegionManager regionManager, ISettingViewCollection views) {
             this.regionManager = regionManager;
             this.views = views;
+
+            var firstView = this.Views.FirstOrDefault();
+            if(firstView != null) {
+                this.CurrentView = (UserControl)firstView;
+            }
         }
 
         private void HandleCloseWindowEvent() {
