@@ -20,6 +20,8 @@ namespace Zander.Modules.Settings {
             this.container.RegisterType<ISettingsViewModel, SettingsViewModel>();
             this.container.RegisterType<ISettingsWindow, SettingsWindow>();
 
+            this.container.RegisterInstance<ZanderConfigProvider>(new ZanderConfigProvider());
+
             var eventAggregator = this.container.Resolve<IEventAggregator>();
             eventAggregator.GetEvent<SettingsEvent>().Subscribe(empty => this.container.Resolve<ISettingsWindow>().ShowDialog());
         }

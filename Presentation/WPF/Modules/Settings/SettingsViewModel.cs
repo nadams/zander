@@ -11,6 +11,7 @@ namespace Zander.Modules.Settings {
         public event CloseWindowEventHandler CloseWindowEvent;
 
         private readonly IZanderConfigService configService;
+        private readonly ZanderConfigProvider configProvider;
 
         private ISettingViewCollection views;
         public IEnumerable<ISettingView> Views {
@@ -32,7 +33,12 @@ namespace Zander.Modules.Settings {
         }
 
         public DelegateCommand OkCommand {
-            get { return new DelegateCommand(this.HandleCloseWindowEvent); }
+            get {
+                return new DelegateCommand(() => {
+                    this.configService.SaveConfig(this.configProvider.Config);
+                    this.HandleCloseWindowEvent();
+                });
+            }
         }
 
         public DelegateCommand CancelCommand {
@@ -45,9 +51,11 @@ namespace Zander.Modules.Settings {
             }
         }
 
-        public SettingsViewModel(ISettingViewCollection views, IZanderConfigService configService) {
+        public SettingsViewModel(ISettingViewCollection views, IZanderConfigService configService, ZanderConfigProvider configProvider) {
             this.views = views;
             this.configService = configService;
+            this.configProvider = configProvider;
+            configProvider.Config = configService.CloneConfig(configService.GetDefaultConfig());
 
             var firstView = this.Views.FirstOrDefault();
             if(firstView != null) {

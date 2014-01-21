@@ -108,6 +108,7 @@
     </Compile>
     <Compile Include="SettingViewCollection.cs" />
     <Compile Include="SettingViewConverter.cs" />
+    <Compile Include="ZanderConfigProvider.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
