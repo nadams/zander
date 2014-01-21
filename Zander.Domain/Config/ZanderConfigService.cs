@@ -2,6 +2,8 @@
 
 namespace Zander.Domain.Config {
     public class ZanderConfigService : IZanderConfigService {
+        public event ConfigUpdatedEventHandler ConfigUpdated;
+
         private readonly IZanderConfigRepository repository;
         private readonly object lockObject;
 
@@ -30,8 +32,13 @@ namespace Zander.Domain.Config {
 
         public void SaveConfig(ZanderConfig config) {
             this.repository.SaveConfig(config);
+            
             lock(this.lockObject) {
                 this.configInstance = config;
+            }
+
+            if(this.ConfigUpdated != null) {
+                this.ConfigUpdated(this, this.configInstance);
             }
         }
 

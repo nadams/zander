@@ -61,6 +61,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Config\ConfigUpdatedEventHandler.cs" />
     <Compile Include="Config\IZanderConfigRepository.cs" />
     <Compile Include="Config\IZanderConfigService.cs" />
     <Compile Include="Config\ZanderConfig.cs" />
