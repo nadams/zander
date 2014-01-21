@@ -1,10 +1,11 @@
 ﻿using Zander.Domain.Config;
+
 namespace Zander.Modules.Settings.General {
     public class GeneralViewModel : IGeneralViewModel {
-        private readonly IZanderConfigService configService;
+        private readonly ZanderConfigProvider configProvider;
 
-        public GeneralViewModel(IZanderConfigService configService) {
-            this.configService = configService;
+        public GeneralViewModel(ZanderConfigProvider configProvider) {
+            this.configProvider = configProvider;
         }
     }
 }
