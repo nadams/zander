@@ -1,5 +1,8 @@
 ﻿using Zander.Presentation.WPF.Zander.Infrastructure.Base;
 
 namespace Zander.Modules.Settings.Engines.Zandronum {
-    public interface IZandronumEngineViewModel : IViewModel { }
+    public interface IZandronumEngineViewModel : IViewModel {
+        string MasterAddressLabel { get; set; }
+        string MasterAddress { get; set; }
+    }
 }
