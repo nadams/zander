@@ -33,5 +33,9 @@ namespace Zander.Modules.Settings.General {
         public UserControl View {
             get { return this; }
         }
+
+        public bool IsSectionGroup {
+            get { return false; }
+        }
     }
 }

@@ -2,25 +2,25 @@
 using System.Linq;
 using System.Windows.Controls;
 
-namespace Zander.Modules.Settings.Appearance {
-    public partial class AppearanceView : UserControl, IAppearanceView {
-        public IAppearanceViewModel ViewModel {
+namespace Zander.Modules.Settings.Engines.Zandronum {
+    public partial class ZandronumEngineView : UserControl, IZandronumEngineView {
+        public IZandronumEngineViewModel ViewModel {
             get {
-                return (IAppearanceViewModel)this.DataContext;
+                return (IZandronumEngineViewModel)this.DataContext;
             }
             set {
                 this.DataContext = value;
             }
         }
 
-        public AppearanceView(IAppearanceViewModel viewModel) {
+        public ZandronumEngineView(IZandronumEngineViewModel viewModel) {
             InitializeComponent();
 
             this.ViewModel = viewModel;
         }
 
         public string SectionName {
-            get { return "Appearance"; }
+            get { return "Zandronum"; }
         }
 
         public IEnumerable<ISettingView> ChildViews {

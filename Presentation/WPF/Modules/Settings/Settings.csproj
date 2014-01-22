@@ -77,6 +77,15 @@
     <Compile Include="Appearance\AppearanceViewModel.cs" />
     <Compile Include="Appearance\IAppearanceView.cs" />
     <Compile Include="Appearance\IAppearanceViewModel.cs" />
+    <Compile Include="Engines\EnginesPlaceholder.xaml.cs">
+      <DependentUpon>EnginesPlaceholder.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Engines\Zandronum\IZandronumEngineView.cs" />
+    <Compile Include="Engines\Zandronum\IZandronumEngineViewModel.cs" />
+    <Compile Include="Engines\Zandronum\ZandronumEngineView.xaml.cs">
+      <DependentUpon>ZandronumEngineView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Engines\Zandronum\ZandronumEngineViewModel.cs" />
     <Compile Include="General\GeneralView.xaml.cs">
       <DependentUpon>GeneralView.xaml</DependentUpon>
     </Compile>
@@ -123,6 +132,14 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Appearance\AppearanceView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Engines\EnginesPlaceholder.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Engines\Zandronum\ZandronumEngineView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -2,6 +2,7 @@
 using Microsoft.Practices.Prism.Regions;
 using Microsoft.Practices.Unity;
 using Zander.Modules.Settings.Appearance;
+using Zander.Modules.Settings.Engines.Zandronum;
 using Zander.Modules.Settings.General;
 using Zander.Presentation.WPF.Zander.Infrastructure.Base;
 using Zander.Presentation.WPF.Zander.Infrastructure.Events;
@@ -19,6 +20,9 @@ namespace Zander.Modules.Settings {
 
             this.container.RegisterType<ISettingsViewModel, SettingsViewModel>();
             this.container.RegisterType<ISettingsWindow, SettingsWindow>();
+
+            this.container.RegisterType<IZandronumEngineViewModel, ZandronumEngineViewModel>();
+            this.container.RegisterType<IZandronumEngineView, ZandronumEngineView>();
 
             this.container.RegisterInstance<ZanderConfigProvider>(new ZanderConfigProvider());
 
