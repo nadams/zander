@@ -14,7 +14,7 @@ namespace Zander.Modules.Settings.General {
         }
 
         public string SectionName {
-            get { return "General"; }
+            get { return Strings.General; }
         }
 
         public IEnumerable<ISettingView> ChildViews {

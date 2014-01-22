@@ -20,7 +20,7 @@ namespace Zander.Modules.Settings.Appearance {
         }
 
         public string SectionName {
-            get { return "Appearance"; }
+            get { return Strings.Appearance; }
         }
 
         public IEnumerable<ISettingView> ChildViews {

@@ -8,7 +8,7 @@ namespace Zander.Modules.Settings.Engines {
         private readonly IUnityContainer container;
 
         public string SectionName {
-            get { return "Engines"; }
+            get { return Strings.Engines; }
         }
 
         public bool IsSectionGroup {

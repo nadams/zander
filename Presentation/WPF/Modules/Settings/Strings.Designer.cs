@@ -61,11 +61,56 @@ namespace Zander.Modules.Settings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Appearance.
+        /// </summary>
+        public static string Appearance {
+            get {
+                return ResourceManager.GetString("Appearance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Engines.
+        /// </summary>
+        public static string Engines {
+            get {
+                return ResourceManager.GetString("Engines", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to General.
+        /// </summary>
+        public static string General {
+            get {
+                return ResourceManager.GetString("General", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Master Server Address.
         /// </summary>
         public static string MasterServerLabel {
             get {
                 return ResourceManager.GetString("MasterServerLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Settings.
+        /// </summary>
+        public static string Settings {
+            get {
+                return ResourceManager.GetString("Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Zandronum.
+        /// </summary>
+        public static string ZandronumEngine {
+            get {
+                return ResourceManager.GetString("ZandronumEngine", resourceCulture);
             }
         }
     }

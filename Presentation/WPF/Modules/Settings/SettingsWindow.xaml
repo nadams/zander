@@ -4,7 +4,7 @@
 		xmlns:prism="http://www.codeplex.com/prism"
         xmlns:settings="clr-namespace:Zander.Modules.Settings"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
-        Title="Settings" Height="444" Width="652">
+        Title="{x:Static settings:Strings.Settings}" Height="444" Width="652">
     <Window.Resources>
         <settings:SettingViewConverter x:Key="SettingViewConverter" />
     </Window.Resources>

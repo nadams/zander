@@ -20,7 +20,7 @@ namespace Zander.Modules.Settings.Engines.Zandronum {
         }
 
         public string SectionName {
-            get { return "Zandronum"; }
+            get { return Strings.ZandronumEngine; }
         }
 
         public IEnumerable<ISettingView> ChildViews {
