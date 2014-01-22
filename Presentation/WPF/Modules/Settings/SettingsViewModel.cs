@@ -47,7 +47,18 @@ namespace Zander.Modules.Settings {
 
         public DelegateCommand<ISettingView> ChangeSelectedItem {
             get {
-                return new DelegateCommand<ISettingView>(view => this.CurrentView = view.View);
+                return new DelegateCommand<ISettingView>(view => {
+                    var userControl = view.View;
+
+                    if(view.IsSectionGroup) {
+                        var childView = view.ChildViews.FirstOrDefault();
+                        if(childView != null) {
+                            userControl = childView.View;
+                        }
+                    }
+
+                    this.CurrentView = userControl;
+                });
             }
         }
 
