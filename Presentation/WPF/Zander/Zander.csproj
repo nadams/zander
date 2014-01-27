@@ -107,6 +107,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\WindowClosingEventHandler.cs" />
     <Compile Include="Core\ZanderBootstrapper.cs" />
     <Compile Include="Extensions\ModuleCatalogExtensions.cs" />
     <Compile Include="Shell.xaml.cs">

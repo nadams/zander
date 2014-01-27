@@ -28,7 +28,13 @@ namespace Zander.Presentation.WPF.Zander.Core {
 		protected override void InitializeShell() {
 			base.InitializeShell();
 
+            var config = this.Container.Resolve<IZanderConfigService>().GetDefaultConfig();
+
 			App.Current.MainWindow = (Window)this.Shell;
+            App.Current.MainWindow.Width = config.WindowWidth;
+            App.Current.MainWindow.Height = config.WindowHeight;
+
+            App.Current.MainWindow.Closing += this.Container.Resolve<WindowClosingEventHandler>().OnWindowClosing;
 
 			this.Container.Resolve<IEventAggregator>().GetEvent<QuitEvent>().Subscribe(empty => App.Current.MainWindow.Close());
 
@@ -37,6 +43,7 @@ namespace Zander.Presentation.WPF.Zander.Core {
 			Action queryAllServers = () => this.Container.Resolve<IEventAggregator>().GetEvent<QueryAllServersEvent>().Publish(Empty.Value);
 
 			Dispatcher.CurrentDispatcher.BeginInvoke(queryAllServers, DispatcherPriority.ContextIdle);
+
 		}
 
         protected override void ConfigureContainer() {
