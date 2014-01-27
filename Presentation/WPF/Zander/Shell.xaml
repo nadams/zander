@@ -2,8 +2,9 @@
 		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 		xmlns:prism="http://www.codeplex.com/prism"
+        xmlns:local="clr-namespace:Zander.Presentation.WPF.Zander"
 		xmlns:infrastructure="clr-namespace:Zander.Presentation.WPF.Zander.Infrastructure;assembly=Zander.Infrastructure"
-		Title="MainWindow" Height="300" Width="300">
+		Title="{x:Static local:Strings.Zander}">
 	<DockPanel LastChildFill="True">
 		<ContentControl prism:RegionManager.RegionName="{x:Static infrastructure:Regions.MenuBar}" DockPanel.Dock="Top" />
 		<ContentControl prism:RegionManager.RegionName="{x:Static infrastructure:Regions.StatusBar}" DockPanel.Dock="Bottom" />
