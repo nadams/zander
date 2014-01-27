@@ -27,14 +27,10 @@ namespace Zander.Presentation.WPF.Zander.Core {
 
 		protected override void InitializeShell() {
 			base.InitializeShell();
-
-            var config = this.Container.Resolve<IZanderConfigService>().GetDefaultConfig();
-
 			App.Current.MainWindow = (Window)this.Shell;
-            App.Current.MainWindow.Width = config.WindowWidth;
-            App.Current.MainWindow.Height = config.WindowHeight;
-
             App.Current.MainWindow.Closing += this.Container.Resolve<WindowClosingEventHandler>().OnWindowClosing;
+
+            this.SetWindowConfig();
 
 			this.Container.Resolve<IEventAggregator>().GetEvent<QuitEvent>().Subscribe(empty => App.Current.MainWindow.Close());
 
@@ -71,5 +67,13 @@ namespace Zander.Presentation.WPF.Zander.Core {
 			this.ModuleCatalog.RegisterModule<ServerBrowserModule>();
             this.ModuleCatalog.RegisterModule<SettingsModule>();
 		}
+
+        private void SetWindowConfig() {
+            var config = this.Container.Resolve<IZanderConfigService>().GetDefaultConfig();
+            var window = App.Current.MainWindow;
+
+            window.Width = config.WindowWidth;
+            window.Height = config.WindowHeight;
+        }
 	}
 }
