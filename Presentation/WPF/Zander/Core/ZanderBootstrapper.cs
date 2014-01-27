@@ -72,8 +72,8 @@ namespace Zander.Presentation.WPF.Zander.Core {
             var config = this.Container.Resolve<IZanderConfigService>().GetDefaultConfig();
             var window = App.Current.MainWindow;
 
-            window.Width = config.WindowWidth;
-            window.Height = config.WindowHeight;
+            window.Width = config.WindowSettings.WindowWidth;
+            window.Height = config.WindowSettings.WindowHeight;
         }
 	}
 }

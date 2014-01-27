@@ -5,11 +5,11 @@ namespace Zander.Modules.Settings.Engines.Zandronum {
 
         public string MasterAddress {
             get {
-                return this.configProvider.Config.ZandronumMasterAddress;
+                return this.configProvider.Config.ZandronumConfig.MasterAddress;
             }
 
             set {
-                this.configProvider.Config.ZandronumMasterAddress = value;
+                this.configProvider.Config.ZandronumConfig.MasterAddress = value;
                 this.RaisePropertyChanged(() => this.MasterAddress);
             }
         }

@@ -114,7 +114,7 @@ namespace Zander.Presentation.WPF.Zander.Services.ServerBrowser {
         }
 
         private IMasterServer GetMasterServer() {
-            var hostname = this.configService.GetDefaultConfig().ZandronumMasterAddress;
+            var hostname = this.configService.GetDefaultConfig().ZandronumConfig.MasterAddress;
 
             var masterServer = this.masterServerRepository.Get(hostname, 5000);
 
