@@ -1,12 +1,11 @@
 ﻿using System;
 using Microsoft.Practices.Prism.Commands;
-using Microsoft.Win32;
 using Zander.Presentation.WPF.Zander.Infrastructure.Base;
 
 namespace Zander.Modules.Settings.Engines.Zandronum {
     public class ZandronumEngineViewModel : BaseViewModel, IZandronumEngineViewModel {
         private readonly ZanderConfigProvider configProvider;
-        private OpenFileDialog fileBrowser;
+        private readonly IFileBrowserProvider fileBrowser;
 
         public string MasterAddress {
             get {
@@ -64,28 +63,17 @@ namespace Zander.Modules.Settings.Engines.Zandronum {
             }
         }
 
-        public ZandronumEngineViewModel(ZanderConfigProvider configProvider) {
+        public ZandronumEngineViewModel(ZanderConfigProvider configProvider, IFileBrowserProvider fileBrowser) {
             this.configProvider = configProvider;
-            this.fileBrowser = new OpenFileDialog();
+            this.fileBrowser = fileBrowser;
         }
 
         private void SetBinary(Action<string> setAction) {
-            string binary = this.BrowseForFile();
+            string binary = this.fileBrowser.BrowseForFile();
 
             if(binary != null) {
                 setAction(binary);
             }
-        }
-
-        private string BrowseForFile() {
-            bool? result = this.fileBrowser.ShowDialog();
-            string filePath = null;
-
-            if(result != null && result.Value) {
-                filePath = this.fileBrowser.FileName;
-            }
-
-            return filePath;
         }
     }
 }
