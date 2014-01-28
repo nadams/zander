@@ -86,12 +86,14 @@
       <DependentUpon>ZandronumEngineView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Engines\Zandronum\ZandronumEngineViewModel.cs" />
+    <Compile Include="FileBrowserProvider.cs" />
     <Compile Include="General\GeneralView.xaml.cs">
       <DependentUpon>GeneralView.xaml</DependentUpon>
     </Compile>
     <Compile Include="General\GeneralViewModel.cs" />
     <Compile Include="General\IGeneralView.cs" />
     <Compile Include="General\IGeneralViewModel.cs" />
+    <Compile Include="IFileBrowserProvider.cs" />
     <Compile Include="ISettingsWindow.cs" />
     <Compile Include="ISettingsViewModel.cs" />
     <Compile Include="ISettingView.cs" />

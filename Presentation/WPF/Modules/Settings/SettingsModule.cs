@@ -17,6 +17,7 @@ namespace Zander.Modules.Settings {
             this.container.RegisterType<IGeneralView, GeneralView>();
             this.container.RegisterType<IAppearanceViewModel, AppearanceViewModel>();
             this.container.RegisterType<IAppearanceView, AppearanceView>();
+            this.container.RegisterInstance<IFileBrowserProvider>(new FileBrowserProvider());
 
             this.container.RegisterType<ISettingsViewModel, SettingsViewModel>();
             this.container.RegisterType<ISettingsWindow, SettingsWindow>();
