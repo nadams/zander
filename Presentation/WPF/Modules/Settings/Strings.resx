@@ -120,6 +120,12 @@
   <data name="Appearance" xml:space="preserve">
     <value>Appearance</value>
   </data>
+  <data name="Browse" xml:space="preserve">
+    <value>Browse</value>
+  </data>
+  <data name="CustomParameters" xml:space="preserve">
+    <value>Custom parameters</value>
+  </data>
   <data name="Engines" xml:space="preserve">
     <value>Engines</value>
   </data>
@@ -129,8 +135,17 @@
   <data name="MasterServerLabel" xml:space="preserve">
     <value>Master Server Address</value>
   </data>
+  <data name="PathToClientBinary" xml:space="preserve">
+    <value>Path to client binary</value>
+  </data>
+  <data name="PathToServerBinary" xml:space="preserve">
+    <value>Path to server binary</value>
+  </data>
   <data name="Settings" xml:space="preserve">
     <value>Settings</value>
+  </data>
+  <data name="ZandronumConfiguration" xml:space="preserve">
+    <value>Zandronum configuration</value>
   </data>
   <data name="ZandronumEngine" xml:space="preserve">
     <value>Zandronum</value>

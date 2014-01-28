@@ -25,6 +25,9 @@
 
     public abstract class EngineConfig {
         public string MasterAddress { get; set; }
+        public string PathToClinetBinary { get; set; }
+        public string PathToServerBinary { get; set; }
+        public string CustomParameters { get; set; }
     }
 
     public class ZandronumEngineConfig : EngineConfig {
