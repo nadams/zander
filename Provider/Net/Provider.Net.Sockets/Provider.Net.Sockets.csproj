@@ -57,6 +57,8 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Fake\FakeMasterServerRepository.cs" />
+    <Compile Include="Fake\FakeServerRepository.cs" />
     <Compile Include="IO\CustomBinaryReader.cs" />
     <Compile Include="IO\HuffmanWrapper.cs" />
     <Compile Include="IO\INetworkCompressor.cs" />

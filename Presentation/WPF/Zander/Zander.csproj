@@ -79,6 +79,7 @@
       <HintPath>..\..\..\packages\Unity.3.0.1304.1\lib\Net45\Microsoft.Practices.Unity.Configuration.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\Prism.4.1.0.0\lib\NET40\System.Windows.Interactivity.dll</HintPath>
@@ -104,8 +105,14 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Strings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\WindowClosingEventHandler.cs" />
     <Compile Include="Core\ZanderBootstrapper.cs" />
     <Compile Include="Extensions\ModuleCatalogExtensions.cs" />
     <Compile Include="Shell.xaml.cs">
@@ -128,6 +135,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="Strings.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -140,6 +151,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Shell.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Zander.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -164,6 +179,10 @@
     <ProjectReference Include="..\Modules\MenuBar\MenuBar.csproj">
       <Project>{d34e3825-d747-492d-a44a-cad7769920ed}</Project>
       <Name>MenuBar</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Modules\Settings\Settings.csproj">
+      <Project>{6a0fc6cf-3ca2-450d-b243-d267137417d8}</Project>
+      <Name>Settings</Name>
     </ProjectReference>
     <ProjectReference Include="..\Modules\StatusBar\StatusBar.csproj">
       <Project>{c8ce9f35-bb12-41bf-978a-522f37eb74dd}</Project>

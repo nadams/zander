@@ -1,0 +1,28 @@
+﻿<UserControl x:Class="Zander.Modules.Settings.Engines.Zandronum.ZandronumEngineView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:settings="clr-namespace:Zander.Modules.Settings">
+    <GroupBox Header="{x:Static settings:Strings.ZandronumConfiguration}">
+        <StackPanel Orientation="Vertical">
+            <Label Content="{x:Static settings:Strings.PathToClientBinary}" />
+            <DockPanel LastChildFill="True">
+                <Button Content="{x:Static settings:Strings.Browse}" Command="{Binding Path=BrowseForClientBinary}" DockPanel.Dock="Right" />
+                <TextBox Text="{Binding Path=PathToClinetBinary}" />
+            </DockPanel>
+        
+            <Label Content="{x:Static settings:Strings.PathToServerBinary}" />
+            <DockPanel LastChildFill="True">
+                <Button Content="{x:Static settings:Strings.Browse}" Command="{Binding Path=BrowseForServerBinary}" DockPanel.Dock="Right" />
+                <TextBox Text="{Binding Path=PathToServerBinary}" />
+            </DockPanel>
+
+            <Label Content="{x:Static settings:Strings.CustomParameters}" />
+            <TextBox Text="{Binding Path=CustomParameters}" />
+
+            <Label Content="{x:Static settings:Strings.MasterServerLabel}" />
+            <TextBox Text="{Binding Path=MasterAddress}" />
+        </StackPanel>
+    </GroupBox>
+</UserControl>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Windows;
 using System.Windows.Threading;
 using Microsoft.Practices.Prism.Events;
@@ -10,11 +11,13 @@ using Zander.Domain.Config;
 using Zander.Domain.Remote;
 using Zander.Modules.MenuBar;
 using Zander.Modules.ServerBrowser;
+using Zander.Modules.Settings;
 using Zander.Modules.StatusBar;
 using Zander.Presentation.WPF.Zander.Extensions;
 using Zander.Presentation.WPF.Zander.Infrastructure.Events;
 using Zander.Presentation.WPF.Zander.Services.ServerBrowser;
 using Zander.Provider.Net.Sockets;
+using Zander.Provider.Net.Sockets.Fake;
 
 namespace Zander.Presentation.WPF.Zander.Core {
 	public class ZanderBootstrapper : UnityBootstrapper {
@@ -24,8 +27,10 @@ namespace Zander.Presentation.WPF.Zander.Core {
 
 		protected override void InitializeShell() {
 			base.InitializeShell();
-
 			App.Current.MainWindow = (Window)this.Shell;
+            App.Current.MainWindow.Closing += this.Container.Resolve<WindowClosingEventHandler>().OnWindowClosing;
+
+            this.SetWindowConfig();
 
 			this.Container.Resolve<IEventAggregator>().GetEvent<QuitEvent>().Subscribe(empty => App.Current.MainWindow.Close());
 
@@ -34,16 +39,22 @@ namespace Zander.Presentation.WPF.Zander.Core {
 			Action queryAllServers = () => this.Container.Resolve<IEventAggregator>().GetEvent<QueryAllServersEvent>().Publish(Empty.Value);
 
 			Dispatcher.CurrentDispatcher.BeginInvoke(queryAllServers, DispatcherPriority.ContextIdle);
+
 		}
 
         protected override void ConfigureContainer() {
             base.ConfigureContainer();
 
-            this.Container.RegisterType<IMasterServerRepository, ZandronumMasterServerRepository>();
-            this.Container.RegisterType<IServerRepository, ServerRepository>();
-            this.Container.RegisterType<IRemoteServerApiProvider, RemoteServerApiProvider>();
-            this.Container.RegisterType<IServerBrowserService, ServerBrowserService>(new ContainerControlledLifetimeManager());
+            if(Convert.ToBoolean(ConfigurationManager.AppSettings["useFakeServers"])) {
+                this.Container.RegisterType<IServerRepository, FakeServerRepository>();
+                this.Container.RegisterType<IMasterServerRepository, FakeMasterServerRepository>();
+            } else {
+                this.Container.RegisterType<IMasterServerRepository, ZandronumMasterServerRepository>();
+                this.Container.RegisterType<IServerRepository, ServerRepository>();
+            }
 
+            this.Container.RegisterType<IServerBrowserService, ServerBrowserService>(new ContainerControlledLifetimeManager());
+            this.Container.RegisterType<IRemoteServerApiProvider, RemoteServerApiProvider>();
             this.Container.RegisterType<IZanderConfigRepository, ZanderConfigRepository>();
             this.Container.RegisterType<IZanderConfigService, ZanderConfigService>(new ContainerControlledLifetimeManager());
         }
@@ -54,6 +65,15 @@ namespace Zander.Presentation.WPF.Zander.Core {
 			this.ModuleCatalog.RegisterModule<MenuBarModule>();
 			this.ModuleCatalog.RegisterModule<StatusBarModule>();
 			this.ModuleCatalog.RegisterModule<ServerBrowserModule>();
+            this.ModuleCatalog.RegisterModule<SettingsModule>();
 		}
+
+        private void SetWindowConfig() {
+            var config = this.Container.Resolve<IZanderConfigService>().GetDefaultConfig();
+            var window = App.Current.MainWindow;
+
+            window.Width = config.WindowSettings.WindowWidth;
+            window.Height = config.WindowSettings.WindowHeight;
+        }
 	}
 }

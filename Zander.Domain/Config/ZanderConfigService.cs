@@ -1,5 +1,9 @@
-﻿namespace Zander.Domain.Config {
+﻿using Newtonsoft.Json;
+
+namespace Zander.Domain.Config {
     public class ZanderConfigService : IZanderConfigService {
+        public event ConfigUpdatedEventHandler ConfigUpdated;
+
         private readonly IZanderConfigRepository repository;
         private readonly object lockObject;
 
@@ -28,9 +32,18 @@
 
         public void SaveConfig(ZanderConfig config) {
             this.repository.SaveConfig(config);
+            
             lock(this.lockObject) {
                 this.configInstance = config;
             }
+
+            if(this.ConfigUpdated != null) {
+                this.ConfigUpdated(this, this.configInstance);
+            }
+        }
+
+        public ZanderConfig CloneConfig(ZanderConfig config) {
+            return JsonConvert.DeserializeObject<ZanderConfig>(JsonConvert.SerializeObject(config));
         }
     }
 }
