@@ -95,7 +95,7 @@
     <Compile Include="Provider\Net\Sockets\RemoteServerApiTests.cs" />
     <Compile Include="Provider\Net\Sockets\ServerRepositoryTests.cs" />
     <Compile Include="Provider\Net\Sockets\ZandronumMasterServerRepositoryTests.cs" />
-    <Compile Include="WPF\Modules\Settings\ZandronumEngineViewModelTests.cs" />
+    <Compile Include="WPF\Modules\Settings\EngineViewModelTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Presentation\WPF\Infrastructure\Zander.Infrastructure.csproj">

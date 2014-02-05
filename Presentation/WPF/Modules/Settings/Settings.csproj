@@ -80,6 +80,7 @@
     <Compile Include="Engines\EnginesPlaceholder.xaml.cs">
       <DependentUpon>EnginesPlaceholder.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Engines\EngineViewModel.cs" />
     <Compile Include="Engines\Zandronum\IZandronumEngineView.cs" />
     <Compile Include="Engines\Zandronum\IZandronumEngineViewModel.cs" />
     <Compile Include="Engines\Zandronum\ZandronumEngineView.xaml.cs">
