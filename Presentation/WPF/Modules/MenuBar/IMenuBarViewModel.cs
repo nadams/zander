@@ -2,7 +2,6 @@
 
 namespace Zander.Modules.MenuBar.Models {
 	public interface IMenuBarViewModel : IViewModel {
-		MenuBarStrings Strings { get; set; }
 		MenuBarActions Actions { get; set; }
 	}
 }

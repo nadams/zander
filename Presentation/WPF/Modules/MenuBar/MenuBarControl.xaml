@@ -1,23 +1,24 @@
 ﻿<UserControl x:Class="Zander.Modules.MenuBar.MenuBarControl"
 			 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Zander.Modules.MenuBar">
 	<Menu>
-		<MenuItem Header="{Binding Path=Strings.File}">
-			<MenuItem Header="{Binding Path=Strings.Quit}" Command="{Binding Path=Actions.Quit}" />
+		<MenuItem Header="{x:Static local:Strings.File}">
+            <MenuItem Header="{x:Static local:Strings.Quit}" Command="{Binding Path=Actions.Quit}" />
 		</MenuItem>
-		<MenuItem Header="{Binding Path=Strings.Edit}">
-			<MenuItem Header="{Binding Path=Strings.EditCustomServers}" Command="{Binding Path=Actions.EditCustomServers}" />
-			<MenuItem Header="{Binding Path=Strings.EditIgnoreList}" Command="{Binding Path=Actions.EditIgnoreList}" />
-			<MenuItem Header="{Binding Path=Strings.EditFilters}" Command="{Binding Path=Actions.EditFilters}" />
-			<MenuItem Header="{Binding Path=Strings.Settings}" Command="{Binding Path=Actions.Settings}" />
+        <MenuItem Header="{x:Static local:Strings.Edit}">
+            <MenuItem Header="{x:Static local:Strings.EditCustomServers}" Command="{Binding Path=Actions.EditCustomServers}" />
+            <MenuItem Header="{x:Static local:Strings.EditIgnoreList}" Command="{Binding Path=Actions.EditIgnoreList}" />
+            <MenuItem Header="{x:Static local:Strings.EditFilters}" Command="{Binding Path=Actions.EditFilters}" />
+            <MenuItem Header="{x:Static local:Strings.Settings}" Command="{Binding Path=Actions.Settings}" />
 		</MenuItem>
-		<MenuItem Header="{Binding Path=Strings.Server}">
-			<MenuItem Header="{Binding Path=Strings.RefreshCurrentServer}" Command="{Binding Path=Actions.RefreshCurrentServer}" />
-			<MenuItem Header="{Binding Path=Strings.RefreshAllServers}" Command="{Binding Path=Actions.RefreshAllServers}" />
-			<MenuItem Header="{Binding Path=Strings.AddToIgnoreList}" Command="{Binding Path=Actions.AddToIgnoreList}" />
+        <MenuItem Header="{x:Static local:Strings.Server}">
+            <MenuItem Header="{x:Static local:Strings.RefreshCurrentServer}" Command="{Binding Path=Actions.RefreshCurrentServer}" />
+            <MenuItem Header="{x:Static local:Strings.RefreshAllServers}" Command="{Binding Path=Actions.RefreshAllServers}" />
+            <MenuItem Header="{x:Static local:Strings.AddToIgnoreList}" Command="{Binding Path=Actions.AddToIgnoreList}" />
 		</MenuItem>
-		<MenuItem Header="{Binding Path=Strings.Help}">
-			<MenuItem Header="{Binding Path=Strings.About}" Command="{Binding Path=Actions.About}" />
+        <MenuItem Header="{x:Static local:Strings.Help}">
+            <MenuItem Header="{x:Static local:Strings.About}" Command="{Binding Path=Actions.About}" />
 		</MenuItem>
 	</Menu>
 </UserControl>
