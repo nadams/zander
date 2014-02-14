@@ -42,19 +42,28 @@ namespace Zander.Modules.ServerBrowser {
 			this.eventAggregator = eventAggregator;
             this.serverBrowserService = serverBrowserService;
 
-			this.eventAggregator.GetEvent<QueryAllServersEvent>().Subscribe(empty => this.QueryAllServers.Execute(null));
-            this.eventAggregator.GetEvent<RefreshCurrentServerEvent>().Subscribe(empty => this.QueryCurrentServer.Execute(null));
-
-			this.eventAggregator.GetEvent<ServerQueriedEvent>().Subscribe(server => {
-				this.Model.AddServer(server);
-
-				this.eventAggregator.GetEvent<CurrentServerQueryCountEvent>().Publish(this.Model.QueriedServers);
-			}, ThreadOption.UIThread);
+			this.eventAggregator.GetEvent<QueryAllServersEvent>().Subscribe(this.ExecuteQueryAllServers);
+            this.eventAggregator.GetEvent<RefreshCurrentServerEvent>().Subscribe(this.ExecuteQueryCurrentServer);
+			this.eventAggregator.GetEvent<ServerQueriedEvent>().Subscribe(this.ServerRefreshedAction, ThreadOption.UIThread);
 
             this.serverBrowserService.ServersChanged += this.CollectionChanged;
             this.serverBrowserService.DoneQueryingServers += o => this.eventAggregator.GetEvent<DoneQueryingServersEvent>().Publish(Empty.Value);
             this.serverBrowserService.TotalServersUpdated += (o, e) => this.eventAggregator.GetEvent<TotalServersUpdatedEvent>().Publish(e.TotalServers);
 		}
+
+        public void ExecuteQueryAllServers(Empty empty) {
+            this.QueryAllServers.Execute(empty);
+        }
+
+        public void ExecuteQueryCurrentServer(Empty empty) {
+            this.QueryCurrentServer.Execute(empty);
+        }
+
+        public void ServerRefreshedAction(Server server) {
+            this.Model.AddServer(server);
+
+            this.eventAggregator.GetEvent<CurrentServerQueryCountEvent>().Publish(this.Model.QueriedServers);
+        }
 
         private void CollectionChanged(object sender, ServersCollectionChangedEventArgs args) {
             var changedValue = args.ChangedValue;

@@ -13,6 +13,30 @@ namespace Zander.UnitTests.WPF.Modules.ServerBrowser {
     public class ServerBrowserViewModelTests {
 
         [TestMethod]
+        public void ServerBrowserViewModel_ConstructorCalled_ListeningToEventAggregatorEvents() {
+            var eventAggregator = this.GetDefaultEventAggregator().Object;
+            var serverBrowserService = new Mock<IServerBrowserService>().Object;
+
+            var vm = new ServerBrowserViewModel(eventAggregator, serverBrowserService);
+
+            Assert.IsTrue(eventAggregator.GetEvent<QueryAllServersEvent>().Contains(vm.ExecuteQueryAllServers));
+            Assert.IsTrue(eventAggregator.GetEvent<RefreshCurrentServerEvent>().Contains(vm.ExecuteQueryCurrentServer));
+            Assert.IsTrue(eventAggregator.GetEvent<ServerQueriedEvent>().Contains(vm.ServerRefreshedAction));
+        }
+
+        [TestMethod]
+        public void ServerBrowserViewModel_ConstructorCalled_ListeningToEvents() {
+            var eventAggregator = this.GetDefaultEventAggregator().Object;
+            var serverBrowserService = new Mock<IServerBrowserService>().Object;
+
+            var vm = new ServerBrowserViewModel(eventAggregator, serverBrowserService);
+
+            Assert.IsTrue(eventAggregator.GetEvent<QueryAllServersEvent>().Contains(vm.ExecuteQueryAllServers));
+            Assert.IsTrue(eventAggregator.GetEvent<RefreshCurrentServerEvent>().Contains(vm.ExecuteQueryCurrentServer));
+            Assert.IsTrue(eventAggregator.GetEvent<ServerQueriedEvent>().Contains(vm.ServerRefreshedAction));
+        }
+
+        [TestMethod]
         public void LaunchSelectedServer_ServerIsSelected_EventIsFired() {
             bool eventRaised = false;
             var eventAggregatorMock = this.GetDefaultEventAggregator();
