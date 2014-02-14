@@ -96,6 +96,7 @@
     <Compile Include="Provider\Net\Sockets\RemoteServerApiTests.cs" />
     <Compile Include="Provider\Net\Sockets\ServerRepositoryTests.cs" />
     <Compile Include="Provider\Net\Sockets\ZandronumMasterServerRepositoryTests.cs" />
+    <Compile Include="WPF\Modules\ServerBrowser\ServerBrowserViewModelTests.cs" />
     <Compile Include="WPF\Modules\Settings\EngineViewModelTests.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -103,9 +104,17 @@
       <Project>{ea8b7577-6944-4ac5-b0b6-624a52aa18b7}</Project>
       <Name>Zander.Infrastructure</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Presentation\WPF\Modules\ServerBrowser\ServerBrowser.csproj">
+      <Project>{2773f698-f610-4e21-87af-54c3b1f74d71}</Project>
+      <Name>ServerBrowser</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Presentation\WPF\Modules\Settings\Settings.csproj">
       <Project>{6a0fc6cf-3ca2-450d-b243-d267137417d8}</Project>
       <Name>Settings</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Presentation\WPF\Services\Zander.Services.csproj">
+      <Project>{796a3973-78d4-4d8d-8db3-64f71ceb1611}</Project>
+      <Name>Zander.Services</Name>
     </ProjectReference>
     <ProjectReference Include="..\Provider\Net\Provider.Net.Sockets\Provider.Net.Sockets.csproj">
       <Project>{a37346c3-b2bc-4682-b298-a2da7ba3869f}</Project>

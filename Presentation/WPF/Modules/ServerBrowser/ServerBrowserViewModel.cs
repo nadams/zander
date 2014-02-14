@@ -75,7 +75,11 @@ namespace Zander.Modules.ServerBrowser {
         }
 
         private void LaunchSelectedServerCommand() {
+            var payload = new LaunchServerEventArgs {
+                Address = this.Model.SelectedServer.Address.ToString()
+            };
 
+            this.eventAggregator.GetEvent<LaunchServerEvent>().Publish(payload);
         }
     }
 }
