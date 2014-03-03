@@ -27,6 +27,7 @@ namespace Zander.Presentation.WPF.Zander.Core {
 
 		protected override void InitializeShell() {
 			base.InitializeShell();
+
 			App.Current.MainWindow = (Window)this.Shell;
             App.Current.MainWindow.Closing += this.Container.Resolve<WindowClosingEventHandler>().OnWindowClosing;
 
@@ -39,7 +40,6 @@ namespace Zander.Presentation.WPF.Zander.Core {
 			Action queryAllServers = () => this.Container.Resolve<IEventAggregator>().GetEvent<QueryAllServersEvent>().Publish(Empty.Value);
 
 			Dispatcher.CurrentDispatcher.BeginInvoke(queryAllServers, DispatcherPriority.ContextIdle);
-
 		}
 
         protected override void ConfigureContainer() {
@@ -65,7 +65,7 @@ namespace Zander.Presentation.WPF.Zander.Core {
 			this.ModuleCatalog.RegisterModule<MenuBarModule>();
 			this.ModuleCatalog.RegisterModule<StatusBarModule>();
 			this.ModuleCatalog.RegisterModule<ServerBrowserModule>();
-            this.ModuleCatalog.RegisterModule<SettingsModule>();
+            this.ModuleCatalog.RegisterModule<SettingsModule>(typeof(MenuBarModule));
 		}
 
         private void SetWindowConfig() {
