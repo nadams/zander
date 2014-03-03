@@ -1,7 +1,8 @@
 ﻿<UserControl x:Class="Zander.Modules.ServerBrowser.ServerBrowserControl"
 			 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-			 xmlns:conv="clr-namespace:Zander.Modules.ServerBrowser.Converters">
+			 xmlns:conv="clr-namespace:Zander.Modules.ServerBrowser.Converters"
+             xmlns:local="clr-namespace:Zander.Modules.ServerBrowser">
 	<UserControl.Resources>
 		<conv:CollectionToCommaList x:Key="CollectionToCommaList" />
 	</UserControl.Resources>
@@ -14,14 +15,21 @@
         HeadersVisibility="Column"
         MouseDoubleClick="DataGridMouseDoubleClick"
         SelectionChanged="DataGridSelectionChanged">
-		<DataGrid.Columns>
-			<DataGridTextColumn Header="Name" Binding="{Binding Path=DisplayName}" />
-			<DataGridTextColumn Header="Players" Binding="{Binding Path=Players}" />
-			<DataGridTextColumn Header="Current Map" Binding="{Binding Path=CurrentMap}" />
-			<DataGridTextColumn Header="IWad" Binding="{Binding Path=IWad}" />
-			<DataGridTextColumn Header="Game Name" Binding="{Binding Path=GameName}" />
-			<DataGridTextColumn Header="PWads" Binding="{Binding Path=PWads, Converter={StaticResource ResourceKey=CollectionToCommaList}}" />
-			<DataGridTextColumn Header="Address" Binding="{Binding Path=Address}" />
-		</DataGrid.Columns>
-	</DataGrid>
+        <DataGrid.Columns>
+            <DataGridTextColumn Header="{x:Static local:Strings.Name}" Binding="{Binding Path=DisplayName}" />
+            <DataGridTextColumn Header="{x:Static local:Strings.Players}" Binding="{Binding Path=Players}" />
+            <DataGridTextColumn Header="{x:Static local:Strings.CurrentMap}" Binding="{Binding Path=CurrentMap}" />
+            <DataGridTextColumn Header="{x:Static local:Strings.IWad}" Binding="{Binding Path=IWad}" />
+            <DataGridTextColumn Header="{x:Static local:Strings.GameName}" Binding="{Binding Path=GameName}" />
+            <DataGridTextColumn Header="{x:Static local:Strings.PWads}" Binding="{Binding Path=PWads, Converter={StaticResource ResourceKey=CollectionToCommaList}}" />
+            <DataGridTextColumn Header="{x:Static local:Strings.Address}" Binding="{Binding Path=Address}" />
+        </DataGrid.Columns>
+        <DataGrid.ContextMenu>
+            <ContextMenu IsEnabled="{Binding Path=Model.HasCurrentServer}">
+                <MenuItem 
+                    Header="{x:Static local:Strings.Refresh}" 
+                    Command="{Binding Path=QueryCurrentServer}" />
+            </ContextMenu>
+        </DataGrid.ContextMenu>
+    </DataGrid>
 </UserControl>
