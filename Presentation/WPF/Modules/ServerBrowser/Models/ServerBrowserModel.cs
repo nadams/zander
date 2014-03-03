@@ -31,6 +31,7 @@ namespace Zander.Modules.ServerBrowser.Models {
             set {
                 this.selectedServer = value;
                 this.RaisePropertyChanged(() => this.SelectedServer);
+                this.RaisePropertyChanged(() => this.HasCurrentServer);
             }
         }
 
@@ -39,6 +40,12 @@ namespace Zander.Modules.ServerBrowser.Models {
 				return this.Servers.Count;
 			}
 		}
+
+        public bool HasCurrentServer {
+            get {
+                return this.SelectedServer != null;
+            }
+        }
 
 		public ServerBrowserModel() {
             this.serverMapper = new ServerEntityMapper();

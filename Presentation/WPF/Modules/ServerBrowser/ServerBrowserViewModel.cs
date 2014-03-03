@@ -1,5 +1,4 @@
-﻿using System.Collections.Specialized;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using Microsoft.Practices.Prism.Commands;
 using Microsoft.Practices.Prism.Events;
 using Microsoft.Practices.Prism.ViewModel;
@@ -23,11 +22,7 @@ namespace Zander.Modules.ServerBrowser {
 
         public ICommand QueryCurrentServer {
             get {
-                return new DelegateCommand(() => {
-                    if(this.Model.SelectedServer != null) {
-                        this.serverBrowserService.RefreshServer(this.Model.SelectedServer.Address); 
-                    }
-                });
+                return new DelegateCommand(this.QueryCurrentServerCommand);
             }
         }
 
@@ -80,6 +75,14 @@ namespace Zander.Modules.ServerBrowser {
                 case ServersCollectionChangedActions.Remove:
                     this.Model.RemoveServer(changedValue);
                     break;
+            }
+        }
+
+        private void QueryCurrentServerCommand() {
+            var selectedServer = this.Model.SelectedServer;
+
+            if(selectedServer != null) {
+                this.serverBrowserService.RefreshServer(selectedServer.Address);
             }
         }
 
