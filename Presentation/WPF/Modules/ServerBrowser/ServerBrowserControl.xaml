@@ -14,14 +14,19 @@
         HeadersVisibility="Column"
         MouseDoubleClick="DataGridMouseDoubleClick"
         SelectionChanged="DataGridSelectionChanged">
-		<DataGrid.Columns>
-			<DataGridTextColumn Header="Name" Binding="{Binding Path=DisplayName}" />
-			<DataGridTextColumn Header="Players" Binding="{Binding Path=Players}" />
-			<DataGridTextColumn Header="Current Map" Binding="{Binding Path=CurrentMap}" />
-			<DataGridTextColumn Header="IWad" Binding="{Binding Path=IWad}" />
-			<DataGridTextColumn Header="Game Name" Binding="{Binding Path=GameName}" />
-			<DataGridTextColumn Header="PWads" Binding="{Binding Path=PWads, Converter={StaticResource ResourceKey=CollectionToCommaList}}" />
-			<DataGridTextColumn Header="Address" Binding="{Binding Path=Address}" />
-		</DataGrid.Columns>
-	</DataGrid>
+        <DataGrid.Columns>
+            <DataGridTextColumn Header="Name" Binding="{Binding Path=DisplayName}" />
+            <DataGridTextColumn Header="Players" Binding="{Binding Path=Players}" />
+            <DataGridTextColumn Header="Current Map" Binding="{Binding Path=CurrentMap}" />
+            <DataGridTextColumn Header="IWad" Binding="{Binding Path=IWad}" />
+            <DataGridTextColumn Header="Game Name" Binding="{Binding Path=GameName}" />
+            <DataGridTextColumn Header="PWads" Binding="{Binding Path=PWads, Converter={StaticResource ResourceKey=CollectionToCommaList}}" />
+            <DataGridTextColumn Header="Address" Binding="{Binding Path=Address}" />
+        </DataGrid.Columns>
+        <DataGrid.ContextMenu>
+            <ContextMenu>
+                <MenuItem></MenuItem>
+            </ContextMenu>
+        </DataGrid.ContextMenu>
+    </DataGrid>
 </UserControl>
