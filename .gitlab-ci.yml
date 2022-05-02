@@ -15,8 +15,8 @@ format:
 compile:
   stage: build
   script:
-    - mkdir -p zander-bin
-    - go build -o zander-bin ./...
+    - mkdir -p bin
+    - go build -o bin ./...
   artifacts:
     paths:
-      - zander-bin
+      - bin
