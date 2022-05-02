@@ -20,8 +20,5 @@ func listen() error {
 
 	defer conn.Close()
 
-	for {
-	}
-
 	return nil
 }
