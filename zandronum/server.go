@@ -2,12 +2,15 @@ package zandronum
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"os/exec"
 	"sync"
 	"syscall"
+
+	"gitlab.node-3.net/nadams/zander/internal/message"
 )
 
 type Server struct {
@@ -47,13 +50,15 @@ func (s *Server) Start() error {
 		return fmt.Errorf("could not start server: %w", err)
 	}
 
+	go s.cmd.Wait()
+
 	go func() {
 		scanner := bufio.NewScanner(s.stdout)
 		for scanner.Scan() {
 			b := scanner.Bytes()
+			b = append(b, '\n')
 
 			s.content = append(s.content, b...)
-			s.content = append(s.content, '\n')
 
 			s.RLock()
 			for _, consumer := range s.consumers {
@@ -62,6 +67,12 @@ func (s *Server) Start() error {
 			s.RUnlock()
 		}
 
+		s.Lock()
+		defer s.Unlock()
+
+		for _, consumer := range s.consumers {
+			close(consumer)
+		}
 	}()
 
 	return nil
@@ -83,8 +94,18 @@ func (s *Server) Stop() error {
 	return nil
 }
 
-func (s *Server) Connect(id string, w io.Writer, r io.Reader) error {
+func (s *Server) Connect(id string, send chan<- message.Message, recv <-chan message.Message) error {
 	if s.cmd != nil {
+		if s.cmd.ProcessState != nil {
+			b, _ := json.Marshal(string(s.content))
+			send <- message.Message{
+				BodyType: message.LINE,
+				Body:     b,
+			}
+
+			return nil
+		}
+
 		consumer := make(chan []byte)
 
 		s.Lock()
@@ -92,21 +113,35 @@ func (s *Server) Connect(id string, w io.Writer, r io.Reader) error {
 		s.Unlock()
 
 		go func() {
-			scanner := bufio.NewScanner(r)
-			for scanner.Scan() {
-				b := scanner.Bytes()
+			for msg := range recv {
+				if msg.BodyType == message.LINE {
+					var body string
+					if err := json.Unmarshal(msg.Body, &body); err != nil {
+						log.Println(err)
+					}
 
-				s.stdin.Write(b)
-				s.stdin.Write([]byte("\n"))
+					s.stdin.Write([]byte(body))
+					s.stdin.Write([]byte{'\n'})
+				}
 			}
 		}()
 
-		w.Write(s.content)
+		b, _ := json.Marshal(string(s.content))
+		send <- message.Message{
+			BodyType: message.LINE,
+			Body:     b,
+		}
 
 		for line := range consumer {
-			w.Write(line)
-			w.Write([]byte{'\n'})
+			b, _ = json.Marshal(string(line))
+
+			send <- message.Message{
+				BodyType: message.LINE,
+				Body:     b,
+			}
 		}
+
+		log.Println("consumer done")
 	}
 
 	return nil
@@ -118,11 +153,9 @@ func (s *Server) Disconnect(id string) {
 	s.Lock()
 	defer s.Unlock()
 
-	for key, consumer := range s.consumers {
-		if key == id {
-			close(consumer)
+	if consumer, ok := s.consumers[id]; ok {
+		close(consumer)
 
-			delete(s.consumers, id)
-		}
+		delete(s.consumers, id)
 	}
 }
