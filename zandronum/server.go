@@ -140,8 +140,6 @@ func (s *Server) Connect(id string, send chan<- message.Message, recv <-chan mes
 				Body:     b,
 			}
 		}
-
-		log.Println("consumer done")
 	}
 
 	return nil

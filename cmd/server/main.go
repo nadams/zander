@@ -1,19 +1,15 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net"
 	"os"
 	"path/filepath"
-	"time"
 
 	"github.com/alecthomas/kong"
-	"github.com/google/uuid"
 	"gitlab.node-3.net/nadams/zander/internal/command"
-	"gitlab.node-3.net/nadams/zander/internal/message"
+	"gitlab.node-3.net/nadams/zander/internal/handler"
 	"gitlab.node-3.net/nadams/zander/zandronum"
 )
 
@@ -66,77 +62,12 @@ func ListenAndServe(cli CLI) error {
 		log.Println(err)
 	}
 
-	log.Println("listening for connections")
 	for {
 		conn, err := l.Accept()
 		if err != nil {
 			log.Println(err)
 		}
 
-		log.Println("client connected")
-
-		go connect(conn, server)
+		go handler.HandleConnection(conn, server)
 	}
-}
-
-func connect(conn net.Conn, server *zandronum.Server) {
-	id := uuid.New().String()
-	send := make(chan message.Message)
-	recv := make(chan message.Message)
-	ticker := time.NewTicker(time.Second * 2)
-
-	encoder := json.NewEncoder(conn)
-	encoder.SetEscapeHTML(false)
-	decoder := json.NewDecoder(conn)
-
-	go func() {
-		msg := message.Message{BodyType: message.PING}
-
-		for range ticker.C {
-			conn.SetWriteDeadline(time.Now().Add(time.Second * 5))
-
-			if err := encoder.Encode(msg); err != nil {
-				ticker.Stop()
-				server.Disconnect(id)
-				conn.Close()
-			}
-		}
-	}()
-
-	go func() {
-		for {
-			var msg message.Message
-
-			if err := decoder.Decode(&msg); err != nil {
-				if err == io.EOF {
-					return
-				} else if _, ok := err.(*net.OpError); ok {
-					return
-				}
-
-				log.Printf("received unknown message: %v", err)
-				continue
-			}
-
-			recv <- msg
-		}
-	}()
-
-	go func() {
-		for msg := range send {
-			if err := encoder.Encode(msg); err != nil {
-				log.Printf("will not send unknown message: %v", err)
-				continue
-			}
-		}
-	}()
-
-	if err := server.Connect(id, send, recv); err != nil {
-		log.Println(err)
-	}
-
-	ticker.Stop()
-	conn.Close()
-	close(send)
-	close(recv)
 }
