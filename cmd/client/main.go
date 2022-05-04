@@ -1,24 +1,19 @@
 package main
 
 import (
-	"fmt"
-	"log"
-	"net"
+	"github.com/alecthomas/kong"
+	"gitlab.node-3.net/nadams/zander/cmd/client/cmds"
+	"gitlab.node-3.net/nadams/zander/internal/command"
 )
 
-func main() {
-	if err := listen(); err != nil {
-		log.Fatal(err)
-	}
+type CLI struct {
+	Socket string         `flag:"" short:"s" type:"pathenv" default:"$XDG_CONFIG_HOME/zander/zander.sock" description:"Connects to a socket at the given path"`
+	Attach cmds.AttachCmd `cmd:"" help:"Attach to a running server"`
 }
 
-func listen() error {
-	conn, err := net.Dial("unix", "/tmp/zander.sock")
-	if err != nil {
-		return fmt.Errorf("could not connect to zander: %w", err)
-	}
+func main() {
+	var cli CLI
+	ctx := kong.Parse(&cli, kong.NamedMapper("pathenv", command.PathEnvDecoder()))
 
-	defer conn.Close()
-
-	return nil
+	ctx.FatalIfErrorf(ctx.Run(cli.Socket))
 }

@@ -6,10 +6,10 @@ import (
 	"net"
 	"os"
 	"path/filepath"
-	"reflect"
 
 	"github.com/alecthomas/kong"
-	"github.com/pkg/errors"
+	"github.com/google/uuid"
+	"gitlab.node-3.net/nadams/zander/internal/command"
 	"gitlab.node-3.net/nadams/zander/zandronum"
 )
 
@@ -18,27 +18,9 @@ type CLI struct {
 	ZandronumServer string `flag:"" short:"p" type:"pathenv" default:"zandronum-server" description:"The path to zandronum-server, may be just the name if it's in $PATH"`
 }
 
-func pathEnvDecoder() kong.MapperFunc {
-	return func(ctx *kong.DecodeContext, target reflect.Value) error {
-		t, err := ctx.Scan.PopValue("pathenv")
-		if err != nil {
-			return err
-		}
-
-		switch v := t.Value.(type) {
-		case string:
-			target.SetString(os.ExpandEnv(v))
-		default:
-			return errors.Errorf("expected a string but got %q (%T)", t, t.Value)
-		}
-
-		return nil
-	}
-}
-
 func main() {
 	var cli CLI
-	ctx := kong.Parse(&cli, kong.NamedMapper("pathenv", pathEnvDecoder()))
+	ctx := kong.Parse(&cli, kong.NamedMapper("pathenv", command.PathEnvDecoder()))
 
 	switch ctx.Command() {
 	default:
@@ -80,18 +62,25 @@ func ListenAndServe(cli CLI) error {
 		log.Println(err)
 	}
 
+	log.Println("listening for connections")
 	for {
 		conn, err := l.Accept()
 		if err != nil {
 			log.Println(err)
 		}
 
+		log.Println("client connected")
+
 		go connect(conn, server)
 	}
 }
 
 func connect(conn net.Conn, server *zandronum.Server) {
-	if err := server.Connect(conn, conn); err != nil {
+	id := uuid.New().String()
+
+	if err := server.Connect(id, conn, conn); err != nil {
 		log.Println(err)
 	}
+
+	server.Disconnect(id)
 }
