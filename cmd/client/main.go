@@ -9,6 +9,7 @@ import (
 type CLI struct {
 	Socket string         `flag:"" short:"s" type:"pathenv" default:"$XDG_CONFIG_HOME/zander/zander.sock" description:"Connects to a socket at the given path"`
 	Attach cmds.AttachCmd `cmd:"" help:"Attach to a running server"`
+	List   cmds.ListCmd   `cmd:"" help:"List configured servers"`
 }
 
 func main() {
