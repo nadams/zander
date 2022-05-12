@@ -11,6 +11,7 @@ import (
 	"gitlab.node-3.net/nadams/zander/config"
 	"gitlab.node-3.net/nadams/zander/internal/command"
 	"gitlab.node-3.net/nadams/zander/internal/handler"
+	"gitlab.node-3.net/nadams/zander/internal/message"
 	"gitlab.node-3.net/nadams/zander/zandronum"
 )
 
@@ -36,14 +37,26 @@ func main() {
 
 	switch ctx.Command() {
 	default:
-		if err := ListenAndServe(cli, cfg); err != nil {
+		if err := Start(cli, cfg); err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
 	}
 }
 
-func ListenAndServe(cli CLI, cfg *config.Config) error {
+func Start(cli CLI, cfg *config.Config) error {
+	server := zandronum.NewServer("/usr/share/zandronum/zandronum-server", nil)
+
+	manager := zandronum.NewManager()
+	id := manager.Add(server)
+	manager.Start(id)
+
+	registerHandlers(manager)
+
+	return ListenAndServe(cli, cfg, manager)
+}
+
+func ListenAndServe(cli CLI, cfg *config.Config, manager *zandronum.Manager) error {
 	removeSocket := func() error {
 		if err := os.RemoveAll(cli.Socket); err != nil {
 			return fmt.Errorf("could not remove zander socket: %w", err)
@@ -69,17 +82,17 @@ func ListenAndServe(cli CLI, cfg *config.Config) error {
 
 	defer removeSocket()
 
-	server := zandronum.NewServer("/usr/share/zandronum/zandronum-server", nil)
-	if err := server.Start(); err != nil {
-		log.Println(err)
-	}
-
 	for {
 		conn, err := l.Accept()
 		if err != nil {
 			log.Println(err)
 		}
 
-		go handler.HandleConnection(conn, server)
+		go handler.Handle(conn)
 	}
+}
+
+func registerHandlers(manager *zandronum.Manager) {
+	handler.Register(message.CMD_LIST_SERVERS, handler.ListServers(manager))
+	handler.Register(message.CMD_ATTACH, handler.Attach(manager))
 }

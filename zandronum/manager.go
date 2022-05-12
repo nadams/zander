@@ -12,8 +12,7 @@ var (
 )
 
 type Manager struct {
-	sync.RWMutex
-
+	m       sync.RWMutex
 	servers map[ID]*Server
 }
 
@@ -26,8 +25,8 @@ func NewManager() *Manager {
 }
 
 func (m *Manager) Add(server *Server) ID {
-	m.Lock()
-	defer m.Unlock()
+	m.m.Lock()
+	defer m.m.Unlock()
 
 	id := ID(uuid.New().String())
 
@@ -55,16 +54,23 @@ func (m *Manager) Stop(id ID) error {
 }
 
 func (m *Manager) List() []ServerInfo {
-	m.RLock()
-	defer m.RUnlock()
+	m.m.RLock()
+	defer m.m.RUnlock()
 
 	out := make([]ServerInfo, 0, len(m.servers))
 
-	for key := range m.servers {
+	for key, server := range m.servers {
 		out = append(out, ServerInfo{
-			ID: string(key),
+			ID:      string(key),
+			Started: server.started,
 		})
 	}
 
 	return out
+}
+
+func (m *Manager) Get(id ID) (*Server, bool) {
+	server, found := m.servers[id]
+
+	return server, found
 }

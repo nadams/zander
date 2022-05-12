@@ -9,6 +9,9 @@ const (
 	PONG
 	LINE
 	SERVER_LIST
+	CMD_ATTACH
+	CMD_LIST_SERVERS
+	DISCONNECT
 )
 
 type Message struct {

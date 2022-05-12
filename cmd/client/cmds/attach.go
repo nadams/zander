@@ -11,6 +11,7 @@ import (
 )
 
 type AttachCmd struct {
+	ID string `arg:"" required:"true"`
 }
 
 func (a *AttachCmd) Run(socket string) error {
@@ -20,6 +21,11 @@ func (a *AttachCmd) Run(socket string) error {
 	}
 
 	defer client.Close()
+
+	b, _ := json.Marshal(a.ID)
+
+	client.Send() <- message.Message{BodyType: message.CMD_ATTACH, Body: b}
+	client.StartPingPong()
 
 	go func() {
 		scanner := bufio.NewScanner(os.Stdin)

@@ -9,18 +9,19 @@ import (
 	"os/exec"
 	"sync"
 	"syscall"
+	"time"
 
 	"gitlab.node-3.net/nadams/zander/internal/message"
 )
 
 type Server struct {
-	sync.RWMutex
-
+	m         sync.RWMutex
 	cmd       *exec.Cmd
 	content   []byte
 	stdout    io.ReadCloser
 	stdin     io.WriteCloser
 	consumers map[string]chan<- []byte
+	started   time.Time
 }
 
 func NewServer(binary string, opts map[string]string) *Server {
@@ -33,6 +34,8 @@ func NewServer(binary string, opts map[string]string) *Server {
 }
 
 func (s *Server) Start() error {
+	s.started = time.Now()
+
 	stdout, err := s.cmd.StdoutPipe()
 	if err != nil {
 		return fmt.Errorf("could not create server stdout pipe: %w", err)
@@ -60,15 +63,15 @@ func (s *Server) Start() error {
 
 			s.content = append(s.content, b...)
 
-			s.RLock()
+			s.m.RLock()
 			for _, consumer := range s.consumers {
 				consumer <- b
 			}
-			s.RUnlock()
+			s.m.RUnlock()
 		}
 
-		s.Lock()
-		defer s.Unlock()
+		s.m.Lock()
+		defer s.m.Unlock()
 
 		for _, consumer := range s.consumers {
 			close(consumer)
@@ -96,49 +99,21 @@ func (s *Server) Stop() error {
 
 func (s *Server) Connect(id string, send chan<- message.Message, recv <-chan message.Message) error {
 	if s.cmd != nil {
-		if s.cmd.ProcessState != nil {
-			b, _ := json.Marshal(string(s.content))
+		initMsg := <-recv
+
+		switch initMsg.BodyType {
+		case message.CMD_ATTACH:
+			return s.attach(id, send, recv)
+		case message.CMD_LIST_SERVERS:
+			b, _ := json.Marshal("hello")
 			send <- message.Message{
 				BodyType: message.LINE,
 				Body:     b,
 			}
 
 			return nil
-		}
-
-		consumer := make(chan []byte)
-
-		s.Lock()
-		s.consumers[id] = consumer
-		s.Unlock()
-
-		go func() {
-			for msg := range recv {
-				if msg.BodyType == message.LINE {
-					var body string
-					if err := json.Unmarshal(msg.Body, &body); err != nil {
-						log.Println(err)
-					}
-
-					s.stdin.Write([]byte(body))
-					s.stdin.Write([]byte{'\n'})
-				}
-			}
-		}()
-
-		b, _ := json.Marshal(string(s.content))
-		send <- message.Message{
-			BodyType: message.LINE,
-			Body:     b,
-		}
-
-		for line := range consumer {
-			b, _ = json.Marshal(string(line))
-
-			send <- message.Message{
-				BodyType: message.LINE,
-				Body:     b,
-			}
+		default:
+			return fmt.Errorf("unknow init command: %v", initMsg.BodyType)
 		}
 	}
 
@@ -148,12 +123,61 @@ func (s *Server) Connect(id string, send chan<- message.Message, recv <-chan mes
 func (s *Server) Disconnect(id string) {
 	log.Printf("client %s disconnecting", id)
 
-	s.Lock()
-	defer s.Unlock()
+	s.m.Lock()
+	defer s.m.Unlock()
 
 	if consumer, ok := s.consumers[id]; ok {
 		close(consumer)
 
 		delete(s.consumers, id)
 	}
+}
+
+func (s *Server) attach(id string, send chan<- message.Message, recv <-chan message.Message) error {
+	if s.cmd.ProcessState != nil {
+		b, _ := json.Marshal(string(s.content))
+		send <- message.Message{
+			BodyType: message.LINE,
+			Body:     b,
+		}
+
+		return nil
+	}
+
+	consumer := make(chan []byte)
+
+	s.m.Lock()
+	s.consumers[id] = consumer
+	s.m.Unlock()
+
+	go func() {
+		for msg := range recv {
+			if msg.BodyType == message.LINE {
+				var body string
+				if err := json.Unmarshal(msg.Body, &body); err != nil {
+					log.Println(err)
+				}
+
+				s.stdin.Write([]byte(body))
+				s.stdin.Write([]byte{'\n'})
+			}
+		}
+	}()
+
+	b, _ := json.Marshal(string(s.content))
+	send <- message.Message{
+		BodyType: message.LINE,
+		Body:     b,
+	}
+
+	for line := range consumer {
+		b, _ = json.Marshal(string(line))
+
+		send <- message.Message{
+			BodyType: message.LINE,
+			Body:     b,
+		}
+	}
+
+	return nil
 }

@@ -19,6 +19,7 @@ type Client struct {
 	send    chan message.Message
 	recv    chan message.Message
 	wg      sync.WaitGroup
+	pp      bool
 }
 
 func NewClient(socket string) *Client {
@@ -54,8 +55,8 @@ func (c *Client) Open() error {
 		c.encoder.SetEscapeHTML(false)
 		c.decoder = json.NewDecoder(c.conn)
 
+		c.wg.Add(1)
 		go func() {
-			c.wg.Add(1)
 			defer c.wg.Done()
 
 			for msg := range c.send {
@@ -63,10 +64,12 @@ func (c *Client) Open() error {
 					log.Println(err)
 				}
 			}
+
+			close(c.recv)
 		}()
 
+		c.wg.Add(1)
 		go func() {
-			c.wg.Add(1)
 			defer c.wg.Done()
 
 			for {
@@ -75,26 +78,34 @@ func (c *Client) Open() error {
 				if err := c.decoder.Decode(&msg); err != nil {
 					if err == io.EOF {
 						break
+					} else if _, ok := err.(*net.OpError); ok {
+						break
 					}
 
 					log.Printf("could not decode message: %v", err)
+					return
 				}
 
 				switch msg.BodyType {
 				case message.PING:
-					reply := message.Message{BodyType: message.PONG}
-					if err := c.encoder.Encode(reply); err != nil {
-						log.Println(err)
+					if c.pp {
+						c.send <- message.Message{BodyType: message.PONG}
 					}
 				case message.PONG:
 				default:
 					c.recv <- msg
 				}
 			}
+
+			close(c.send)
 		}()
 	}
 
 	return nil
+}
+
+func (c *Client) StartPingPong() {
+	c.pp = true
 }
 
 func (c *Client) Send() chan<- message.Message {
