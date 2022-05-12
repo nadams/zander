@@ -111,7 +111,6 @@ func ListenAndServe(cli CLI, cfg *config.Config, manager *zandronum.Manager) err
 			continue
 		}
 
-		log.Println("handling conn")
 		go handler.Handle(conn)
 	}
 

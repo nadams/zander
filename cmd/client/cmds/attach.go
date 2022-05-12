@@ -4,7 +4,10 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"gitlab.node-3.net/nadams/zander/internal/message"
 	"gitlab.node-3.net/nadams/zander/zandronum"
@@ -20,7 +23,16 @@ func (a *AttachCmd) Run(socket string) error {
 		return err
 	}
 
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+
 	defer client.Close()
+
+	go func() {
+		<-sigs
+
+		client.Close()
+	}()
 
 	b, _ := json.Marshal(a.ID)
 
@@ -48,6 +60,8 @@ func (a *AttachCmd) Run(socket string) error {
 			fmt.Fprint(os.Stdout, body)
 		}
 	}
+
+	log.Println("done")
 
 	return nil
 }

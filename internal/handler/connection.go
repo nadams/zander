@@ -39,7 +39,6 @@ func Handle(conn net.Conn) {
 	go func() {
 		defer func() {
 			close(recv)
-			close(send)
 
 			wg.Done()
 		}()
@@ -52,13 +51,18 @@ func Handle(conn net.Conn) {
 
 	wg.Add(1)
 	go func() {
-		defer wg.Done()
+		defer func() {
+			close(send)
+
+			wg.Done()
+		}()
 
 		for {
 			var msg message.Message
 
 			if err := decoder.Decode(&msg); err != nil {
 				if err == io.EOF {
+					log.Println("got eof")
 					return
 				} else if _, ok := err.(*net.OpError); ok {
 					return
@@ -71,12 +75,6 @@ func Handle(conn net.Conn) {
 			log.Printf("got message: %+v", msg)
 
 			recv <- msg
-			//switch msg.BodyType {
-			//case message.DISCONNECT:
-			//  return
-			//default:
-			//  recv <- msg
-			//}
 		}
 	}()
 
@@ -91,4 +89,5 @@ func Handle(conn net.Conn) {
 	}
 
 	wg.Wait()
+	log.Println("done handling conn")
 }
