@@ -4,13 +4,17 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"gitlab.node-3.net/nadams/zander/internal/message"
 	"gitlab.node-3.net/nadams/zander/zandronum"
 )
 
 type AttachCmd struct {
+	ID string `arg:"" required:"true"`
 }
 
 func (a *AttachCmd) Run(socket string) error {
@@ -19,7 +23,21 @@ func (a *AttachCmd) Run(socket string) error {
 		return err
 	}
 
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+
 	defer client.Close()
+
+	go func() {
+		<-sigs
+
+		client.Close()
+	}()
+
+	b, _ := json.Marshal(a.ID)
+
+	client.Send() <- message.Message{BodyType: message.CMD_ATTACH, Body: b}
+	client.StartPingPong()
 
 	go func() {
 		scanner := bufio.NewScanner(os.Stdin)
@@ -42,6 +60,8 @@ func (a *AttachCmd) Run(socket string) error {
 			fmt.Fprint(os.Stdout, body)
 		}
 	}
+
+	log.Println("done")
 
 	return nil
 }

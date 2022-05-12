@@ -5,38 +5,58 @@ import (
 	"io"
 	"log"
 	"net"
-	"time"
+	"reflect"
+	"sync"
 
-	"github.com/google/uuid"
 	"gitlab.node-3.net/nadams/zander/internal/message"
-	"gitlab.node-3.net/nadams/zander/zandronum"
 )
 
-func HandleConnection(conn net.Conn, server *zandronum.Server) {
-	id := uuid.New().String()
+func Handle(conn net.Conn) {
+	defer conn.Close()
+
+	var wg sync.WaitGroup
 	send := make(chan message.Message)
 	recv := make(chan message.Message)
-	ticker := time.NewTicker(time.Second * 2)
 
 	encoder := json.NewEncoder(conn)
 	encoder.SetEscapeHTML(false)
 	decoder := json.NewDecoder(conn)
 
+	var msg message.Message
+
+	if err := decoder.Decode(&msg); err != nil {
+		log.Printf("got error when waiting for initial command: %v", err)
+		return
+	}
+
+	handler, found := handlers[msg.BodyType]
+	if !found {
+		log.Printf("handler for body type %v not found", msg.BodyType)
+		return
+	}
+
+	wg.Add(1)
 	go func() {
-		msg := message.Message{BodyType: message.PING}
+		defer func() {
+			close(recv)
 
-		for range ticker.C {
-			conn.SetWriteDeadline(time.Now().Add(time.Second * 5))
+			wg.Done()
+		}()
 
-			if err := encoder.Encode(msg); err != nil {
-				ticker.Stop()
-				server.Disconnect(id)
-				conn.Close()
-			}
+		if err := handler(recv, send); err != nil {
+			conn.Close()
+			log.Printf("error from handler: %v", err)
 		}
 	}()
 
+	wg.Add(1)
 	go func() {
+		defer func() {
+			close(send)
+
+			wg.Done()
+		}()
+
 		for {
 			var msg message.Message
 
@@ -51,25 +71,21 @@ func HandleConnection(conn net.Conn, server *zandronum.Server) {
 				continue
 			}
 
+			log.Printf("got message: %+v", msg)
+
 			recv <- msg
 		}
 	}()
 
-	go func() {
-		for msg := range send {
-			if err := encoder.Encode(msg); err != nil {
-				log.Printf("will not send unknown message: %v", err)
-				continue
-			}
-		}
-	}()
+	recv <- msg
 
-	if err := server.Connect(id, send, recv); err != nil {
-		log.Println(err)
+	for msg := range send {
+		if err := encoder.Encode(msg); err != nil {
+			log.Println(reflect.TypeOf(err))
+			log.Printf("will not send unknown message: %v, %+v", err, msg)
+			continue
+		}
 	}
 
-	ticker.Stop()
-	conn.Close()
-	close(send)
-	close(recv)
+	wg.Wait()
 }

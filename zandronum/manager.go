@@ -3,8 +3,6 @@ package zandronum
 import (
 	"errors"
 	"sync"
-
-	"github.com/google/uuid"
 )
 
 var (
@@ -12,8 +10,7 @@ var (
 )
 
 type Manager struct {
-	sync.RWMutex
-
+	m       sync.RWMutex
 	servers map[ID]*Server
 }
 
@@ -26,10 +23,11 @@ func NewManager() *Manager {
 }
 
 func (m *Manager) Add(server *Server) ID {
-	m.Lock()
-	defer m.Unlock()
+	m.m.Lock()
+	defer m.m.Unlock()
 
-	id := ID(uuid.New().String())
+	//id := ID(uuid.New().String())
+	id := ID("1")
 
 	m.servers[id] = server
 
@@ -55,16 +53,24 @@ func (m *Manager) Stop(id ID) error {
 }
 
 func (m *Manager) List() []ServerInfo {
-	m.RLock()
-	defer m.RUnlock()
+	m.m.RLock()
+	defer m.m.RUnlock()
 
 	out := make([]ServerInfo, 0, len(m.servers))
 
-	for key := range m.servers {
+	for key, server := range m.servers {
 		out = append(out, ServerInfo{
-			ID: string(key),
+			ID:      string(key),
+			Status:  server.Status(),
+			Started: server.started,
 		})
 	}
 
 	return out
+}
+
+func (m *Manager) Get(id ID) (*Server, bool) {
+	server, found := m.servers[id]
+
+	return server, found
 }
