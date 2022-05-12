@@ -118,6 +118,22 @@ func (s *Server) Disconnect(id string) {
 	}
 }
 
+func (s *Server) Status() string {
+	switch {
+	case s.cmd == nil:
+		return "not started"
+
+	case s.cmd.ProcessState != nil:
+		return "stopped"
+
+	case s.cmd.ProcessState == nil && s.cmd != nil:
+		return "running"
+
+	default:
+		return ""
+	}
+}
+
 func (s *Server) attach(id string, send chan<- message.Message, recv <-chan message.Message) error {
 	if s.cmd.ProcessState != nil {
 		b, _ := json.Marshal(string(s.content))

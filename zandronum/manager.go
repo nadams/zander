@@ -3,8 +3,6 @@ package zandronum
 import (
 	"errors"
 	"sync"
-
-	"github.com/google/uuid"
 )
 
 var (
@@ -28,7 +26,8 @@ func (m *Manager) Add(server *Server) ID {
 	m.m.Lock()
 	defer m.m.Unlock()
 
-	id := ID(uuid.New().String())
+	//id := ID(uuid.New().String())
+	id := ID("1")
 
 	m.servers[id] = server
 
@@ -62,6 +61,7 @@ func (m *Manager) List() []ServerInfo {
 	for key, server := range m.servers {
 		out = append(out, ServerInfo{
 			ID:      string(key),
+			Status:  server.Status(),
 			Started: server.started,
 		})
 	}

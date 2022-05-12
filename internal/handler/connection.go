@@ -62,7 +62,6 @@ func Handle(conn net.Conn) {
 
 			if err := decoder.Decode(&msg); err != nil {
 				if err == io.EOF {
-					log.Println("got eof")
 					return
 				} else if _, ok := err.(*net.OpError); ok {
 					return
@@ -89,5 +88,4 @@ func Handle(conn net.Conn) {
 	}
 
 	wg.Wait()
-	log.Println("done handling conn")
 }

@@ -65,6 +65,7 @@ func (c *Client) Open() error {
 				}
 			}
 
+			log.Println("done listening to send")
 			close(c.recv)
 		}()
 
@@ -97,6 +98,7 @@ func (c *Client) Open() error {
 				}
 			}
 
+			log.Println("done recv")
 			close(c.send)
 		}()
 	}

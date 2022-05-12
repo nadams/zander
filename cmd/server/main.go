@@ -58,7 +58,7 @@ func Start(cli CLI, cfg *config.Config) error {
 		quit <- struct{}{}
 	}()
 
-	server := zandronum.NewServer("/usr/share/zandronum/zandronum-server", nil)
+	server := zandronum.NewServer("zandronum-server", nil)
 
 	manager := zandronum.NewManager()
 	id := manager.Add(server)
