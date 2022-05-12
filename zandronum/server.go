@@ -99,22 +99,7 @@ func (s *Server) Stop() error {
 
 func (s *Server) Connect(id string, send chan<- message.Message, recv <-chan message.Message) error {
 	if s.cmd != nil {
-		initMsg := <-recv
-
-		switch initMsg.BodyType {
-		case message.CMD_ATTACH:
-			return s.attach(id, send, recv)
-		case message.CMD_LIST_SERVERS:
-			b, _ := json.Marshal("hello")
-			send <- message.Message{
-				BodyType: message.LINE,
-				Body:     b,
-			}
-
-			return nil
-		default:
-			return fmt.Errorf("unknow init command: %v", initMsg.BodyType)
-		}
+		return s.attach(id, send, recv)
 	}
 
 	return nil

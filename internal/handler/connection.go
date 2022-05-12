@@ -31,7 +31,7 @@ func Handle(conn net.Conn) {
 
 	handler, found := handlers[msg.BodyType]
 	if !found {
-		log.Println("handler for body type %v not found", msg.BodyType)
+		log.Printf("handler for body type %v not found", msg.BodyType)
 		return
 	}
 
@@ -45,7 +45,8 @@ func Handle(conn net.Conn) {
 		}()
 
 		if err := handler(recv, send); err != nil {
-			log.Println("error from handler: %v", err)
+			conn.Close()
+			log.Printf("error from handler: %v", err)
 		}
 	}()
 

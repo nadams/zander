@@ -5,7 +5,9 @@ import (
 	"log"
 	"net"
 	"os"
+	"os/signal"
 	"path/filepath"
+	"syscall"
 
 	"github.com/alecthomas/kong"
 	"gitlab.node-3.net/nadams/zander/config"
@@ -19,6 +21,8 @@ type CLI struct {
 	Socket string `flag:"" short:"s" type:"pathenv" default:"$XDG_CONFIG_HOME/zander/zander.sock" description:"Listen on a socket at the given path"`
 	Config string `flag:"" short:"c" type:"pathenv" default:"$XDG_CONFIG_HOME/zander/config.json" description:"Path to config file"`
 }
+
+var quit = make(chan struct{}, 1)
 
 func main() {
 	var cli CLI
@@ -45,6 +49,15 @@ func main() {
 }
 
 func Start(cli CLI, cfg *config.Config) error {
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+
+	go func() {
+		<-sigs
+
+		quit <- struct{}{}
+	}()
+
 	server := zandronum.NewServer("/usr/share/zandronum/zandronum-server", nil)
 
 	manager := zandronum.NewManager()
@@ -82,14 +95,27 @@ func ListenAndServe(cli CLI, cfg *config.Config, manager *zandronum.Manager) err
 
 	defer removeSocket()
 
+	go func() {
+		<-quit
+		l.Close()
+	}()
+
 	for {
 		conn, err := l.Accept()
 		if err != nil {
+			if _, ok := err.(*net.OpError); ok {
+				break
+			}
+
 			log.Println(err)
+			continue
 		}
 
+		log.Println("handling conn")
 		go handler.Handle(conn)
 	}
+
+	return nil
 }
 
 func registerHandlers(manager *zandronum.Manager) {
