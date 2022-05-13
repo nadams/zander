@@ -27,6 +27,8 @@ func Attach(manager *zandronum.Manager) Handler {
 
 		recv2 := make(chan message.Message)
 
+		defer close(recv2)
+
 		go func() {
 			for msg := range recv {
 				recv2 <- msg

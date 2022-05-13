@@ -54,6 +54,8 @@ func Handle(conn net.Conn) {
 			conn.Close()
 			log.Printf("error from handler: %v", err)
 		}
+
+		conn.Close()
 	}()
 
 	wg.Add(1)

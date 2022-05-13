@@ -73,9 +73,23 @@ func (s *Server) Start() error {
 		s.m.Lock()
 		defer s.m.Unlock()
 
-		for _, consumer := range s.consumers {
+		consIDs := make([]string, 0, len(s.consumers))
+		cons := make([]chan<- []byte, 0, len(s.consumers))
+
+		for key, consumer := range s.consumers {
+			consIDs = append(consIDs, key)
+			cons = append(cons, consumer)
+		}
+
+		for _, id := range consIDs {
+			delete(s.consumers, id)
+		}
+
+		for _, consumer := range cons {
 			close(consumer)
 		}
+
+		s.Stop()
 	}()
 
 	return nil
