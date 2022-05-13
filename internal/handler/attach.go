@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 
 	"github.com/google/uuid"
 	"gitlab.node-3.net/nadams/zander/internal/message"
@@ -15,9 +14,9 @@ func Attach(manager *zandronum.Manager) Handler {
 		attachCmd := <-recv
 
 		var serverID string
-		json.Unmarshal(attachCmd.Body, &serverID)
-
-		log.Printf("got attach cmd for server: %+v", serverID)
+		if err := json.Unmarshal(attachCmd.Body, &serverID); err != nil {
+			return err
+		}
 
 		server, found := manager.Get(zandronum.ID(serverID))
 		if !found {
@@ -26,8 +25,16 @@ func Attach(manager *zandronum.Manager) Handler {
 
 		clientID := uuid.New().String()
 
-		defer server.Disconnect(clientID)
+		recv2 := make(chan message.Message)
 
-		return server.Connect(clientID, send, recv)
+		go func() {
+			for msg := range recv {
+				recv2 <- msg
+			}
+
+			server.Disconnect(clientID)
+		}()
+
+		return server.Connect(clientID, send, recv2)
 	}
 }

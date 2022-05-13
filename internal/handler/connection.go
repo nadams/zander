@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"net"
@@ -38,7 +39,13 @@ func Handle(conn net.Conn) {
 	wg.Add(1)
 	go func() {
 		defer func() {
-			close(recv)
+			if r := recover(); r != nil {
+				fmt.Println(r)
+			}
+		}()
+
+		defer func() {
+			close(send)
 
 			wg.Done()
 		}()
@@ -52,7 +59,7 @@ func Handle(conn net.Conn) {
 	wg.Add(1)
 	go func() {
 		defer func() {
-			close(send)
+			close(recv)
 
 			wg.Done()
 		}()
@@ -70,8 +77,6 @@ func Handle(conn net.Conn) {
 				log.Printf("received unknown message: %v", err)
 				continue
 			}
-
-			log.Printf("got message: %+v", msg)
 
 			recv <- msg
 		}

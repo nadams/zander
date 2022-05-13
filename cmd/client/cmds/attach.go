@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
-	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -60,8 +59,6 @@ func (a *AttachCmd) Run(socket string) error {
 			fmt.Fprint(os.Stdout, body)
 		}
 	}
-
-	log.Println("done")
 
 	return nil
 }

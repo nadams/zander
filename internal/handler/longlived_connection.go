@@ -53,7 +53,6 @@ func HandleConnection(conn net.Conn, server *zandronum.Server) {
 			}
 
 			recv <- msg
-			log.Println("reader should be done")
 		}
 	}()
 
