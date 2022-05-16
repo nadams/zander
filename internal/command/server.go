@@ -1,4 +1,4 @@
-package main
+package command
 
 import (
 	"fmt"
@@ -9,53 +9,43 @@ import (
 	"path/filepath"
 	"syscall"
 
-	"github.com/alecthomas/kong"
 	"gitlab.node-3.net/nadams/zander/config"
-	"gitlab.node-3.net/nadams/zander/internal/command"
 	"gitlab.node-3.net/nadams/zander/internal/handler"
 	"gitlab.node-3.net/nadams/zander/internal/message"
 	"gitlab.node-3.net/nadams/zander/zandronum"
 )
 
-type CLI struct {
-	Socket string `flag:"" short:"s" type:"pathenv" default:"$XDG_CONFIG_HOME/zander/zander.sock" description:"Listen on a socket at the given path"`
+type Server struct {
 	Config string `flag:"" short:"c" type:"pathenv" default:"$XDG_CONFIG_HOME/zander/config.json" description:"Path to config file"`
+
+	ctx  CmdCtx
+	quit chan struct{}
 }
 
-var quit = make(chan struct{}, 1)
-
-func main() {
-	var cli CLI
-	ctx := kong.Parse(&cli, kong.NamedMapper("pathenv", command.PathEnvDecoder()))
+func (s *Server) Run(cmdctx CmdCtx) error {
+	s.ctx = cmdctx
+	s.quit = make(chan struct{}, 1)
 
 	cfg := config.New()
 	if err := cfg.LoadFromDisk(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return err
 	}
 
 	if err := cfg.Validate(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return err
 	}
 
-	switch ctx.Command() {
-	default:
-		if err := Start(cli, cfg); err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-	}
+	return s.run(cfg)
 }
 
-func Start(cli CLI, cfg *config.Config) error {
+func (s *Server) run(cfg *config.Config) error {
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 
 	go func() {
 		<-sigs
 
-		quit <- struct{}{}
+		s.quit <- struct{}{}
 	}()
 
 	server := zandronum.NewServer("zandronum-server", nil)
@@ -64,14 +54,14 @@ func Start(cli CLI, cfg *config.Config) error {
 	id := manager.Add(server)
 	manager.Start(id)
 
-	registerHandlers(manager)
+	s.registerHandlers(manager)
 
-	return ListenAndServe(cli, cfg, manager)
+	return s.listenAndServe(cfg, manager)
 }
 
-func ListenAndServe(cli CLI, cfg *config.Config, manager *zandronum.Manager) error {
+func (s *Server) listenAndServe(cfg *config.Config, manager *zandronum.Manager) error {
 	removeSocket := func() error {
-		if err := os.RemoveAll(cli.Socket); err != nil {
+		if err := os.RemoveAll(s.ctx.Socket); err != nil {
 			return fmt.Errorf("could not remove zander socket: %w", err)
 		}
 
@@ -82,11 +72,11 @@ func ListenAndServe(cli CLI, cfg *config.Config, manager *zandronum.Manager) err
 		return err
 	}
 
-	if err := os.MkdirAll(filepath.Dir(cli.Socket), 0755); err != nil {
+	if err := os.MkdirAll(filepath.Dir(s.ctx.Socket), 0755); err != nil {
 		return fmt.Errorf("could not create path for socket: %w", err)
 	}
 
-	l, err := net.Listen("unix", cli.Socket)
+	l, err := net.Listen("unix", s.ctx.Socket)
 	if err != nil {
 		return fmt.Errorf("could not create socket: %w", err)
 	}
@@ -96,7 +86,7 @@ func ListenAndServe(cli CLI, cfg *config.Config, manager *zandronum.Manager) err
 	defer removeSocket()
 
 	go func() {
-		<-quit
+		<-s.quit
 		l.Close()
 	}()
 
@@ -117,7 +107,7 @@ func ListenAndServe(cli CLI, cfg *config.Config, manager *zandronum.Manager) err
 	return nil
 }
 
-func registerHandlers(manager *zandronum.Manager) {
+func (s *Server) registerHandlers(manager *zandronum.Manager) {
 	handler.Register(message.CMD_LIST_SERVERS, handler.ListServers(manager))
 	handler.Register(message.CMD_ATTACH, handler.Attach(manager))
 }

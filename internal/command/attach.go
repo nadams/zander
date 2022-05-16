@@ -1,4 +1,4 @@
-package cmds
+package command
 
 import (
 	"bufio"
@@ -16,8 +16,8 @@ type AttachCmd struct {
 	ID string `arg:"" required:"true"`
 }
 
-func (a *AttachCmd) Run(socket string) error {
-	client := zandronum.NewClient(socket)
+func (a *AttachCmd) Run(ctx CmdCtx) error {
+	client := zandronum.NewClient(ctx.Socket)
 	if err := client.Open(); err != nil {
 		return err
 	}
