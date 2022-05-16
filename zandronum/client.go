@@ -54,29 +54,33 @@ func (c *Client) Open() error {
 
 		c.wg.Add(1)
 		go func() {
-			defer c.wg.Done()
+			defer func() {
+				close(c.recv)
+				c.wg.Done()
+			}()
 
 			for msg := range c.send {
 				if err := c.encoder.Encode(msg); err != nil {
 					log.Println(err)
 				}
 			}
-
-			close(c.recv)
 		}()
 
 		c.wg.Add(1)
 		go func() {
-			defer c.wg.Done()
+			defer func() {
+				close(c.send)
+				c.wg.Done()
+			}()
 
 			for {
 				var msg message.Message
 
 				if err := c.decoder.Decode(&msg); err != nil {
 					if err == io.EOF {
-						break
+						return
 					} else if _, ok := err.(*net.OpError); ok {
-						break
+						return
 					}
 
 					log.Printf("could not decode message: %v", err)
@@ -93,8 +97,6 @@ func (c *Client) Open() error {
 					c.recv <- msg
 				}
 			}
-
-			close(c.send)
 		}()
 	}
 
