@@ -31,14 +31,11 @@ func NewClient(socket string) *Client {
 }
 
 func (c *Client) Close() error {
-	if c.conn != nil {
-		return c.conn.Close()
-	}
-
 	c.wg.Wait()
 
-	close(c.send)
-	close(c.recv)
+	if c.conn != nil {
+		c.conn.Close()
+	}
 
 	return nil
 }
