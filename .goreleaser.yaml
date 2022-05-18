@@ -21,3 +21,10 @@ changelog:
     exclude:
       - '^docs:'
       - '^test:'
+env_files:
+  gitlab_token: "gitlab_token"
+gitlab_urls:
+  api: https://gitlab.node-3.net/api/v4/
+  download: https://gitlab.node-3.net
+  skip_tls_verify: false
+  use_package_registry: false
