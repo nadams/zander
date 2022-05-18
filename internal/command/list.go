@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/jedib0t/go-pretty/table"
+	"github.com/jedib0t/go-pretty/v6/table"
 	"gitlab.node-3.net/nadams/zander/internal/message"
 	"gitlab.node-3.net/nadams/zander/zandronum"
 	"gopkg.in/yaml.v2"
