@@ -3,7 +3,7 @@ image: golang:buster
 stages:
   - test
   - build
-  - deploy
+  - release
 
 format:
   stage: test
@@ -20,3 +20,15 @@ compile:
   artifacts:
     paths:
       - bin
+
+release:
+  stage: release
+  image:
+    name: goreleaser/goreleaser
+    entrypoint: ['']
+  only:
+    - tags
+  variables:
+    GIT_DEPTH: 0
+  script:
+    - goreleaser release --rm-dist
