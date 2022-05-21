@@ -4,7 +4,6 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
-	"log"
 	"os"
 	"time"
 
@@ -32,47 +31,46 @@ func (l *ListCmd) Run(ctx CmdCtx) error {
 
 	client.Send() <- message.Message{BodyType: message.CMD_LIST_SERVERS}
 
-	for msg := range client.Recv() {
-		if msg.BodyType == message.SERVER_LIST {
-			var body message.ServerList
+	msg := <-client.Recv()
+	if msg.BodyType != message.SERVER_LIST {
+		return fmt.Errorf("invalid response from server: %v", msg.BodyType)
+	}
 
-			if err := json.Unmarshal(msg.Body, &body); err != nil {
-				log.Println(err)
-				break
-			}
+	var body message.ServerList
 
-			switch l.Output {
-			case "table":
-				tw := table.NewWriter()
-				h := make(table.Row, 0, len(l.header))
-				for _, x := range l.header {
-					h = append(h, x)
-				}
-				tw.AppendHeader(h)
-				for _, s := range body.Servers {
-					tw.AppendRow(table.Row{s.ID, s.Name, s.Status, s.Started.Format(time.ANSIC)})
-				}
-				fmt.Fprintln(os.Stdout, tw.Render())
-			case "csv":
-				w := csv.NewWriter(os.Stdout)
-				w.Write(l.header)
-				for _, s := range body.Servers {
-					w.Write([]string{s.ID, s.Name, s.Status, s.Started.Format(time.RFC3339)})
-				}
-				w.Flush()
-			case "json":
-				enc := json.NewEncoder(os.Stdout)
-				enc.SetEscapeHTML(false)
-				enc.SetIndent("", "  ")
+	if err := json.Unmarshal(msg.Body, &body); err != nil {
+		return fmt.Errorf("response from server not understood: %w", err)
+	}
 
-				enc.Encode(body)
-			case "yaml":
-				yaml.NewEncoder(os.Stdout).Encode(body)
-			default:
-				fmt.Fprintf(os.Stdout, "%+v\n", body)
-			}
-			break
+	switch l.Output {
+	case "table":
+		tw := table.NewWriter()
+		h := make(table.Row, 0, len(l.header))
+		for _, x := range l.header {
+			h = append(h, x)
 		}
+		tw.AppendHeader(h)
+		for _, s := range body.Servers {
+			tw.AppendRow(table.Row{s.ID, s.Name, s.Status, s.Started.Format(time.ANSIC)})
+		}
+		fmt.Fprintln(os.Stdout, tw.Render())
+	case "csv":
+		w := csv.NewWriter(os.Stdout)
+		w.Write(l.header)
+		for _, s := range body.Servers {
+			w.Write([]string{s.ID, s.Name, s.Status, s.Started.Format(time.RFC3339)})
+		}
+		w.Flush()
+	case "json":
+		enc := json.NewEncoder(os.Stdout)
+		enc.SetEscapeHTML(false)
+		enc.SetIndent("", "  ")
+
+		enc.Encode(body)
+	case "yaml":
+		yaml.NewEncoder(os.Stdout).Encode(body)
+	default:
+		fmt.Fprintf(os.Stdout, "%+v\n", body)
 	}
 
 	return nil

@@ -13,7 +13,16 @@ import (
 )
 
 func Handle(conn net.Conn) {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println(r)
+		}
+	}()
+
 	defer conn.Close()
+
+	r, w := io.Pipe()
+	go io.Copy(w, conn)
 
 	var wg sync.WaitGroup
 	send := make(chan message.Message)
@@ -21,7 +30,7 @@ func Handle(conn net.Conn) {
 
 	encoder := json.NewEncoder(conn)
 	encoder.SetEscapeHTML(false)
-	decoder := json.NewDecoder(conn)
+	decoder := json.NewDecoder(r)
 
 	var msg message.Message
 
@@ -38,33 +47,22 @@ func Handle(conn net.Conn) {
 
 	wg.Add(1)
 	go func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Println(r)
+		defer wg.Done()
+
+		recv <- msg
+
+		for msg := range send {
+			if err := encoder.Encode(msg); err != nil {
+				log.Println(reflect.TypeOf(err))
+				log.Printf("will not send unknown message: %v, %+v", err, msg)
+				continue
 			}
-		}()
-
-		defer func() {
-			close(send)
-
-			wg.Done()
-		}()
-
-		if err := handler(recv, send); err != nil {
-			conn.Close()
-			log.Printf("error from handler: %v", err)
 		}
-
-		conn.Close()
 	}()
 
 	wg.Add(1)
 	go func() {
-		defer func() {
-			close(recv)
-
-			wg.Done()
-		}()
+		defer wg.Done()
 
 		for {
 			var msg message.Message
@@ -73,6 +71,8 @@ func Handle(conn net.Conn) {
 				if err == io.EOF {
 					return
 				} else if _, ok := err.(*net.OpError); ok {
+					return
+				} else if err == io.ErrClosedPipe {
 					return
 				}
 
@@ -84,15 +84,13 @@ func Handle(conn net.Conn) {
 		}
 	}()
 
-	recv <- msg
-
-	for msg := range send {
-		if err := encoder.Encode(msg); err != nil {
-			log.Println(reflect.TypeOf(err))
-			log.Printf("will not send unknown message: %v, %+v", err, msg)
-			continue
-		}
+	if err := handler(recv, send); err != nil {
+		log.Printf("error from handler: %v", err)
 	}
+
+	close(send)
+
+	r.Close()
 
 	wg.Wait()
 }

@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -29,6 +30,8 @@ func (a *AttachCmd) Run(ctx CmdCtx) error {
 
 	go func() {
 		<-sigs
+
+		log.Println("got sig")
 
 		client.Close()
 	}()
@@ -59,6 +62,8 @@ func (a *AttachCmd) Run(ctx CmdCtx) error {
 			fmt.Fprint(os.Stdout, body)
 		}
 	}
+
+	log.Println("end")
 
 	return nil
 }
