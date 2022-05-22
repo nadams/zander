@@ -1,116 +1,105 @@
 package zandronum
 
-import (
-	"encoding/json"
-	"fmt"
-	"io"
-	"log"
-	"net"
-	"sync"
+//type Client struct {
+//  socket  string
+//  conn    net.Conn
+//  encoder *json.Encoder
+//  decoder *json.Decoder
+//  send    chan message.Message
+//  recv    chan message.Message
+//  wg      sync.WaitGroup
+//  pp      bool
+//}
 
-	"gitlab.node-3.net/nadams/zander/internal/message"
-)
+//func NewClient(socket string) *Client {
+//  return &Client{
+//    socket: socket,
+//    send:   make(chan message.Message),
+//    recv:   make(chan message.Message),
+//  }
+//}
 
-type Client struct {
-	socket  string
-	conn    net.Conn
-	encoder *json.Encoder
-	decoder *json.Decoder
-	send    chan message.Message
-	recv    chan message.Message
-	wg      sync.WaitGroup
-	pp      bool
-}
+//func (c *Client) Close() error {
+//  c.wg.Wait()
 
-func NewClient(socket string) *Client {
-	return &Client{
-		socket: socket,
-		send:   make(chan message.Message),
-		recv:   make(chan message.Message),
-	}
-}
+//  if c.conn != nil {
+//    c.conn.Close()
+//  }
 
-func (c *Client) Close() error {
-	c.wg.Wait()
+//  return nil
+//}
 
-	if c.conn != nil {
-		c.conn.Close()
-	}
+//func (c *Client) Open() error {
+//  if c.conn == nil {
+//    conn, err := net.Dial("unix", c.socket)
+//    if err != nil {
+//      return fmt.Errorf("could not connect to zander: %w", err)
+//    }
 
-	return nil
-}
+//    c.conn = conn
+//    c.encoder = json.NewEncoder(c.conn)
+//    c.encoder.SetEscapeHTML(false)
+//    c.decoder = json.NewDecoder(c.conn)
 
-func (c *Client) Open() error {
-	if c.conn == nil {
-		conn, err := net.Dial("unix", c.socket)
-		if err != nil {
-			return fmt.Errorf("could not connect to zander: %w", err)
-		}
+//    c.wg.Add(1)
+//    go func() {
+//      defer func() {
+//        close(c.recv)
+//        c.wg.Done()
+//      }()
 
-		c.conn = conn
-		c.encoder = json.NewEncoder(c.conn)
-		c.encoder.SetEscapeHTML(false)
-		c.decoder = json.NewDecoder(c.conn)
+//      for msg := range c.send {
+//        if err := c.encoder.Encode(msg); err != nil {
+//          log.Println(err)
+//        }
+//      }
+//    }()
 
-		c.wg.Add(1)
-		go func() {
-			defer func() {
-				close(c.recv)
-				c.wg.Done()
-			}()
+//    c.wg.Add(1)
+//    go func() {
+//      defer func() {
+//        close(c.send)
+//        c.wg.Done()
+//      }()
 
-			for msg := range c.send {
-				if err := c.encoder.Encode(msg); err != nil {
-					log.Println(err)
-				}
-			}
-		}()
+//      for {
+//        var msg message.Message
 
-		c.wg.Add(1)
-		go func() {
-			defer func() {
-				close(c.send)
-				c.wg.Done()
-			}()
+//        if err := c.decoder.Decode(&msg); err != nil {
+//          if err == io.EOF {
+//            return
+//          } else if _, ok := err.(*net.OpError); ok {
+//            return
+//          }
 
-			for {
-				var msg message.Message
+//          log.Printf("could not decode message: %v", err)
+//          return
+//        }
 
-				if err := c.decoder.Decode(&msg); err != nil {
-					if err == io.EOF {
-						return
-					} else if _, ok := err.(*net.OpError); ok {
-						return
-					}
+//        switch msg.BodyType {
+//        case message.PING:
+//          if c.pp {
+//            c.send <- message.Message{BodyType: message.PONG}
+//          }
+//        case message.PONG:
+//        default:
+//          c.recv <- msg
+//        }
+//      }
+//    }()
+//  }
 
-					log.Printf("could not decode message: %v", err)
-					return
-				}
+//  return nil
+//}
 
-				switch msg.BodyType {
-				case message.PING:
-					if c.pp {
-						c.send <- message.Message{BodyType: message.PONG}
-					}
-				case message.PONG:
-				default:
-					c.recv <- msg
-				}
-			}
-		}()
-	}
+//func (c *Client) StartPingPong() {
+//  c.pp = true
+//}
 
-	return nil
-}
+//func (c *Client) Send() chan<- message.Message {
+//  return c.send
+//}
 
-func (c *Client) StartPingPong() {
-	c.pp = true
-}
-
-func (c *Client) Send() chan<- message.Message {
-	return c.send
-}
-
-func (c *Client) Recv() <-chan message.Message {
-	return c.recv
-}
+//func (c *Client) Recv() <-chan message.Message {
+//  return c.recv
+//}

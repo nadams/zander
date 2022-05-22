@@ -2,7 +2,6 @@ package zandronum
 
 import (
 	"bufio"
-	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -10,8 +9,6 @@ import (
 	"sync"
 	"syscall"
 	"time"
-
-	"gitlab.node-3.net/nadams/zander/internal/message"
 )
 
 type Server struct {
@@ -111,13 +108,13 @@ func (s *Server) Stop() error {
 	return nil
 }
 
-func (s *Server) Connect(id string, send chan<- message.Message, recv <-chan message.Message) error {
-	if s.cmd != nil {
-		return s.attach(id, send, recv)
-	}
+//func (s *Server) Connect(id string, send chan<- message.Message, recv <-chan message.Message) error {
+//  if s.cmd != nil {
+//    return s.attach(id, send, recv)
+//  }
 
-	return nil
-}
+//  return nil
+//}
 
 func (s *Server) Disconnect(id string) {
 	log.Printf("client %s disconnecting", id)
@@ -148,51 +145,51 @@ func (s *Server) Status() string {
 	}
 }
 
-func (s *Server) attach(id string, send chan<- message.Message, recv <-chan message.Message) error {
-	if s.cmd.ProcessState != nil {
-		b, _ := json.Marshal(string(s.content))
-		send <- message.Message{
-			BodyType: message.LINE,
-			Body:     b,
-		}
+//func (s *Server) attach(id string, send chan<- message.Message, recv <-chan message.Message) error {
+//  if s.cmd.ProcessState != nil {
+//    b, _ := json.Marshal(string(s.content))
+//    send <- message.Message{
+//      BodyType: message.LINE,
+//      Body:     b,
+//    }
 
-		return nil
-	}
+//    return nil
+//  }
 
-	consumer := make(chan []byte)
+//  consumer := make(chan []byte)
 
-	s.m.Lock()
-	s.consumers[id] = consumer
-	s.m.Unlock()
+//  s.m.Lock()
+//  s.consumers[id] = consumer
+//  s.m.Unlock()
 
-	go func() {
-		for msg := range recv {
-			if msg.BodyType == message.LINE {
-				var body string
-				if err := json.Unmarshal(msg.Body, &body); err != nil {
-					log.Println(err)
-				}
+//  go func() {
+//    for msg := range recv {
+//      if msg.BodyType == message.LINE {
+//        var body string
+//        if err := json.Unmarshal(msg.Body, &body); err != nil {
+//          log.Println(err)
+//        }
 
-				s.stdin.Write([]byte(body))
-				s.stdin.Write([]byte{'\n'})
-			}
-		}
-	}()
+//        s.stdin.Write([]byte(body))
+//        s.stdin.Write([]byte{'\n'})
+//      }
+//    }
+//  }()
 
-	b, _ := json.Marshal(string(s.content))
-	send <- message.Message{
-		BodyType: message.LINE,
-		Body:     b,
-	}
+//  b, _ := json.Marshal(string(s.content))
+//  send <- message.Message{
+//    BodyType: message.LINE,
+//    Body:     b,
+//  }
 
-	for line := range consumer {
-		b, _ = json.Marshal(string(line))
+//  for line := range consumer {
+//    b, _ = json.Marshal(string(line))
 
-		send <- message.Message{
-			BodyType: message.LINE,
-			Body:     b,
-		}
-	}
+//    send <- message.Message{
+//      BodyType: message.LINE,
+//      Body:     b,
+//    }
+//  }
 
-	return nil
-}
+//  return nil
+//}
