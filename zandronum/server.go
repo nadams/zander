@@ -4,11 +4,12 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"log"
 	"os/exec"
 	"sync"
 	"syscall"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type Server struct {
@@ -113,7 +114,7 @@ func (s *Server) Stop() error {
 }
 
 func (s *Server) Connect(id string, send chan<- []byte, recv <-chan []byte) error {
-	log.Printf("client %s connecting", id)
+	log.Infof("client %s connecting", id)
 
 	if s.cmd != nil {
 		return s.attach(id, send, recv)
@@ -123,7 +124,7 @@ func (s *Server) Connect(id string, send chan<- []byte, recv <-chan []byte) erro
 }
 
 func (s *Server) Disconnect(id string) {
-	log.Printf("client %s disconnecting", id)
+	log.Info("client %s disconnecting", id)
 
 	s.m.Lock()
 	defer s.m.Unlock()

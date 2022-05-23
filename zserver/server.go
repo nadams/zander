@@ -3,9 +3,9 @@ package zserver
 import (
 	"context"
 	"io"
-	"log"
 
 	"github.com/google/uuid"
+	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -64,7 +64,7 @@ func (z *ZanderServer) Attach(stream zproto.Zander_AttachServer) error {
 					return
 				}
 
-				log.Printf("error when reading client: %v", err)
+				log.Errorf("error when reading client: %v", err)
 				return
 			}
 
@@ -77,7 +77,7 @@ func (z *ZanderServer) Attach(stream zproto.Zander_AttachServer) error {
 			if err := stream.Send(&zproto.AttachOut{
 				Content: data,
 			}); err != nil {
-				log.Println(err)
+				log.Error(err)
 				return
 			}
 		}
@@ -90,7 +90,7 @@ func (z *ZanderServer) Attach(stream zproto.Zander_AttachServer) error {
 		}()
 
 		if err := srv.Connect(id, send, recv); err != nil {
-			log.Println(err)
+			log.Error(err)
 			return
 		}
 	}()

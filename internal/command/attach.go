@@ -5,9 +5,9 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"log"
 	"os"
 
+	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc/status"
 
 	"gitlab.node-3.net/nadams/zander/zproto"
@@ -45,7 +45,7 @@ func (a *AttachCmd) Run(cmdCtx CmdCtx) error {
 						return
 					}
 
-					log.Println(err)
+					log.Error(err)
 					return
 				}
 			}
@@ -64,7 +64,7 @@ func (a *AttachCmd) Run(cmdCtx CmdCtx) error {
 					}
 				}
 
-				log.Printf("unknown error from server: %v", err)
+				log.Errorf("unknown error from server: %v", err)
 			}
 
 			fmt.Print(string(in.Content))
