@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+option go_package = "gitlab.node-3.net/nadams/zander/zproto";
+
+import "google/protobuf/timestamp.proto";
+
+package zproto;
+
+service Zander {
+  rpc ListServers(ListServersRequest) returns (ListServersResponse) {}
+  rpc RestartServer(RestartServerRequest) returns (RestartServerResponse) {}
+  rpc Attach(stream AttachIn) returns (stream AttachOut) {}
+}
+
+message ListServersRequest {}
+
+message ListServersResponse {
+  repeated Server servers = 1;
+}
+
+message RestartServerRequest {
+  string id = 1;  
+}
+
+message RestartServerResponse {}
+
+message Server {
+  string id = 1;
+  string name = 2;
+  string status = 3;
+  google.protobuf.Timestamp started_at = 4;
+}
+
+message AttachIn {
+  string id = 1;
+  bytes content = 2;
+}
+
+message AttachOut {
+  bytes content = 1;  
+}

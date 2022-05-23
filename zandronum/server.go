@@ -2,7 +2,6 @@ package zandronum
 
 import (
 	"bufio"
-	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -10,12 +9,12 @@ import (
 	"sync"
 	"syscall"
 	"time"
-
-	"gitlab.node-3.net/nadams/zander/internal/message"
 )
 
 type Server struct {
 	m         sync.RWMutex
+	binary    string
+	opts      map[string]string
 	cmd       *exec.Cmd
 	content   []byte
 	stdout    io.ReadCloser
@@ -28,6 +27,8 @@ func NewServer(binary string, opts map[string]string) *Server {
 	cmd := exec.Command(binary)
 
 	return &Server{
+		binary:    binary,
+		opts:      opts,
 		cmd:       cmd,
 		consumers: make(map[string]chan<- []byte),
 	}
@@ -111,7 +112,9 @@ func (s *Server) Stop() error {
 	return nil
 }
 
-func (s *Server) Connect(id string, send chan<- message.Message, recv <-chan message.Message) error {
+func (s *Server) Connect(id string, send chan<- []byte, recv <-chan []byte) error {
+	log.Printf("client %s connecting", id)
+
 	if s.cmd != nil {
 		return s.attach(id, send, recv)
 	}
@@ -148,13 +151,9 @@ func (s *Server) Status() string {
 	}
 }
 
-func (s *Server) attach(id string, send chan<- message.Message, recv <-chan message.Message) error {
+func (s *Server) attach(id string, send chan<- []byte, recv <-chan []byte) error {
 	if s.cmd.ProcessState != nil {
-		b, _ := json.Marshal(string(s.content))
-		send <- message.Message{
-			BodyType: message.LINE,
-			Body:     b,
-		}
+		send <- s.content
 
 		return nil
 	}
@@ -167,31 +166,15 @@ func (s *Server) attach(id string, send chan<- message.Message, recv <-chan mess
 
 	go func() {
 		for msg := range recv {
-			if msg.BodyType == message.LINE {
-				var body string
-				if err := json.Unmarshal(msg.Body, &body); err != nil {
-					log.Println(err)
-				}
-
-				s.stdin.Write([]byte(body))
-				s.stdin.Write([]byte{'\n'})
-			}
+			s.stdin.Write([]byte(msg))
+			s.stdin.Write([]byte{'\n'})
 		}
 	}()
 
-	b, _ := json.Marshal(string(s.content))
-	send <- message.Message{
-		BodyType: message.LINE,
-		Body:     b,
-	}
+	send <- s.content
 
 	for line := range consumer {
-		b, _ = json.Marshal(string(line))
-
-		send <- message.Message{
-			BodyType: message.LINE,
-			Body:     b,
-		}
+		send <- line
 	}
 
 	return nil

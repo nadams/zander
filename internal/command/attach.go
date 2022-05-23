@@ -2,68 +2,74 @@ package command
 
 import (
 	"bufio"
-	"encoding/json"
+	"context"
 	"fmt"
+	"io"
 	"log"
 	"os"
-	"os/signal"
-	"syscall"
 
-	"gitlab.node-3.net/nadams/zander/internal/message"
-	"gitlab.node-3.net/nadams/zander/zandronum"
+	"google.golang.org/grpc/status"
+
+	"gitlab.node-3.net/nadams/zander/zproto"
 )
 
 type AttachCmd struct {
 	ID string `arg:"" required:"true"`
 }
 
-func (a *AttachCmd) Run(ctx CmdCtx) error {
-	client := zandronum.NewClient(ctx.Socket)
-	if err := client.Open(); err != nil {
-		return err
-	}
+func (a *AttachCmd) Run(cmdCtx CmdCtx) error {
+	return WithConn(cmdCtx.Socket, func(client zproto.ZanderClient) error {
+		//ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
+		//defer cancel()
+		ctx := context.Background()
 
-	sigs := make(chan os.Signal, 1)
-	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+		stream, err := client.Attach(ctx)
+		if err != nil {
+			return err
+		}
 
-	defer client.Close()
+		if err := stream.Send(&zproto.AttachIn{Id: a.ID}); err != nil {
+			return err
+		}
 
-	go func() {
-		<-sigs
+		go func() {
+			scanner := bufio.NewScanner(os.Stdin)
+			for scanner.Scan() {
+				content := scanner.Bytes()
 
-		log.Println("got sig")
+				if err := stream.Send(&zproto.AttachIn{
+					Id:      a.ID,
+					Content: content,
+				}); err != nil {
+					if err == io.EOF {
+						return
+					}
 
-		client.Close()
-	}()
-
-	b, _ := json.Marshal(a.ID)
-
-	client.Send() <- message.Message{BodyType: message.CMD_ATTACH, Body: b}
-	client.StartPingPong()
-
-	go func() {
-		scanner := bufio.NewScanner(os.Stdin)
-
-		for scanner.Scan() {
-			b, _ := json.Marshal(scanner.Text())
-
-			client.Send() <- message.Message{
-				BodyType: message.LINE,
-				Body:     b,
+					log.Println(err)
+					return
+				}
 			}
+		}()
+
+		for {
+			in, err := stream.Recv()
+			if err != nil {
+				if err == io.EOF {
+					break
+				}
+
+				if err, ok := status.FromError(err); ok {
+					if err.Message() == "error reading from server: EOF" {
+						break
+					}
+				}
+
+				log.Printf("unknown error from server: %v", err)
+			}
+
+			fmt.Print(string(in.Content))
 		}
-	}()
 
-	for msg := range client.Recv() {
-		switch msg.BodyType {
-		case message.LINE:
-			var body string
-			json.Unmarshal(msg.Body, &body)
-			fmt.Fprint(os.Stdout, body)
-		}
-	}
-
-	log.Println("end")
-
-	return nil
+		return nil
+	})
 }

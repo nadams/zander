@@ -2,64 +2,35 @@ package command
 
 import (
 	"fmt"
-	"log"
 	"net"
 	"os"
-	"os/signal"
 	"path/filepath"
-	"syscall"
 
-	"gitlab.node-3.net/nadams/zander/config"
-	"gitlab.node-3.net/nadams/zander/internal/handler"
-	"gitlab.node-3.net/nadams/zander/internal/message"
+	"google.golang.org/grpc"
+
 	"gitlab.node-3.net/nadams/zander/zandronum"
+	"gitlab.node-3.net/nadams/zander/zproto"
+	"gitlab.node-3.net/nadams/zander/zserver"
 )
 
 type Server struct {
 	Config string `flag:"" short:"c" type:"pathenv" default:"$XDG_CONFIG_HOME/zander/config.json" description:"Path to config file"`
 
-	ctx  CmdCtx
-	quit chan struct{}
+	ctx CmdCtx
 }
 
 func (s *Server) Run(cmdctx CmdCtx) error {
 	s.ctx = cmdctx
-	s.quit = make(chan struct{}, 1)
-
-	cfg := config.New()
-	if err := cfg.LoadFromDisk(); err != nil {
-		return err
-	}
-
-	if err := cfg.Validate(); err != nil {
-		return err
-	}
-
-	return s.run(cfg)
-}
-
-func (s *Server) run(cfg *config.Config) error {
-	sigs := make(chan os.Signal, 1)
-	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
-
-	go func() {
-		<-sigs
-
-		s.quit <- struct{}{}
-	}()
-
 	server := zandronum.NewServer("zandronum-server", nil)
 
 	manager := zandronum.NewManager()
 	id := manager.Add(server)
 	manager.Start(id)
 
-	s.registerHandlers(manager)
-
-	return s.listenAndServe(cfg, manager)
+	return s.listenAndServe(manager)
 }
 
-func (s *Server) listenAndServe(cfg *config.Config, manager *zandronum.Manager) error {
+func (s *Server) listenAndServe(manager *zandronum.Manager) error {
 	removeSocket := func() error {
 		if err := os.RemoveAll(s.ctx.Socket); err != nil {
 			return fmt.Errorf("could not remove zander socket: %w", err)
@@ -85,29 +56,11 @@ func (s *Server) listenAndServe(cfg *config.Config, manager *zandronum.Manager) 
 
 	defer removeSocket()
 
-	go func() {
-		<-s.quit
-		l.Close()
-	}()
+	var opts []grpc.ServerOption
 
-	for {
-		conn, err := l.Accept()
-		if err != nil {
-			if _, ok := err.(*net.OpError); ok {
-				break
-			}
-
-			log.Println(err)
-			continue
-		}
-
-		go handler.Handle(conn)
-	}
+	server := grpc.NewServer(opts...)
+	zproto.RegisterZanderServer(server, zserver.New(manager))
+	server.Serve(l)
 
 	return nil
-}
-
-func (s *Server) registerHandlers(manager *zandronum.Manager) {
-	handler.Register(message.CMD_LIST_SERVERS, handler.ListServers(manager))
-	handler.Register(message.CMD_ATTACH, handler.Attach(manager))
 }

@@ -23,13 +23,9 @@ func NewManager() *Manager {
 }
 
 func (m *Manager) Add(server *Server) ID {
-	m.m.Lock()
-	defer m.m.Unlock()
-
 	//id := ID(uuid.New().String())
 	id := ID("1")
-
-	m.servers[id] = server
+	m.add(id, server)
 
 	return id
 }
@@ -50,6 +46,21 @@ func (m *Manager) Stop(id ID) error {
 	}
 
 	return ErrServerNotFound
+}
+
+func (m *Manager) Restart(id ID) error {
+	server, found := m.servers[id]
+	if found {
+		server.Stop()
+
+		newServer := NewServer(server.binary, server.opts)
+		m.remove(id)
+		m.add(id, newServer)
+
+		return m.Start(id)
+	}
+
+	return nil
 }
 
 func (m *Manager) List() []ServerInfo {
@@ -73,4 +84,18 @@ func (m *Manager) Get(id ID) (*Server, bool) {
 	server, found := m.servers[id]
 
 	return server, found
+}
+
+func (m *Manager) remove(id ID) {
+	m.m.Lock()
+	defer m.m.Unlock()
+
+	delete(m.servers, id)
+}
+
+func (m *Manager) add(id ID, server *Server) {
+	m.m.Lock()
+	defer m.m.Unlock()
+
+	m.servers[id] = server
 }
