@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/signal"
+	"syscall"
 
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc/status"
@@ -19,9 +21,15 @@ type AttachCmd struct {
 
 func (a *AttachCmd) Run(cmdCtx CmdCtx) error {
 	return WithConn(cmdCtx.Socket, func(client zproto.ZanderClient) error {
-		//ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
-		//defer cancel()
-		ctx := context.Background()
+		ctx, cancel := context.WithCancel(context.Background())
+		sigs := make(chan os.Signal, 1)
+		signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+
+		go func() {
+			<-sigs
+
+			cancel()
+		}()
 
 		stream, err := client.Attach(ctx)
 		if err != nil {
@@ -58,10 +66,8 @@ func (a *AttachCmd) Run(cmdCtx CmdCtx) error {
 					break
 				}
 
-				if err, ok := status.FromError(err); ok {
-					if err.Message() == "error reading from server: EOF" {
-						break
-					}
+				if _, ok := status.FromError(err); ok {
+					break
 				}
 
 				log.Errorf("unknown error from server: %v", err)
