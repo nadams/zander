@@ -27,18 +27,26 @@ func New(manager *zandronum.Manager) *ZanderServer {
 	}
 }
 
+func (z *ZanderServer) RestartServer(ctx context.Context, in *zproto.RestartServerRequest) (*zproto.RestartServerResponse, error) {
+	if err := z.manager.Restart(zandronum.ID(in.Id)); err != nil {
+		return nil, err
+	}
+
+	return new(zproto.RestartServerResponse), nil
+}
+
 func (z *ZanderServer) Attach(stream zproto.Zander_AttachServer) error {
 	initial, err := stream.Recv()
 	if err != nil {
 		return err
 	}
 
-	srv, found := z.manager.Get(zandronum.ID(initial.ServerId))
+	srv, found := z.manager.Get(zandronum.ID(initial.Id))
 	if !found {
-		return grpc.Errorf(codes.NotFound, "server with id '%v' not found", initial.ServerId)
+		return grpc.Errorf(codes.NotFound, "server with id '%v' not found", initial.Id)
 	}
 
-	wait := make(chan struct{})
+	wait := make(chan struct{}, 1)
 	send := make(chan []byte)
 	recv := make(chan []byte)
 
@@ -46,7 +54,9 @@ func (z *ZanderServer) Attach(stream zproto.Zander_AttachServer) error {
 		for {
 			in, err := stream.Recv()
 			if err != nil {
-				defer close(wait)
+				defer func() {
+					wait <- struct{}{}
+				}()
 
 				if err == io.EOF {
 					return
@@ -77,6 +87,10 @@ func (z *ZanderServer) Attach(stream zproto.Zander_AttachServer) error {
 
 	id := uuid.New().String()
 	go func() {
+		defer func() {
+			wait <- struct{}{}
+		}()
+
 		if err := srv.Connect(id, send, recv); err != nil {
 			log.Println(err)
 			return

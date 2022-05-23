@@ -13,6 +13,8 @@ import (
 
 type Server struct {
 	m         sync.RWMutex
+	binary    string
+	opts      map[string]string
 	cmd       *exec.Cmd
 	content   []byte
 	stdout    io.ReadCloser
@@ -25,6 +27,8 @@ func NewServer(binary string, opts map[string]string) *Server {
 	cmd := exec.Command(binary)
 
 	return &Server{
+		binary:    binary,
+		opts:      opts,
 		cmd:       cmd,
 		consumers: make(map[string]chan<- []byte),
 	}

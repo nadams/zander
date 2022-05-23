@@ -7,9 +7,10 @@ import (
 )
 
 type CLI struct {
-	Server command.Server         `cmd:"" help:"Start zander in server mode"`
-	Attach command.AttachCmd      `cmd:"" help:"Attach to a running doom server"`
-	List   command.ListServersCmd `cmd:"" help:"List configured doom servers"`
+	Server  command.Server           `cmd:"" help:"Start zander in server mode"`
+	List    command.ListServersCmd   `cmd:"" help:"List configured doom servers"`
+	Restart command.RestartServerCmd `cmd:"" help:"Restart a doom server"`
+	Attach  command.AttachCmd        `cmd:"" help:"Attach to a running doom server"`
 
 	Socket string `flag:"" short:"s" type:"pathenv" default:"$XDG_CONFIG_HOME/zander/zander.sock" description:"Connects to a socket at the given path"`
 }
