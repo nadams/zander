@@ -124,7 +124,7 @@ func (s *Server) Connect(id string, send chan<- []byte, recv <-chan []byte) erro
 }
 
 func (s *Server) Disconnect(id string) {
-	log.Info("client %s disconnecting", id)
+	log.Infof("client %s disconnecting", id)
 
 	s.m.Lock()
 	defer s.m.Unlock()
