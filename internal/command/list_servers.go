@@ -14,7 +14,7 @@ import (
 )
 
 type ListServersCmd struct {
-	Output string `flag:"" short:"o" enum:"table,json,yaml,csv,raw" default:"table"`
+	Output string `flag:"" short:"o" enum:"table,json,yaml,csv,raw" default:"table" help:"Output format. valid values: (valid values: ${enum})"`
 
 	header []string
 }
