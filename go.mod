@@ -9,6 +9,8 @@ require (
 
 require (
 	github.com/adrg/xdg v0.4.0
+	github.com/davecgh/go-spew v1.1.1
+	github.com/google/uuid v1.1.2
 	github.com/jedib0t/go-pretty v4.3.0+incompatible
 	google.golang.org/grpc v1.46.2
 	google.golang.org/protobuf v1.28.0

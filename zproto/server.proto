@@ -8,6 +8,7 @@ package zproto;
 
 service Zander {
   rpc ListServers(ListServersRequest) returns (ListServersResponse) {}
+  rpc Attach(stream AttachIn) returns (stream AttachOut) {}
 }
 
 message ListServersRequest {}
@@ -21,4 +22,13 @@ message Server {
   string name = 2;
   string status = 3;
   google.protobuf.Timestamp started_at = 4;
+}
+
+message AttachIn {
+  string server_id = 1;
+  bytes content = 2;
+}
+
+message AttachOut {
+  bytes content = 1;  
 }
