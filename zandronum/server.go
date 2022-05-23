@@ -113,6 +113,8 @@ func (s *Server) Stop() error {
 }
 
 func (s *Server) Connect(id string, send chan<- []byte, recv <-chan []byte) error {
+	log.Printf("client %s connecting", id)
+
 	if s.cmd != nil {
 		return s.attach(id, send, recv)
 	}
@@ -150,7 +152,6 @@ func (s *Server) Status() string {
 }
 
 func (s *Server) attach(id string, send chan<- []byte, recv <-chan []byte) error {
-	fmt.Printf("%+v\n", s.cmd.ProcessState)
 	if s.cmd.ProcessState != nil {
 		send <- s.content
 

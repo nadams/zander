@@ -81,8 +81,6 @@ func (z *ZanderServer) Attach(stream zproto.Zander_AttachServer) error {
 				return
 			}
 		}
-
-		log.Println("done sending data")
 	}()
 
 	id := uuid.New().String()
