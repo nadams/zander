@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"gitlab.node-3.net/nadams/zander/zandronum"
@@ -45,17 +46,17 @@ func (z *ZanderServer) Attach(stream zproto.Zander_AttachServer) error {
 		for {
 			in, err := stream.Recv()
 			if err != nil {
+				defer close(wait)
+
 				if err == io.EOF {
-					log.Println("close channel")
-					close(wait)
+					return
+				} else if st, ok := status.FromError(err); ok && st.Code() == codes.Canceled {
 					return
 				}
 
 				log.Printf("error when reading client: %v", err)
 				return
 			}
-
-			log.Println("got data")
 
 			recv <- in.Content
 		}
@@ -75,15 +76,16 @@ func (z *ZanderServer) Attach(stream zproto.Zander_AttachServer) error {
 	}()
 
 	id := uuid.New().String()
-	if err := srv.Connect(id, send, recv); err != nil {
-		return err
-	}
-
-	close(wait)
-
-	defer srv.Disconnect(id)
+	go func() {
+		if err := srv.Connect(id, send, recv); err != nil {
+			log.Println(err)
+			return
+		}
+	}()
 
 	<-wait
+
+	srv.Disconnect(id)
 
 	return nil
 }
