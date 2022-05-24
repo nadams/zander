@@ -112,7 +112,7 @@ func (a *AttachCmd) setupDefaultOutput(cancel func(), in <-chan string, out chan
 
 	layout := func(g *gocui.Gui) error {
 		maxX, maxY := g.Size()
-		if v, err := g.SetView("cmd", 1, maxY-2, maxX, maxY); err != nil {
+		if v, err := g.SetView("cmd", -1, maxY-2, maxX, maxY); err != nil {
 			if err != gocui.ErrUnknownView {
 				return err
 			}
