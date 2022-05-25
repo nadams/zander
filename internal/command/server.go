@@ -21,7 +21,7 @@ type Server struct {
 
 func (s *Server) Run(cmdctx CmdCtx) error {
 	s.ctx = cmdctx
-	server := zandronum.NewServer("zandronum-server", nil)
+	server := zandronum.NewServer("/usr/bin/zandronum-server", nil)
 
 	manager := zandronum.NewManager()
 	id := manager.Add(server)
