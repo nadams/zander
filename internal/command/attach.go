@@ -21,7 +21,7 @@ import (
 type AttachCmd struct {
 	ID string `arg:"" required:"true" help:"ID of doom server to attach to"`
 
-	Output      string `flag:"" enum:"raw,default" default:"default" help:"Output mode. valid values: (valid values: ${enum})"`
+	Output      string `flag:"" enum:"raw,default" default:"default" help:"Output mode. (valid values: ${enum})"`
 	ScrollLines int    `flag:"" default:"5" help:"How many lines to scroll when pgup and pgdn are pressed. Only valid in default output mode"`
 }
 
