@@ -135,11 +135,13 @@ func (a *AttachCmd) setupDefaultOutput(cancel func(), in <-chan string, out chan
 
 	go func() {
 		for content := range in {
-			fmt.Fprint(output, string(content))
-			app.Draw()
-			app.QueueUpdate(func() {
-				output.ScrollToEnd()
-			})
+			if content != "" {
+				fmt.Fprint(output, string(content))
+				app.Draw()
+				app.QueueUpdate(func() {
+					output.ScrollToEnd()
+				})
+			}
 		}
 
 		app.Stop()
