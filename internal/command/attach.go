@@ -19,9 +19,10 @@ import (
 )
 
 type AttachCmd struct {
-	ID string `arg:"" required:"true"`
+	ID string `arg:"" required:"true" help:"ID of doom server to attach to"`
 
-	Output string `flag:"" enum:"raw,default" default:"default" help:"Output mode. valid values: (valid values: ${enum})"`
+	Output      string `flag:"" enum:"raw,default" default:"default" help:"Output mode. valid values: (valid values: ${enum})"`
+	ScrollLines int    `flag:"" default:"5" help:"How many lines to scroll when pgup and pgdn are pressed. Only valid in default output mode"`
 }
 
 func (a *AttachCmd) Run(cmdCtx CmdCtx) error {
@@ -111,7 +112,7 @@ func (a *AttachCmd) setupDefaultOutput(cancel func(), in <-chan string, out chan
 		switch event.Key() {
 		case tcell.KeyPgUp:
 			if row > 0 {
-				to := row - 5
+				to := row - a.ScrollLines
 				if to < 0 {
 					to = 0
 				}
@@ -120,7 +121,7 @@ func (a *AttachCmd) setupDefaultOutput(cancel func(), in <-chan string, out chan
 			}
 		case tcell.KeyPgDn:
 			maxRows := output.GetOriginalLineCount()
-			to := row + 5
+			to := row + a.ScrollLines
 
 			if to > maxRows {
 				to = maxRows
