@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 
 	"github.com/gdamore/tcell/v2"
@@ -104,6 +105,33 @@ func (a *AttachCmd) setupDefaultOutput(cancel func(), in <-chan string, out chan
 	output.SetBackgroundColor(tcell.ColorDefault)
 	output.SetScrollable(true)
 
+	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		row, _ := output.GetScrollOffset()
+
+		switch event.Key() {
+		case tcell.KeyPgUp:
+			if row > 0 {
+				to := row - 5
+				if to < 0 {
+					to = 0
+				}
+
+				output.ScrollTo(to, 0)
+			}
+		case tcell.KeyPgDn:
+			maxRows := output.GetOriginalLineCount()
+			to := row + 5
+
+			if to > maxRows {
+				to = maxRows
+			}
+
+			output.ScrollTo(to, 0)
+		}
+
+		return event
+	})
+
 	go func() {
 		for content := range in {
 			fmt.Fprint(output, string(content))
@@ -122,7 +150,16 @@ func (a *AttachCmd) setupDefaultOutput(cancel func(), in <-chan string, out chan
 	input.SetBackgroundColor(tcell.ColorDefault)
 	input.SetFieldBackgroundColor(tcell.ColorDefault)
 	input.SetDoneFunc(func(key tcell.Key) {
-		out <- input.GetText()
+		orig := input.GetText()
+		intercept := strings.ToLower(strings.TrimSpace(orig))
+
+		switch intercept {
+		case "help":
+			fmt.Fprintln(output, "help requested")
+		default:
+			out <- input.GetText()
+		}
+
 		input.SetText("")
 	})
 
@@ -163,4 +200,27 @@ func (a *AttachCmd) setupRawOutput(cancel func(), in <-chan string, out chan<- s
 	}
 
 	return nil
+}
+
+type servercmd struct {
+	Cmd         string
+	Example     string
+	Description string
+}
+
+func (a *AttachCmd) availableCommands() []servercmd {
+	return []servercmd{
+		{
+			Cmd:     "AddBan",
+			Example: "AddBan 192.168.2.* 2min \"Test Ban\"",
+			Description: `
+			Issues a ban on an individual client or clients. Syntax for AddBan is: AddBan <IPv4> ["Reason"]. Additionally, range bans are acceptable by using wildcards, such as ( * ). However, when the client or clients are blacklisted, they will not be able to communicate with that server until the client or clients are whitelisted or expunged from the blacklist.
+
+			Time
+				When approaching this argument, the time can be inputted as 6days or even 1345years. The allowed time/date formats are: minutes, hours, days, months, and years.
+				Perm (or permanent ban) is what it is, permanent. This can also be used as the time argument.
+
+				Note: IPv4 is only supported; IPv6 is unsupported at the mean time.`,
+		},
+	}
 }
