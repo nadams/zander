@@ -6,8 +6,11 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/signal"
+	"syscall"
 
-	"github.com/jroimartin/gocui"
+	"github.com/gdamore/tcell/v2"
+	"github.com/rivo/tview"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc/status"
 
@@ -23,18 +26,20 @@ type AttachCmd struct {
 func (a *AttachCmd) Run(cmdCtx CmdCtx) error {
 	return WithConn(cmdCtx.Socket, func(client zproto.ZanderClient) error {
 		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+
 		in := make(chan string)
 		out := make(chan string)
+		sigs := make(chan os.Signal, 1)
 
-		defer close(in)
-		defer close(out)
+		signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 
-		switch a.Output {
-		case "raw":
-			go a.setupRawOutput(cancel, in, out)
-		default:
-			go a.setupDefaultOutput(cancel, in, out)
-		}
+		go func() {
+			<-sigs
+
+			close(in)
+			close(out)
+		}()
 
 		stream, err := client.Attach(ctx)
 		if err != nil {
@@ -61,110 +66,85 @@ func (a *AttachCmd) Run(cmdCtx CmdCtx) error {
 			}
 		}()
 
-		for {
-			msg, err := stream.Recv()
-			if err != nil {
-				if err == io.EOF {
-					break
+		go func() {
+			for {
+				msg, err := stream.Recv()
+				if err != nil {
+					if err == io.EOF {
+						close(in)
+						break
+					}
+
+					if _, ok := status.FromError(err); ok {
+						close(in)
+						break
+					}
+
+					log.Errorf("unknown error from server: %v", err)
 				}
 
-				if _, ok := status.FromError(err); ok {
-					break
-				}
-
-				log.Errorf("unknown error from server: %v", err)
+				in <- string(msg.Content)
 			}
+		}()
 
-			in <- string(msg.Content)
+		switch a.Output {
+		case "raw":
+			return a.setupRawOutput(cancel, in, out)
+		default:
+			return a.setupDefaultOutput(cancel, in, out)
 		}
-
-		return nil
 	})
 }
 
 func (a *AttachCmd) setupDefaultOutput(cancel func(), in <-chan string, out chan<- string) error {
-	g, err := gocui.NewGui(gocui.OutputNormal)
-	if err != nil {
-		return err
-	}
+	app := tview.NewApplication()
 
-	defer g.Close()
-
-	quit := func(g *gocui.Gui, v *gocui.View) error {
-		cancel()
-
-		return gocui.ErrQuit
-	}
-
-	sendcmd := func(g *gocui.Gui, v *gocui.View) error {
-		v, err := g.View("cmd")
-		if err != nil {
-			return err
-		}
-
-		out <- v.Buffer()
-
-		v.Clear()
-		v.SetCursor(0, 0)
-
-		return nil
-	}
-
-	layout := func(g *gocui.Gui) error {
-		maxX, maxY := g.Size()
-		if v, err := g.SetView("cmd", 1, maxY-2, maxX, maxY); err != nil {
-			if err != gocui.ErrUnknownView {
-				return err
-			}
-			v.Frame = false
-			v.Editable = true
-			v.Clear()
-		}
-
-		v, err := g.SetView("out", -1, -1, maxX, maxY-2)
-		if err != nil {
-			if err != gocui.ErrUnknownView {
-				return err
-			}
-			v.Autoscroll = true
-			v.Wrap = true
-			v.Editable = false
-			v.Frame = true
-		}
-
-		g.SetCurrentView("cmd")
-
-		return nil
-	}
-
-	g.SetManagerFunc(layout)
-	g.InputEsc = true
-	g.Cursor = true
-
-	if err := g.SetKeybinding("", gocui.KeyCtrlC, gocui.ModNone, quit); err != nil {
-		return err
-	}
-
-	if err := g.SetKeybinding("", gocui.KeyEnter, gocui.ModNone, sendcmd); err != nil {
-		return err
-	}
+	output := tview.NewTextView()
+	output.SetBorder(false)
+	output.SetBackgroundColor(tcell.ColorDefault)
+	output.SetScrollable(true)
 
 	go func() {
-		for text := range in {
-			g.Update(func(g *gocui.Gui) error {
-				v, err := g.View("out")
-				if err != nil {
-					return err
-				}
-
-				fmt.Fprint(v, text)
-
-				return nil
+		for content := range in {
+			fmt.Fprint(output, string(content))
+			app.Draw()
+			app.QueueUpdate(func() {
+				output.ScrollToEnd()
 			})
 		}
+
+		app.Stop()
 	}()
 
-	return g.MainLoop()
+	input := tview.NewInputField()
+	input.SetBorder(false)
+	input.SetFieldWidth(0)
+	input.SetBackgroundColor(tcell.ColorDefault)
+	input.SetFieldBackgroundColor(tcell.ColorDefault)
+	input.SetDoneFunc(func(key tcell.Key) {
+		out <- input.GetText()
+		input.SetText("")
+	})
+
+	layout := tview.NewFlex()
+	layout.SetDirection(tview.FlexRow)
+	layout.AddItem(output, 0, 1, false)
+	layout.AddItem(hr(), 1, 0, false)
+	layout.AddItem(input, 1, 0, true)
+
+	return app.SetRoot(layout, true).Run()
+}
+
+func hr() *tview.Box {
+	return tview.NewBox().
+		SetBackgroundColor(tcell.ColorDefault).
+		SetDrawFunc(func(screen tcell.Screen, x, y, width, height int) (int, int, int, int) {
+			for cx := x; cx < x+width; cx++ {
+				screen.SetContent(cx, y, tview.BoxDrawingsLightHorizontal, nil, tcell.StyleDefault.Foreground(tcell.ColorWhite))
+			}
+
+			return x, y, width, height
+		})
 }
 
 func (a *AttachCmd) setupRawOutput(cancel func(), in <-chan string, out chan<- string) error {

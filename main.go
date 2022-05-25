@@ -3,6 +3,8 @@
 package main
 
 import (
+	"os"
+
 	log "github.com/sirupsen/logrus"
 
 	"gitlab.node-3.net/nadams/zander/internal/command"

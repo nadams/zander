@@ -3,6 +3,7 @@ package zserver
 import (
 	"context"
 	"io"
+	"strings"
 
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
@@ -66,6 +67,10 @@ func (z *ZanderServer) Attach(stream zproto.Zander_AttachServer) error {
 
 				log.Errorf("error when reading client: %v", err)
 				return
+			}
+
+			if in.Content != nil && strings.TrimSpace(string(in.Content)) == "restart" {
+				continue
 			}
 
 			recv <- in.Content
