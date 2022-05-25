@@ -106,33 +106,6 @@ func (a *AttachCmd) setupDefaultOutput(cancel func(), in <-chan string, out chan
 	output.SetBackgroundColor(tcell.ColorDefault)
 	output.SetScrollable(true)
 
-	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		row, _ := output.GetScrollOffset()
-
-		switch event.Key() {
-		case tcell.KeyPgUp:
-			if row > 0 {
-				to := row - a.ScrollLines
-				if to < 0 {
-					to = 0
-				}
-
-				output.ScrollTo(to, 0)
-			}
-		case tcell.KeyPgDn:
-			maxRows := output.GetOriginalLineCount()
-			to := row + a.ScrollLines
-
-			if to > maxRows {
-				to = maxRows
-			}
-
-			output.ScrollTo(to, 0)
-		}
-
-		return event
-	})
-
 	go func() {
 		for content := range in {
 			if content != "" {
@@ -147,14 +120,66 @@ func (a *AttachCmd) setupDefaultOutput(cancel func(), in <-chan string, out chan
 		app.Stop()
 	}()
 
+	var cmds []string
+	cmdIdx := -1
+
 	input := tview.NewInputField()
 	input.SetBorder(false)
 	input.SetFieldWidth(0)
 	input.SetBackgroundColor(tcell.ColorDefault)
 	input.SetFieldBackgroundColor(tcell.ColorDefault)
+	input.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		switch event.Key() {
+		case tcell.KeyUp:
+			if len(cmds) > 0 {
+				var to int
+
+				if cmdIdx == -1 {
+					to = len(cmds) - 1
+				} else {
+					to = cmdIdx - 1
+
+					if to < 0 {
+						to = 0
+					}
+				}
+
+				cmdIdx = to
+
+				input.SetText(cmds[to])
+			}
+
+			return nil
+		case tcell.KeyDown:
+			if len(cmds) > 0 {
+				if cmdIdx > -1 {
+					to := cmdIdx + 1
+
+					if to >= len(cmds) {
+						to = -1
+					}
+
+					cmdIdx = to
+
+					if cmdIdx == -1 {
+						input.SetText("")
+					} else {
+						input.SetText(cmds[cmdIdx])
+					}
+				}
+			}
+
+			return nil
+		}
+
+		return event
+	})
 	input.SetDoneFunc(func(key tcell.Key) {
 		orig := input.GetText()
 		intercept := strings.ToLower(strings.TrimSpace(orig))
+
+		cmds = append(cmds, orig)
+		cmdIdx = -1
 
 		switch intercept {
 		case "help":
@@ -164,6 +189,33 @@ func (a *AttachCmd) setupDefaultOutput(cancel func(), in <-chan string, out chan
 		}
 
 		input.SetText("")
+	})
+
+	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		switch event.Key() {
+		case tcell.KeyPgUp:
+			row, _ := output.GetScrollOffset()
+			if row > 0 {
+				to := row - a.ScrollLines
+				if to < 0 {
+					to = 0
+				}
+
+				output.ScrollTo(to, 0)
+			}
+		case tcell.KeyPgDn:
+			row, _ := output.GetScrollOffset()
+			maxRows := output.GetOriginalLineCount()
+			to := row + a.ScrollLines
+
+			if to > maxRows {
+				to = maxRows
+			}
+
+			output.ScrollTo(to, 0)
+		}
+
+		return event
 	})
 
 	layout := tview.NewFlex()
