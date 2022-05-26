@@ -112,9 +112,9 @@ func WithMaxHistory(entries int) Option {
 	}
 }
 
-func WithDeDuplicatedAppend() Option {
+func WithDeDuplicatedAppend(on bool) Option {
 	return func(h *CmdHistory) {
-		h.deduplicate = true
+		h.deduplicate = on
 	}
 }
 

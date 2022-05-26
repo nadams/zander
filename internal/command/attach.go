@@ -22,9 +22,10 @@ import (
 type AttachCmd struct {
 	ID string `arg:"" required:"true" help:"ID of doom server to attach to"`
 
-	Output        string `flag:"" enum:"raw,default" default:"default" help:"Output mode. (valid values: ${enum})"`
-	ScrollLines   int    `flag:"" default:"5" help:"How many lines to scroll when pgup and pgdn are pressed. Only valid in default output mode"`
-	CmdHistoryLen int    `flag:"" default:"500" help:"How many entered commands to remember"`
+	Output                      string `flag:"" enum:"raw,default" default:"default" help:"Output mode. (valid values: ${enum})"`
+	ScrollLines                 int    `flag:"" default:"5" help:"How many lines to scroll when pgup and pgdn are pressed. Only valid in default output mode"`
+	CmdHistoryLen               int    `flag:"" default:"500" help:"How many entered commands to remember"`
+	NoDeDuplicatedHistoryAppend bool   `flag:"" help:"Do not duplicate history entries if the previous and submitted commands are the same"`
 }
 
 func (a *AttachCmd) Run(cmdCtx CmdCtx) error {
@@ -103,7 +104,7 @@ func (a *AttachCmd) Run(cmdCtx CmdCtx) error {
 func (a *AttachCmd) setupDefaultOutput(cancel func(), in <-chan string, out chan<- string) error {
 	cmdHistory := history.NewCmdHistory(
 		history.WithMaxHistory(a.CmdHistoryLen),
-		history.WithDeDuplicatedAppend(),
+		history.WithDeDuplicatedAppend(!a.NoDeDuplicatedHistoryAppend),
 	)
 
 	cmdptr := cmdHistory.Ptr()
