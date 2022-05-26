@@ -14,7 +14,7 @@ type CLI struct {
 	Restart command.RestartServerCmd `cmd:"" help:"Restart a doom server"`
 	Attach  command.AttachCmd        `cmd:"" help:"Attach to a running doom server"`
 
-	Socket    string `flag:"" short:"s" type:"pathenv" default:"$XDG_CONFIG_HOME/zander/zander.sock" description:"Connects to a socket at the given path"`
+	Socket    string `flag:"" short:"s" type:"pathenv" default:"$XDG_RUNTIME_DIR/zander.sock" description:"Connects to a socket at the given path"`
 	LogLevel  string `flag:"" enum:"fatal,error,warn,debug,info,trace" default:"warn" help:"Only show the given log severity or higher. (valid values: ${enum})"`
 	LogFormat string `flag:"" enum:"text,json" default:"text" help:"Log output format. (valid values: ${enum})"`
 }

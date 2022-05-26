@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"os/signal"
 	"path/filepath"
+	"syscall"
 
 	"google.golang.org/grpc"
 
@@ -31,6 +33,9 @@ func (s *Server) Run(cmdctx CmdCtx) error {
 }
 
 func (s *Server) listenAndServe(manager *zandronum.Manager) error {
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+
 	removeSocket := func() error {
 		if err := os.RemoveAll(s.ctx.Socket); err != nil {
 			return fmt.Errorf("could not remove zander socket: %w", err)
@@ -60,7 +65,12 @@ func (s *Server) listenAndServe(manager *zandronum.Manager) error {
 
 	server := grpc.NewServer(opts...)
 	zproto.RegisterZanderServer(server, zserver.New(manager))
-	server.Serve(l)
 
-	return nil
+	go func() {
+		<-sigs
+
+		server.Stop()
+	}()
+
+	return server.Serve(l)
 }
