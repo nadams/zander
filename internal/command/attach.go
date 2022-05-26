@@ -101,7 +101,11 @@ func (a *AttachCmd) Run(cmdCtx CmdCtx) error {
 }
 
 func (a *AttachCmd) setupDefaultOutput(cancel func(), in <-chan string, out chan<- string) error {
-	cmdHistory := history.NewCmdHistory(a.CmdHistoryLen)
+	cmdHistory := history.NewCmdHistory(
+		history.WithMaxHistory(a.CmdHistoryLen),
+		history.WithDeDuplicatedAppend(),
+	)
+
 	cmdptr := cmdHistory.Ptr()
 	app := tview.NewApplication()
 
