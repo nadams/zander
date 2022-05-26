@@ -12,6 +12,7 @@ require (
 	github.com/gdamore/tcell/v2 v2.4.1-0.20210905002822-f057f0a857a1
 	github.com/google/uuid v1.1.2
 	github.com/jedib0t/go-pretty v4.3.0+incompatible
+	github.com/pelletier/go-toml/v2 v2.0.1
 	github.com/rivo/tview v0.0.0-20220307222120-9994674d60a8
 	github.com/sirupsen/logrus v1.8.1
 	google.golang.org/grpc v1.46.2
