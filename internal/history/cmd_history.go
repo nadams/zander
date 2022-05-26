@@ -20,7 +20,9 @@ func (c *CmdHistory) Append(cmd string) error {
 	c.m.Lock()
 	defer c.m.Unlock()
 
-	c.cmds = append(c.cmds, cmd)
+	if len(c.cmds) == 0 || c.cmds[len(c.cmds)-1] != cmd {
+		c.cmds = append(c.cmds, cmd)
+	}
 
 	// TODO: write to disk?
 
