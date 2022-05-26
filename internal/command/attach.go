@@ -149,20 +149,21 @@ func (a *AttachCmd) setupDefaultOutput(cancel func(), in <-chan string, out chan
 		return event
 	})
 	input.SetDoneFunc(func(key tcell.Key) {
-		orig := input.GetText()
-		intercept := strings.ToLower(strings.TrimSpace(orig))
+		if orig := input.GetText(); len(orig) > 0 {
+			intercept := strings.ToLower(strings.TrimSpace(orig))
 
-		cmdHistory.Append(orig)
-		cmdptr.Reset()
+			cmdHistory.Append(orig)
+			cmdptr.Reset()
 
-		switch intercept {
-		case "help":
-			fmt.Fprintln(output, "help requested")
-		default:
-			out <- input.GetText()
+			switch intercept {
+			case "help":
+				fmt.Fprintln(output, "help requested")
+			default:
+				out <- input.GetText()
+			}
+
+			input.SetText("")
 		}
-
-		input.SetText("")
 	})
 
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
