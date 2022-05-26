@@ -15,14 +15,16 @@ import (
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc/status"
 
+	"gitlab.node-3.net/nadams/zander/internal/history"
 	"gitlab.node-3.net/nadams/zander/zproto"
 )
 
 type AttachCmd struct {
 	ID string `arg:"" required:"true" help:"ID of doom server to attach to"`
 
-	Output      string `flag:"" enum:"raw,default" default:"default" help:"Output mode. (valid values: ${enum})"`
-	ScrollLines int    `flag:"" default:"5" help:"How many lines to scroll when pgup and pgdn are pressed. Only valid in default output mode"`
+	Output        string `flag:"" enum:"raw,default" default:"default" help:"Output mode. (valid values: ${enum})"`
+	ScrollLines   int    `flag:"" default:"5" help:"How many lines to scroll when pgup and pgdn are pressed. Only valid in default output mode"`
+	CmdHistoryLen int    `flag:"" default:"500" help:"How many entered commands to remember"`
 }
 
 func (a *AttachCmd) Run(cmdCtx CmdCtx) error {
@@ -99,6 +101,8 @@ func (a *AttachCmd) Run(cmdCtx CmdCtx) error {
 }
 
 func (a *AttachCmd) setupDefaultOutput(cancel func(), in <-chan string, out chan<- string) error {
+	cmdHistory := history.NewCmdHistory(a.CmdHistoryLen)
+	cmdptr := cmdHistory.Ptr()
 	app := tview.NewApplication()
 
 	output := tview.NewTextView()
@@ -120,9 +124,6 @@ func (a *AttachCmd) setupDefaultOutput(cancel func(), in <-chan string, out chan
 		app.Stop()
 	}()
 
-	var cmds []string
-	cmdIdx := -1
-
 	input := tview.NewInputField()
 	input.SetBorder(false)
 	input.SetFieldWidth(0)
@@ -131,43 +132,11 @@ func (a *AttachCmd) setupDefaultOutput(cancel func(), in <-chan string, out chan
 	input.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		switch event.Key() {
 		case tcell.KeyUp:
-			if len(cmds) > 0 {
-				var to int
-
-				if cmdIdx == -1 {
-					to = len(cmds) - 1
-				} else {
-					to = cmdIdx - 1
-
-					if to < 0 {
-						to = 0
-					}
-				}
-
-				cmdIdx = to
-
-				input.SetText(cmds[to])
-			}
+			input.SetText(cmdptr.Prev())
 
 			return nil
 		case tcell.KeyDown:
-			if len(cmds) > 0 {
-				if cmdIdx > -1 {
-					to := cmdIdx + 1
-
-					if to >= len(cmds) {
-						to = -1
-					}
-
-					cmdIdx = to
-
-					if cmdIdx == -1 {
-						input.SetText("")
-					} else {
-						input.SetText(cmds[cmdIdx])
-					}
-				}
-			}
+			input.SetText(cmdptr.Next())
 
 			return nil
 		}
@@ -178,8 +147,8 @@ func (a *AttachCmd) setupDefaultOutput(cancel func(), in <-chan string, out chan
 		orig := input.GetText()
 		intercept := strings.ToLower(strings.TrimSpace(orig))
 
-		cmds = append(cmds, orig)
-		cmdIdx = -1
+		cmdHistory.Append(orig)
+		cmdptr.Reset()
 
 		switch intercept {
 		case "help":
