@@ -2,7 +2,6 @@ package command
 
 import (
 	"fmt"
-	"log"
 	"net"
 	"os"
 	"os/signal"
@@ -10,6 +9,7 @@ import (
 	"syscall"
 
 	"github.com/adrg/xdg"
+	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 
 	"gitlab.node-3.net/nadams/zander/config"
@@ -32,26 +32,35 @@ func (s *Server) Run(cmdctx CmdCtx) error {
 		return err
 	}
 
-	log.Printf("%+v", cfg)
+	manager, err := zandronum.Load(cfg)
+	if err != nil {
+		return err
+	}
 
-	server := zandronum.NewServer(config.Expand(cfg.ServerBinaries.Zandronum), nil)
+	log.Printf("%+v", manager)
 
-	manager := zandronum.NewManager()
-	id := manager.Add(server)
-	manager.Start(id)
+	if errs := manager.StartAll(); len(errs) > 0 {
+		log.Error(errs)
+	}
+
+	//server := zandronum.NewServer(config.Expand(cfg.ServerBinaries.Zandronum), nil)
+
+	//manager := zandronum.NewManager()
+	//id := manager.Add(server)
+	//manager.Start(id)
 
 	return s.listenAndServe(manager)
 }
 
-func (s *Server) loadConfig() (*config.Config, string, error) {
+func (s *Server) loadConfig() (config.Config, string, error) {
 	configPath, err := xdg.ConfigFile("zander/zander.toml")
 	if err != nil {
-		return nil, "", fmt.Errorf("could not get config file path: %w", err)
+		return config.Config{}, "", fmt.Errorf("could not get config file path: %w", err)
 	}
 
 	cfg, err := config.FromDisk(configPath)
 	if err != nil {
-		return nil, "", err
+		return config.Config{}, "", err
 	}
 
 	return cfg, configPath, err

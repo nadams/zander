@@ -2,7 +2,14 @@ package zandronum
 
 import (
 	"errors"
+	"io/ioutil"
+	"log"
+	"os"
+	"path/filepath"
+	"strings"
 	"sync"
+
+	"gitlab.node-3.net/nadams/zander/config"
 )
 
 var (
@@ -30,7 +37,29 @@ func (m *Manager) Add(server *Server) ID {
 	return id
 }
 
+func (m *Manager) AddWithID(id ID, server *Server) {
+	m.add(id, server)
+}
+
+func (m *Manager) StartAll() []error {
+	m.m.RLock()
+	defer m.m.RUnlock()
+
+	var errs []error
+
+	for _, server := range m.servers {
+		if err := server.Start(); err != nil {
+			errs = append(errs, err)
+		}
+	}
+
+	return errs
+}
+
 func (m *Manager) Start(id ID) error {
+	m.m.RLock()
+	defer m.m.RUnlock()
+
 	server, found := m.servers[id]
 	if found {
 		return server.Start()
@@ -40,6 +69,9 @@ func (m *Manager) Start(id ID) error {
 }
 
 func (m *Manager) Stop(id ID) error {
+	m.m.RLock()
+	defer m.m.RUnlock()
+
 	server, found := m.servers[id]
 	if found {
 		return server.Stop()
@@ -98,4 +130,38 @@ func (m *Manager) add(id ID, server *Server) {
 	defer m.m.Unlock()
 
 	m.servers[id] = server
+}
+
+func Load(cfg config.Config) (*Manager, error) {
+	m := NewManager()
+	binary := cfg.Expand(cfg.ServerBinaries.Zandronum)
+	dir := cfg.ExpandRel(cfg.ServerConfigDir)
+
+	if _, err := os.Stat(dir); err != nil {
+		if err := os.MkdirAll(dir, 0755); err != nil {
+			return nil, err
+		}
+	}
+
+	entries, err := ioutil.ReadDir(dir)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, entry := range entries {
+		if !entry.IsDir() && strings.HasSuffix(entry.Name(), ".toml") {
+			cfg, err := config.LoadServer(filepath.Join(dir, entry.Name()))
+			if err != nil {
+				return nil, err
+			}
+
+			log.Printf("%+v", cfg)
+
+			server := NewServerWithConfig(binary, cfg)
+
+			m.AddWithID(ID(cfg.ID), server)
+		}
+	}
+
+	return m, nil
 }

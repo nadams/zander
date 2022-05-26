@@ -10,12 +10,14 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
+	"gitlab.node-3.net/nadams/zander/config"
 )
 
 type Server struct {
 	m         sync.RWMutex
 	binary    string
 	opts      map[string]string
+	cfg       config.Server
 	cmd       *exec.Cmd
 	content   []byte
 	stdout    io.ReadCloser
@@ -31,6 +33,17 @@ func NewServer(binary string, opts map[string]string) *Server {
 		binary:    binary,
 		opts:      opts,
 		cmd:       cmd,
+		consumers: make(map[string]chan<- []byte),
+	}
+}
+
+func NewServerWithConfig(binary string, cfg config.Server) *Server {
+	cmd := exec.Command(binary)
+
+	return &Server{
+		binary:    binary,
+		cmd:       cmd,
+		cfg:       cfg,
 		consumers: make(map[string]chan<- []byte),
 	}
 }
