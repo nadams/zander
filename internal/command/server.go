@@ -2,34 +2,59 @@ package command
 
 import (
 	"fmt"
+	"log"
 	"net"
 	"os"
 	"os/signal"
 	"path/filepath"
 	"syscall"
 
+	"github.com/adrg/xdg"
 	"google.golang.org/grpc"
 
+	"gitlab.node-3.net/nadams/zander/config"
 	"gitlab.node-3.net/nadams/zander/zandronum"
 	"gitlab.node-3.net/nadams/zander/zproto"
 	"gitlab.node-3.net/nadams/zander/zserver"
 )
 
 type Server struct {
-	Config string `flag:"" short:"c" type:"pathenv" default:"$XDG_CONFIG_HOME/zander/config.json" description:"Path to config file"`
+	ConfigDir string `flag:"" short:"c" type:"path" description:"Directory containing zander configuration. Defaults to $XDG_CONFIG_HOME/zander"`
 
 	ctx CmdCtx
 }
 
 func (s *Server) Run(cmdctx CmdCtx) error {
 	s.ctx = cmdctx
-	server := zandronum.NewServer("/usr/bin/zandronum-server", nil)
+
+	cfg, _, err := s.loadConfig()
+	if err != nil {
+		return err
+	}
+
+	log.Printf("%+v", cfg)
+
+	server := zandronum.NewServer(config.Expand(cfg.ServerBinaries.Zandronum), nil)
 
 	manager := zandronum.NewManager()
 	id := manager.Add(server)
 	manager.Start(id)
 
 	return s.listenAndServe(manager)
+}
+
+func (s *Server) loadConfig() (*config.Config, string, error) {
+	configPath, err := xdg.ConfigFile("zander/zander.toml")
+	if err != nil {
+		return nil, "", fmt.Errorf("could not get config file path: %w", err)
+	}
+
+	cfg, err := config.FromDisk(configPath)
+	if err != nil {
+		return nil, "", err
+	}
+
+	return cfg, configPath, err
 }
 
 func (s *Server) listenAndServe(manager *zandronum.Manager) error {

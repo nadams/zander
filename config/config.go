@@ -1,76 +1,63 @@
 package config
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
 	"os"
 
-	"github.com/adrg/xdg"
+	"github.com/pelletier/go-toml/v2"
 )
 
 type Config struct {
-	Version int      `json:"version"`
-	Servers []Server `json:"servers"`
-	WADDir  string   `json:"waddir"`
+	ServerConfigDir string         `toml:"server_config_dir,omitempty"`
+	WADDir          string         `toml:"wad_dir,omitempty"`
+	ServerBinaries  ServerBinaries `toml:"server_binaries,omitempty"`
 }
 
-func New() *Config {
-	return &Config{
-		Version: 1,
-		WADDir:  "$DOOMWADDIR",
-	}
-}
-
-func (c *Config) Validate() error {
-	return nil
-}
-
-func (c *Config) LoadFromDisk() error {
-	path, err := xdg.ConfigFile("zander/config.json")
+func FromDisk(path string) (*Config, error) {
+	f, err := os.OpenFile(path, os.O_RDONLY|os.O_CREATE, 0600)
 	if err != nil {
-		return fmt.Errorf("could not find config file: %w", err)
-	}
-
-	if _, err := os.Stat(path); err != nil {
-		if err := c.create(path); err != nil {
-			return err
-		}
-	}
-
-	return c.load(path)
-}
-
-func (c *Config) load(path string) error {
-	f, err := os.Open(path)
-	if err != nil {
-		return fmt.Errorf("could not open config file: %w", err)
+		return nil, err
 	}
 
 	defer f.Close()
 
-	if err := json.NewDecoder(f).Decode(c); err != nil {
-		return fmt.Errorf("could not load config file: %w", err)
+	c := DefaultConfig()
+
+	if err := toml.NewDecoder(f).Decode(&c); err != nil {
+		return nil, fmt.Errorf("could not decode configuration: %w", err)
 	}
 
-	return nil
+	return &c, nil
 }
 
-func (c *Config) create(path string) error {
-	f, err := os.OpenFile(path, os.O_CREATE|os.O_RDWR, 0600)
-	if err != nil {
-		return fmt.Errorf("could not create config file: %w", err)
+func DefaultConfig() Config {
+	return Config{
+		ServerConfigDir: "servers",
+		WADDir:          "wads",
+		ServerBinaries: ServerBinaries{
+			Zandronum: "zandronum-server",
+		},
 	}
-
-	defer f.Close()
-
-	return c.newEncoder(f).Encode(c)
 }
 
-func (c *Config) newEncoder(w io.Writer) *json.Encoder {
-	enc := json.NewEncoder(w)
-	enc.SetEscapeHTML(false)
-	enc.SetIndent("", "  ")
+type ServerBinaries struct {
+	Zandronum string `toml:"zandronum,omitempty"`
+	Odamex    string `toml:"odamex,omitempty"`
+	ZDaemon   string `toml:"zdaemon,omitempty"`
+}
 
-	return enc
+type ServerConfig struct {
+	ID           string
+	Mode         string
+	Email        string
+	Port         int
+	Hostname     string
+	Website      string
+	IWAD         string
+	PWADs        []string
+	Skill        int
+	MOTD         string
+	Maplist      []string
+	RCONPassword string
+	RawParams    string
 }
