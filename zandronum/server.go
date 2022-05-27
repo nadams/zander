@@ -40,7 +40,7 @@ func NewServer(binary string, opts map[string]string) *Server {
 	}
 }
 
-func NewServerWithConfig(binary string, cfg config.Server) *Server {
+func NewServerWithConfig(binary, waddir string, cfg config.Server) *Server {
 	params, err := cfg.Parameters()
 	if err != nil {
 		panic(err)
@@ -65,6 +65,7 @@ func NewServerWithConfig(binary string, cfg config.Server) *Server {
 	params = append(params, "+exec", f.Name())
 
 	cmd := exec.Command(binary, params...)
+	cmd.Env = append(cmd.Env, fmt.Sprintf("DOOMWADDIR=%s", waddir))
 
 	return &Server{
 		binary:    binary,

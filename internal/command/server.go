@@ -37,8 +37,6 @@ func (s *Server) Run(cmdctx CmdCtx) error {
 		return err
 	}
 
-	log.Printf("%+v", manager)
-
 	if errs := manager.StartAll(); len(errs) > 0 {
 		log.Error(errs)
 	}

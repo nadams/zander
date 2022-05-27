@@ -3,7 +3,6 @@ package zandronum
 import (
 	"errors"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -136,6 +135,7 @@ func Load(cfg config.Config) (*Manager, error) {
 	m := NewManager()
 	binary := cfg.Expand(cfg.ServerBinaries.Zandronum)
 	dir := cfg.ExpandRel(cfg.ServerConfigDir)
+	waddir := cfg.ExpandRel(cfg.WADDir)
 
 	if _, err := os.Stat(dir); err != nil {
 		if err := os.MkdirAll(dir, 0755); err != nil {
@@ -155,9 +155,7 @@ func Load(cfg config.Config) (*Manager, error) {
 				return nil, err
 			}
 
-			log.Printf("%+v", cfg)
-
-			server := NewServerWithConfig(binary, cfg)
+			server := NewServerWithConfig(binary, waddir, cfg)
 
 			m.AddWithID(ID(cfg.ID), server)
 		}
