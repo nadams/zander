@@ -4,7 +4,10 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"os"
 	"os/exec"
+	"path/filepath"
+	"strings"
 	"sync"
 	"syscall"
 	"time"
@@ -38,7 +41,30 @@ func NewServer(binary string, opts map[string]string) *Server {
 }
 
 func NewServerWithConfig(binary string, cfg config.Server) *Server {
-	cmd := exec.Command(binary)
+	params, err := cfg.Parameters()
+	if err != nil {
+		panic(err)
+	}
+
+	cvars, err := cfg.CVARs()
+	if err != nil {
+		panic(err)
+	}
+
+	f, err := os.OpenFile(filepath.Join(os.TempDir(), fmt.Sprintf("%s.cfg", cfg.ID)), os.O_TRUNC|os.O_CREATE|os.O_RDWR, 0600)
+	if err != nil {
+		panic(err)
+	}
+
+	defer f.Close()
+
+	if _, err := io.Copy(f, strings.NewReader(cvars)); err != nil {
+		panic(err)
+	}
+
+	params = append(params, "+exec", f.Name())
+
+	cmd := exec.Command(binary, params...)
 
 	return &Server{
 		binary:    binary,
