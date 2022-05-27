@@ -3,6 +3,7 @@ package command
 import (
 	"fmt"
 	"runtime/debug"
+	"strings"
 )
 
 type VersionCmd struct{}
@@ -13,7 +14,19 @@ func (v *VersionCmd) Run(_ CmdCtx) error {
 		fmt.Println("version: unknown")
 	}
 
-	fmt.Printf("Revision: %s\nGo version: %s\n", info.Main.Version, info.GoVersion)
+	var out strings.Builder
+	out.WriteString(fmt.Sprintf("Go version: %s\n", info.GoVersion))
+
+	for _, setting := range info.Settings {
+		if setting.Value != "" {
+			out.WriteString(setting.Key)
+			out.WriteString(": ")
+			out.WriteString(setting.Value)
+			out.WriteString("\n")
+		}
+	}
+
+	fmt.Print(out.String())
 
 	return nil
 }
