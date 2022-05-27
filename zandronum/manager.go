@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"sync"
 
@@ -103,7 +104,12 @@ func (m *Manager) List() []ServerInfo {
 	for key, server := range m.servers {
 		out = append(out, ServerInfo{
 			ID:      string(key),
+			Name:    server.cfg.Hostname,
+			Mode:    server.cfg.Mode,
 			Status:  server.Status(),
+			Port:    server.cfg.Port,
+			IWAD:    server.cfg.IWAD,
+			PWADs:   server.cfg.PWADs,
 			Started: server.started,
 		})
 	}
@@ -147,6 +153,10 @@ func Load(cfg config.Config) (*Manager, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	sort.Slice(entries, func(i, j int) bool {
+		return entries[i].Name() < entries[j].Name()
+	})
 
 	for _, entry := range entries {
 		if !entry.IsDir() && strings.HasSuffix(entry.Name(), ".toml") {

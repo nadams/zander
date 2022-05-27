@@ -27,8 +27,12 @@ message RestartServerResponse {}
 message Server {
   string id = 1;
   string name = 2;
-  string status = 3;
-  google.protobuf.Timestamp started_at = 4;
+  string mode = 3;
+  string status = 4;
+  int32 port = 5;
+  string iwad = 6;
+  repeated string pwads = 7;
+  google.protobuf.Timestamp started_at = 8;
 }
 
 message AttachIn {

@@ -64,6 +64,44 @@ func NewServerWithConfig(binary, waddir string, cfg config.Server) *Server {
 
 	params = append(params, "+exec", f.Name())
 
+	switch strings.ToLower(cfg.Mode) {
+	case "ctf":
+		params = append(params, "+ctf 1")
+	case "1ctf":
+		params = append(params, "+oneflagctf 1")
+	case "skulltag":
+		params = append(params, "+skulltag 1")
+	case "duel":
+		params = append(params, "+duel 1")
+	case "teamgame":
+		params = append(params, "+teamgame 1")
+	case "domination":
+		params = append(params, "+domination 1")
+	case "survival":
+		params = append(params, "+survival 1")
+	case "invasion":
+		params = append(params, "+invasion 1")
+	case "cooperative":
+		params = append(params, "+cooperative 1")
+	case "dm":
+		params = append(params, "+deathmatch 1")
+	case "tdm":
+		params = append(params, "+teamplay 1")
+	case "terminator":
+		params = append(params, "+terminator 1")
+	case "possession":
+		params = append(params, "+possession 1")
+	case "tpossession":
+		params = append(params, "+teampossession 1")
+	case "lms":
+		params = append(params, "+lastmanstanding 1")
+	case "tlms":
+		params = append(params, "+teamlms 1")
+	default:
+		cfg.Mode = "dm"
+		params = append(params, "+deathmatch 1")
+	}
+
 	cmd := exec.Command(binary, params...)
 	cmd.Env = append(cmd.Env, fmt.Sprintf("DOOMWADDIR=%s", waddir))
 

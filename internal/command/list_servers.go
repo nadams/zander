@@ -6,9 +6,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"sort"
+	"strings"
 	"time"
 
 	"github.com/jedib0t/go-pretty/table"
+	"github.com/jedib0t/go-pretty/text"
 	"gitlab.node-3.net/nadams/zander/zproto"
 	"gopkg.in/yaml.v2"
 )
@@ -20,7 +23,7 @@ type ListServersCmd struct {
 }
 
 func (l *ListServersCmd) Run(cmdCtx CmdCtx) error {
-	l.header = []string{"ID", "Name", "Status", "Started"}
+	l.header = []string{"ID", "Name", "Port", "Mode", "Status", "IWAD", "PWADs", "Started"}
 
 	return WithConnTimeout(cmdCtx.Socket, DefaultTimeout, func(ctx context.Context, client zproto.ZanderClient) error {
 		resp, err := client.ListServers(ctx, &zproto.ListServersRequest{})
@@ -28,23 +31,41 @@ func (l *ListServersCmd) Run(cmdCtx CmdCtx) error {
 			return err
 		}
 
+		sort.Slice(resp.Servers, func(i, j int) bool {
+			return resp.Servers[i].Name < resp.Servers[j].Name
+		})
+
 		switch l.Output {
 		case "table":
 			tw := table.NewWriter()
+			tw.SetColumnConfigs([]table.ColumnConfig{
+				{Name: "Name", WidthMax: 30},
+			})
 			h := make(table.Row, 0, len(l.header))
 			for _, x := range l.header {
 				h = append(h, x)
 			}
 			tw.AppendHeader(h)
 			for _, s := range resp.Servers {
-				tw.AppendRow(table.Row{s.Id, s.Name, s.Status, s.StartedAt.AsTime().Format(time.ANSIC)})
+				status := s.Status
+				switch status {
+				case "running":
+					status = text.FgGreen.Sprint(status)
+				case "stopped":
+					status = text.FgRed.Sprint(status)
+				case "not started":
+					status = text.FgYellow.Sprint(status)
+				}
+				pwads := strings.Join(s.Pwads, "\n")
+				tw.AppendRow(table.Row{s.Id, s.Name, s.Port, s.Mode, status, s.Iwad, pwads, s.StartedAt.AsTime().Format(time.ANSIC)})
 			}
 			fmt.Fprintln(os.Stdout, tw.Render())
 		case "csv":
 			w := csv.NewWriter(os.Stdout)
 			w.Write(l.header)
 			for _, s := range resp.Servers {
-				w.Write([]string{s.Id, s.Name, s.Status, s.StartedAt.AsTime().Format(time.RFC3339)})
+				pwads := strings.Join(s.Pwads, ";")
+				w.Write([]string{s.Id, s.Name, fmt.Sprintf("%d", s.Port), s.Mode, s.Status, s.Iwad, pwads, s.StartedAt.AsTime().Format(time.ANSIC)})
 			}
 			w.Flush()
 		case "json":
