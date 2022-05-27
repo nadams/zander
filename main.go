@@ -9,6 +9,12 @@ import (
 	"gitlab.node-3.net/nadams/zander/internal/command"
 )
 
+var (
+	version string
+	commit  string
+	date    string
+)
+
 type CLI struct {
 	Server  command.Server           `cmd:"" help:"Start zander in server mode"`
 	List    command.ListServersCmd   `cmd:"" help:"List configured doom servers"`
@@ -21,26 +27,35 @@ type CLI struct {
 	LogFormat string `flag:"" enum:"text,json" default:"text" env:"ZANDER_LOG_FORMAT" help:"Log output format. (valid values: ${enum})"`
 }
 
+func (c CLI) ctx() command.CmdCtx {
+	if commit == "" {
+		commit = "devel"
+	}
+
+	return command.CmdCtx{
+		Socket:  c.Socket,
+		Commit:  commit,
+		Version: version,
+		Date:    date,
+	}
+}
+
 func main() {
 	var cli CLI
 	ctx := command.Parse(&cli)
 
 	configureLogger(&cli)
 
-	socketPath := cli.Socket
-
-	if len(socketPath) == 0 {
+	if len(cli.Socket) == 0 {
 		p, err := xdg.RuntimeFile("zander.sock")
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		socketPath = p
+		cli.Socket = p
 	}
 
-	ctx.FatalIfErrorf(ctx.Run(command.CmdCtx{
-		Socket: socketPath,
-	}))
+	ctx.FatalIfErrorf(ctx.Run(cli.ctx()))
 }
 
 func configureLogger(cli *CLI) {

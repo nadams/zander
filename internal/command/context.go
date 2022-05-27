@@ -1,5 +1,8 @@
 package command
 
 type CmdCtx struct {
-	Socket string
+	Commit  string
+	Version string
+	Date    string
+	Socket  string
 }

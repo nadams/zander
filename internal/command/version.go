@@ -2,31 +2,29 @@ package command
 
 import (
 	"fmt"
-	"runtime/debug"
 	"strings"
 )
 
 type VersionCmd struct{}
 
-func (v *VersionCmd) Run(_ CmdCtx) error {
-	info, ok := debug.ReadBuildInfo()
-	if !ok {
-		fmt.Println("version: unknown")
-	}
-
-	var out strings.Builder
-	out.WriteString(fmt.Sprintf("Go version: %s\n", info.GoVersion))
-
-	for _, setting := range info.Settings {
-		if setting.Value != "" {
-			out.WriteString(setting.Key)
-			out.WriteString(": ")
-			out.WriteString(setting.Value)
-			out.WriteString("\n")
-		}
-	}
+func (v *VersionCmd) Run(ctx CmdCtx) error {
+	out := &strings.Builder{}
+	v.writeProp(out, "Version", ctx.Version)
+	v.writeProp(out, "Commit", ctx.Commit)
+	v.writeProp(out, "Date", ctx.Date)
 
 	fmt.Print(out.String())
 
 	return nil
+}
+
+func (v *VersionCmd) writeProp(out *strings.Builder, name, value string) {
+	if value == "" {
+		return
+	}
+
+	out.WriteString(name)
+	out.WriteString(": ")
+	out.WriteString(value)
+	out.WriteString("\n")
 }
