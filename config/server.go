@@ -122,11 +122,20 @@ func (s Server) CVARs() (string, error) {
 		case zanderTag.HasOption("cvar"):
 			val := v.Field(i).Interface()
 			switch z := val.(type) {
+			case string:
+				out.WriteString(zanderTag.Name)
+				out.WriteString(" ")
+				out.WriteString("\"")
+				out.WriteString(z)
+				out.WriteString("\"")
+				out.WriteString("\n")
 			case []string:
 				for _, a := range z {
 					out.WriteString(zanderTag.Name)
 					out.WriteString(" ")
+					out.WriteString("\"")
 					out.WriteString(a)
+					out.WriteString("\"")
 					out.WriteString("\n")
 				}
 			default:
