@@ -26,9 +26,13 @@ type AttachCmd struct {
 	ScrollLines                 int    `flag:"" default:"5" help:"How many lines to scroll when pgup and pgdn are pressed. Only valid in default output mode"`
 	CmdHistoryLen               int    `flag:"" default:"500" help:"How many entered commands to remember"`
 	NoDeDuplicatedHistoryAppend bool   `flag:"" help:"Do not duplicate history entries if the previous and submitted commands are the same"`
+
+	stickToBottom bool
 }
 
 func (a *AttachCmd) Run(cmdCtx CmdCtx) error {
+	a.stickToBottom = true
+
 	return WithConn(cmdCtx.Socket, func(client zproto.ZanderClient) error {
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
@@ -114,15 +118,18 @@ func (a *AttachCmd) setupDefaultOutput(cancel func(), in <-chan string, out chan
 	output.SetBorder(false)
 	output.SetBackgroundColor(tcell.ColorDefault)
 	output.SetScrollable(true)
+	output.SetChangedFunc(func() {
+		app.Draw()
+	})
 
 	go func() {
 		for content := range in {
 			if content != "" {
 				fmt.Fprint(output, string(content))
-				app.Draw()
-				app.QueueUpdate(func() {
+
+				if a.stickToBottom {
 					output.ScrollToEnd()
-				})
+				}
 			}
 		}
 
@@ -163,6 +170,7 @@ func (a *AttachCmd) setupDefaultOutput(cancel func(), in <-chan string, out chan
 			}
 
 			input.SetText("")
+			output.ScrollToEnd()
 		}
 	})
 
@@ -176,15 +184,18 @@ func (a *AttachCmd) setupDefaultOutput(cancel func(), in <-chan string, out chan
 					to = 0
 				}
 
+				a.stickToBottom = false
 				output.ScrollTo(to, 0)
 			}
 		case tcell.KeyPgDn:
 			row, _ := output.GetScrollOffset()
 			maxRows := output.GetOriginalLineCount()
+			_, _, _, height := output.GetInnerRect()
 			to := row + a.ScrollLines
 
-			if to > maxRows {
+			if height+to >= maxRows {
 				to = maxRows
+				a.stickToBottom = true
 			}
 
 			output.ScrollTo(to, 0)
@@ -196,18 +207,23 @@ func (a *AttachCmd) setupDefaultOutput(cancel func(), in <-chan string, out chan
 	layout := tview.NewFlex()
 	layout.SetDirection(tview.FlexRow)
 	layout.AddItem(output, 0, 1, false)
-	layout.AddItem(hr(), 1, 0, false)
+	layout.AddItem(hr(func() bool { return a.stickToBottom }), 1, 0, false)
 	layout.AddItem(input, 1, 0, true)
 
 	return app.SetRoot(layout, true).Run()
 }
 
-func hr() *tview.Box {
+func hr(stick func() bool) *tview.Box {
 	return tview.NewBox().
 		SetBackgroundColor(tcell.ColorDefault).
 		SetDrawFunc(func(screen tcell.Screen, x, y, width, height int) (int, int, int, int) {
+			r := tview.BoxDrawingsLightHorizontal
+			if !stick() {
+				r = 'v'
+			}
+
 			for cx := x; cx < x+width; cx++ {
-				screen.SetContent(cx, y, tview.BoxDrawingsLightHorizontal, nil, tcell.StyleDefault.Foreground(tcell.ColorWhite))
+				screen.SetContent(cx, y, r, nil, tcell.StyleDefault.Foreground(tcell.ColorWhite))
 			}
 
 			return x, y, width, height
