@@ -177,6 +177,11 @@ func (a *AttachCmd) setupDefaultOutput(cancel func(), in <-chan string, out chan
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		switch event.Key() {
 		case tcell.KeyPgUp:
+			if event.Modifiers()&tcell.ModCtrl == tcell.ModCtrl {
+				output.ScrollToBeginning()
+				a.stickToBottom = false
+				return event
+			}
 			row, _ := output.GetScrollOffset()
 			if row > 0 {
 				to := row - a.ScrollLines
@@ -188,6 +193,12 @@ func (a *AttachCmd) setupDefaultOutput(cancel func(), in <-chan string, out chan
 				output.ScrollTo(to, 0)
 			}
 		case tcell.KeyPgDn:
+			if event.Modifiers()&tcell.ModCtrl == tcell.ModCtrl {
+				output.ScrollToEnd()
+				a.stickToBottom = true
+				return event
+			}
+
 			row, _ := output.GetScrollOffset()
 			maxRows := output.GetOriginalLineCount()
 			_, _, _, height := output.GetInnerRect()
