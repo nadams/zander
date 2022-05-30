@@ -12,24 +12,24 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"gitlab.node-3.net/nadams/zander/zandronum"
+	"gitlab.node-3.net/nadams/zander/doom"
 	"gitlab.node-3.net/nadams/zander/zproto"
 )
 
 type ZanderServer struct {
 	zproto.UnimplementedZanderServer
 
-	manager *zandronum.Manager
+	manager *doom.Manager
 }
 
-func New(manager *zandronum.Manager) *ZanderServer {
+func New(manager *doom.Manager) *ZanderServer {
 	return &ZanderServer{
 		manager: manager,
 	}
 }
 
 func (z *ZanderServer) RestartServer(ctx context.Context, in *zproto.RestartServerRequest) (*zproto.RestartServerResponse, error) {
-	if err := z.manager.Restart(zandronum.ID(in.Id)); err != nil {
+	if err := z.manager.Restart(doom.ID(in.Id)); err != nil {
 		return nil, err
 	}
 
@@ -42,7 +42,7 @@ func (z *ZanderServer) Attach(stream zproto.Zander_AttachServer) error {
 		return err
 	}
 
-	srv, found := z.manager.Get(zandronum.ID(initial.Id))
+	srv, found := z.manager.Get(doom.ID(initial.Id))
 	if !found {
 		return grpc.Errorf(codes.NotFound, "server with id '%v' not found", initial.Id)
 	}

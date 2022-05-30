@@ -1,4 +1,4 @@
-package zandronum
+package doom
 
 import (
 	"bufio"

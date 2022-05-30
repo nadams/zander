@@ -13,7 +13,7 @@ import (
 	"google.golang.org/grpc"
 
 	"gitlab.node-3.net/nadams/zander/config"
-	"gitlab.node-3.net/nadams/zander/zandronum"
+	"gitlab.node-3.net/nadams/zander/doom"
 	"gitlab.node-3.net/nadams/zander/zproto"
 	"gitlab.node-3.net/nadams/zander/zserver"
 )
@@ -32,7 +32,7 @@ func (s *Server) Run(cmdctx CmdCtx) error {
 		return err
 	}
 
-	manager, err := zandronum.Load(cfg)
+	manager, err := doom.Load(cfg)
 	if err != nil {
 		return err
 	}
@@ -40,12 +40,6 @@ func (s *Server) Run(cmdctx CmdCtx) error {
 	if errs := manager.StartAll(); len(errs) > 0 {
 		log.Error(errs)
 	}
-
-	//server := zandronum.NewServer(config.Expand(cfg.ServerBinaries.Zandronum), nil)
-
-	//manager := zandronum.NewManager()
-	//id := manager.Add(server)
-	//manager.Start(id)
 
 	return s.listenAndServe(manager)
 }
@@ -64,7 +58,7 @@ func (s *Server) loadConfig() (config.Config, string, error) {
 	return cfg, configPath, err
 }
 
-func (s *Server) listenAndServe(manager *zandronum.Manager) error {
+func (s *Server) listenAndServe(manager *doom.Manager) error {
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 
