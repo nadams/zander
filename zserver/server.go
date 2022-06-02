@@ -28,12 +28,12 @@ func New(manager *doom.Manager) *ZanderServer {
 	}
 }
 
-func (z *ZanderServer) RestartServer(ctx context.Context, in *zproto.RestartServerRequest) (*zproto.RestartServerResponse, error) {
-	if err := z.manager.Restart(doom.ID(in.Id)); err != nil {
+func (z *ZanderServer) StartServer(ctx context.Context, in *zproto.StartServerRequest) (*zproto.StartServerResponse, error) {
+	if err := z.manager.Start(doom.ID(in.Id)); err != nil {
 		return nil, err
 	}
 
-	return new(zproto.RestartServerResponse), nil
+	return new(zproto.StartServerResponse), nil
 }
 
 func (z *ZanderServer) StopServer(ctx context.Context, in *zproto.StopServerRequest) (*zproto.StopServerResponse, error) {
@@ -42,6 +42,14 @@ func (z *ZanderServer) StopServer(ctx context.Context, in *zproto.StopServerRequ
 	}
 
 	return new(zproto.StopServerResponse), nil
+}
+
+func (z *ZanderServer) RestartServer(ctx context.Context, in *zproto.RestartServerRequest) (*zproto.RestartServerResponse, error) {
+	if err := z.manager.Restart(doom.ID(in.Id)); err != nil {
+		return nil, err
+	}
+
+	return new(zproto.RestartServerResponse), nil
 }
 
 func (z *ZanderServer) Attach(stream zproto.Zander_AttachServer) error {

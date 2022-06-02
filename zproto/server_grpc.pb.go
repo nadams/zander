@@ -23,8 +23,9 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ZanderClient interface {
 	ListServers(ctx context.Context, in *ListServersRequest, opts ...grpc.CallOption) (*ListServersResponse, error)
-	RestartServer(ctx context.Context, in *RestartServerRequest, opts ...grpc.CallOption) (*RestartServerResponse, error)
+	StartServer(ctx context.Context, in *StartServerRequest, opts ...grpc.CallOption) (*StartServerResponse, error)
 	StopServer(ctx context.Context, in *StopServerRequest, opts ...grpc.CallOption) (*StopServerResponse, error)
+	RestartServer(ctx context.Context, in *RestartServerRequest, opts ...grpc.CallOption) (*RestartServerResponse, error)
 	Attach(ctx context.Context, opts ...grpc.CallOption) (Zander_AttachClient, error)
 }
 
@@ -45,9 +46,9 @@ func (c *zanderClient) ListServers(ctx context.Context, in *ListServersRequest, 
 	return out, nil
 }
 
-func (c *zanderClient) RestartServer(ctx context.Context, in *RestartServerRequest, opts ...grpc.CallOption) (*RestartServerResponse, error) {
-	out := new(RestartServerResponse)
-	err := c.cc.Invoke(ctx, "/zproto.Zander/RestartServer", in, out, opts...)
+func (c *zanderClient) StartServer(ctx context.Context, in *StartServerRequest, opts ...grpc.CallOption) (*StartServerResponse, error) {
+	out := new(StartServerResponse)
+	err := c.cc.Invoke(ctx, "/zproto.Zander/StartServer", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -57,6 +58,15 @@ func (c *zanderClient) RestartServer(ctx context.Context, in *RestartServerReque
 func (c *zanderClient) StopServer(ctx context.Context, in *StopServerRequest, opts ...grpc.CallOption) (*StopServerResponse, error) {
 	out := new(StopServerResponse)
 	err := c.cc.Invoke(ctx, "/zproto.Zander/StopServer", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *zanderClient) RestartServer(ctx context.Context, in *RestartServerRequest, opts ...grpc.CallOption) (*RestartServerResponse, error) {
+	out := new(RestartServerResponse)
+	err := c.cc.Invoke(ctx, "/zproto.Zander/RestartServer", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -99,8 +109,9 @@ func (x *zanderAttachClient) Recv() (*AttachOut, error) {
 // for forward compatibility
 type ZanderServer interface {
 	ListServers(context.Context, *ListServersRequest) (*ListServersResponse, error)
-	RestartServer(context.Context, *RestartServerRequest) (*RestartServerResponse, error)
+	StartServer(context.Context, *StartServerRequest) (*StartServerResponse, error)
 	StopServer(context.Context, *StopServerRequest) (*StopServerResponse, error)
+	RestartServer(context.Context, *RestartServerRequest) (*RestartServerResponse, error)
 	Attach(Zander_AttachServer) error
 	mustEmbedUnimplementedZanderServer()
 }
@@ -112,11 +123,14 @@ type UnimplementedZanderServer struct {
 func (UnimplementedZanderServer) ListServers(context.Context, *ListServersRequest) (*ListServersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListServers not implemented")
 }
-func (UnimplementedZanderServer) RestartServer(context.Context, *RestartServerRequest) (*RestartServerResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RestartServer not implemented")
+func (UnimplementedZanderServer) StartServer(context.Context, *StartServerRequest) (*StartServerResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StartServer not implemented")
 }
 func (UnimplementedZanderServer) StopServer(context.Context, *StopServerRequest) (*StopServerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StopServer not implemented")
+}
+func (UnimplementedZanderServer) RestartServer(context.Context, *RestartServerRequest) (*RestartServerResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RestartServer not implemented")
 }
 func (UnimplementedZanderServer) Attach(Zander_AttachServer) error {
 	return status.Errorf(codes.Unimplemented, "method Attach not implemented")
@@ -152,20 +166,20 @@ func _Zander_ListServers_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Zander_RestartServer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RestartServerRequest)
+func _Zander_StartServer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StartServerRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ZanderServer).RestartServer(ctx, in)
+		return srv.(ZanderServer).StartServer(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/zproto.Zander/RestartServer",
+		FullMethod: "/zproto.Zander/StartServer",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ZanderServer).RestartServer(ctx, req.(*RestartServerRequest))
+		return srv.(ZanderServer).StartServer(ctx, req.(*StartServerRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -184,6 +198,24 @@ func _Zander_StopServer_Handler(srv interface{}, ctx context.Context, dec func(i
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ZanderServer).StopServer(ctx, req.(*StopServerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Zander_RestartServer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RestartServerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ZanderServer).RestartServer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/zproto.Zander/RestartServer",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ZanderServer).RestartServer(ctx, req.(*RestartServerRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -226,12 +258,16 @@ var Zander_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Zander_ListServers_Handler,
 		},
 		{
-			MethodName: "RestartServer",
-			Handler:    _Zander_RestartServer_Handler,
+			MethodName: "StartServer",
+			Handler:    _Zander_StartServer_Handler,
 		},
 		{
 			MethodName: "StopServer",
 			Handler:    _Zander_StopServer_Handler,
+		},
+		{
+			MethodName: "RestartServer",
+			Handler:    _Zander_RestartServer_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
