@@ -10,8 +10,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/dustin/go-humanize"
 	"github.com/jedib0t/go-pretty/table"
 	"github.com/jedib0t/go-pretty/text"
+	"gitlab.node-3.net/nadams/zander/doom"
 	"gitlab.node-3.net/nadams/zander/zproto"
 	"gopkg.in/yaml.v2"
 )
@@ -23,7 +25,7 @@ type ListServersCmd struct {
 }
 
 func (l *ListServersCmd) Run(cmdCtx CmdCtx) error {
-	l.header = []string{"ID", "Name", "Port", "Mode", "Status", "IWAD", "PWADs", "Started"}
+	l.header = []string{"ID", "Name", "Port", "Mode", "Status", "IWAD", "PWADs"}
 
 	return WithConnTimeout(cmdCtx.Socket, DefaultTimeout, func(ctx context.Context, client zproto.ZanderClient) error {
 		resp, err := client.ListServers(ctx, &zproto.ListServersRequest{})
@@ -48,16 +50,30 @@ func (l *ListServersCmd) Run(cmdCtx CmdCtx) error {
 			tw.AppendHeader(h)
 			for _, s := range resp.Servers {
 				status := s.Status
-				switch status {
-				case "running":
+				switch doom.ServerStatus(status) {
+				case doom.Running:
 					status = text.FgGreen.Sprint(status)
-				case "stopped":
+				case doom.Stopped:
+					status = text.FgBlue.Sprint(status)
+				case doom.Errored:
 					status = text.FgRed.Sprint(status)
-				case "not started":
+				case doom.NotStarted:
 					status = text.FgYellow.Sprint(status)
 				}
+
+				t := s.StartedAt.AsTime()
+				updown := "started"
+				nicetime := humanize.Time(t)
+
+				if x := s.StoppedAt.AsTime(); x == (time.Time{}) {
+					updown = "stopped"
+					t = x
+				}
+
+				status = fmt.Sprintf("%s\n%s %s", status, updown, nicetime)
+
 				pwads := strings.Join(s.Pwads, "\n")
-				tw.AppendRow(table.Row{s.Id, s.Name, s.Port, s.Mode, status, s.Iwad, pwads, s.StartedAt.AsTime().Format(time.ANSIC)})
+				tw.AppendRow(table.Row{s.Id, s.Name, s.Port, s.Mode, status, s.Iwad, pwads})
 			}
 			fmt.Fprintln(os.Stdout, tw.Render())
 		case "csv":

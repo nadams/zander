@@ -13,20 +13,30 @@ import (
 	"github.com/pelletier/go-toml/v2"
 )
 
+type RestartPolicy string
+
+const (
+	No            RestartPolicy = "no"
+	OnFailure                   = "on-failure"
+	UnlessStopped               = "unless-stopped"
+)
+
 type Server struct {
-	ID           string   `toml:"id,omitempty" zander:"-"`
-	Mode         string   `toml:"mode,omitempty" zander:"mode"`
-	Email        string   `toml:"email,omitempty" zander:"sv_hostemail,cvar"`
-	Port         int      `toml:"port,omitempty" zander:"port"`
-	Hostname     string   `toml:"hostname,omitempty" zander:"sv_hostname,cvar"`
-	Website      string   `toml:"website,omitempty" zander:"sv_website,cvar"`
-	IWAD         string   `toml:"iwad,omitempty" zander:"iwad"`
-	PWADs        []string `toml:"pwads,omitempty" zander:"file"`
-	Skill        int      `toml:"skill,omitempty" zander:"skill"`
-	MOTD         string   `toml:"motd,multiline,omitempty" zander:"sv_motd,cvar"`
-	Maplist      []string `toml:"maplist,omitempty" zander:"addmap,cvar"`
-	RCONPassword string   `toml:"rcon_password,omitempty" zander:"sv_rconpassword,cvar"`
-	RawParams    string   `toml:"raw_params,multiline,omitempty" zander:",rawcvar"`
+	ID            string        `toml:"id,omitempty" zander:"-"`
+	Disabled      bool          `toml:"disabled,omitempty" zander:"-"`
+	RestartPolicy RestartPolicy `toml:"restart_policy,omitempty" zander:"-"`
+	Mode          string        `toml:"mode,omitempty" zander:"mode"`
+	Email         string        `toml:"email,omitempty" zander:"sv_hostemail,cvar"`
+	Port          int           `toml:"port,omitempty" zander:"port"`
+	Hostname      string        `toml:"hostname,omitempty" zander:"sv_hostname,cvar"`
+	Website       string        `toml:"website,omitempty" zander:"sv_website,cvar"`
+	IWAD          string        `toml:"iwad,omitempty" zander:"iwad"`
+	PWADs         []string      `toml:"pwads,omitempty" zander:"file"`
+	Skill         int           `toml:"skill,omitempty" zander:"skill"`
+	MOTD          string        `toml:"motd,multiline,omitempty" zander:"sv_motd,cvar"`
+	Maplist       []string      `toml:"maplist,omitempty" zander:"addmap,cvar"`
+	RCONPassword  string        `toml:"rcon_password,omitempty" zander:"sv_rconpassword,cvar"`
+	RawParams     string        `toml:"raw_params,multiline,omitempty" zander:",rawcvar"`
 }
 
 func LoadServer(path string) (Server, error) {
@@ -46,6 +56,10 @@ func LoadServer(path string) (Server, error) {
 
 	if err := toml.NewDecoder(f).Decode(&s); err != nil {
 		return Server{}, err
+	}
+
+	if s.RestartPolicy == "" {
+		s.RestartPolicy = OnFailure
 	}
 
 	return s, nil

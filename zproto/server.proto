@@ -9,6 +9,7 @@ package zproto;
 service Zander {
   rpc ListServers(ListServersRequest) returns (ListServersResponse) {}
   rpc RestartServer(RestartServerRequest) returns (RestartServerResponse) {}
+  rpc StopServer(StopServerRequest) returns (StopServerResponse) {}
   rpc Attach(stream AttachIn) returns (stream AttachOut) {}
 }
 
@@ -24,6 +25,12 @@ message RestartServerRequest {
 
 message RestartServerResponse {}
 
+message StopServerRequest {
+  string id = 1;  
+}
+
+message StopServerResponse {}
+
 message Server {
   string id = 1;
   string name = 2;
@@ -33,6 +40,7 @@ message Server {
   string iwad = 6;
   repeated string pwads = 7;
   google.protobuf.Timestamp started_at = 8;
+  google.protobuf.Timestamp stopped_at = 9;
 }
 
 message AttachIn {

@@ -16,9 +16,19 @@ import (
 	"gitlab.node-3.net/nadams/zander/config"
 )
 
+type ServerStatus string
+
+const (
+	Running    ServerStatus = "running"
+	Stopped                 = "stopped"
+	Errored                 = "errored"
+	NotStarted              = "not started"
+)
+
 type Server struct {
 	m         sync.RWMutex
 	binary    string
+	waddir    string
 	opts      map[string]string
 	cfg       config.Server
 	cmd       *exec.Cmd
@@ -27,6 +37,7 @@ type Server struct {
 	stdin     io.WriteCloser
 	consumers map[string]chan<- []byte
 	started   time.Time
+	stopped   time.Time
 }
 
 func NewServer(binary string, opts map[string]string) *Server {
@@ -107,6 +118,7 @@ func NewServerWithConfig(binary, waddir string, cfg config.Server) *Server {
 
 	return &Server{
 		binary:    binary,
+		waddir:    waddir,
 		cmd:       cmd,
 		cfg:       cfg,
 		consumers: make(map[string]chan<- []byte),
@@ -177,6 +189,8 @@ func (s *Server) Start() error {
 
 func (s *Server) Stop() error {
 	if s.cmd != nil {
+		s.stopped = time.Now()
+
 		if s.stdin != nil {
 			s.stdin.Close()
 		}
@@ -214,17 +228,16 @@ func (s *Server) Disconnect(id string) {
 	}
 }
 
-func (s *Server) Status() string {
+func (s *Server) Status() ServerStatus {
 	switch {
-	case s.cmd == nil:
-		return "not started"
-
-	case s.cmd.ProcessState != nil:
-		return "stopped"
-
-	case s.cmd.ProcessState == nil && s.cmd != nil:
-		return "running"
-
+	case s.started == time.Time{}:
+		return NotStarted
+	case s.cmd.ProcessState != nil && s.stopped == time.Time{}:
+		return Errored
+	case s.stopped != time.Time{}:
+		return Stopped
+	case s.cmd.ProcessState == nil:
+		return Running
 	default:
 		return ""
 	}

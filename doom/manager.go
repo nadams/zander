@@ -8,6 +8,9 @@ import (
 	"sort"
 	"strings"
 	"sync"
+	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	"gitlab.node-3.net/nadams/zander/config"
 )
@@ -48,8 +51,13 @@ func (m *Manager) StartAll() []error {
 	var errs []error
 
 	for _, server := range m.servers {
+		if server.cfg.Disabled {
+			continue
+		}
+
 		if err := server.Start(); err != nil {
 			errs = append(errs, err)
+			continue
 		}
 	}
 
@@ -57,9 +65,6 @@ func (m *Manager) StartAll() []error {
 }
 
 func (m *Manager) Start(id ID) error {
-	m.m.RLock()
-	defer m.m.RUnlock()
-
 	server, found := m.servers[id]
 	if found {
 		return server.Start()
@@ -69,9 +74,6 @@ func (m *Manager) Start(id ID) error {
 }
 
 func (m *Manager) Stop(id ID) error {
-	m.m.RLock()
-	defer m.m.RUnlock()
-
 	server, found := m.servers[id]
 	if found {
 		return server.Stop()
@@ -81,11 +83,13 @@ func (m *Manager) Stop(id ID) error {
 }
 
 func (m *Manager) Restart(id ID) error {
-	server, found := m.servers[id]
-	if found {
+	m.m.Lock()
+	defer m.m.Unlock()
+
+	if server, found := m.servers[id]; found {
 		server.Stop()
 
-		newServer := NewServer(server.binary, server.opts)
+		newServer := NewServerWithConfig(server.binary, server.waddir, server.cfg)
 		m.remove(id)
 		m.add(id, newServer)
 
@@ -106,11 +110,12 @@ func (m *Manager) List() []ServerInfo {
 			ID:      string(key),
 			Name:    server.cfg.Hostname,
 			Mode:    server.cfg.Mode,
-			Status:  server.Status(),
+			Status:  string(server.Status()),
 			Port:    server.cfg.Port,
 			IWAD:    server.cfg.IWAD,
 			PWADs:   server.cfg.PWADs,
 			Started: server.started,
+			Stopped: server.stopped,
 		})
 	}
 
@@ -123,17 +128,23 @@ func (m *Manager) Get(id ID) (*Server, bool) {
 	return server, found
 }
 
-func (m *Manager) remove(id ID) {
-	m.m.Lock()
-	defer m.m.Unlock()
+func (m *Manager) Watch() {
+	for range time.NewTicker(time.Second).C {
+		for id, server := range m.servers {
+			if server.cfg.RestartPolicy == config.OnFailure && server.Status() == Errored {
+				log.Infof("found server to restart: %v", id)
 
+				m.Restart(id)
+			}
+		}
+	}
+}
+
+func (m *Manager) remove(id ID) {
 	delete(m.servers, id)
 }
 
 func (m *Manager) add(id ID, server *Server) {
-	m.m.Lock()
-	defer m.m.Unlock()
-
 	m.servers[id] = server
 }
 

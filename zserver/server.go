@@ -36,6 +36,14 @@ func (z *ZanderServer) RestartServer(ctx context.Context, in *zproto.RestartServ
 	return new(zproto.RestartServerResponse), nil
 }
 
+func (z *ZanderServer) StopServer(ctx context.Context, in *zproto.StopServerRequest) (*zproto.StopServerResponse, error) {
+	if err := z.manager.Stop(doom.ID(in.Id)); err != nil {
+		return nil, err
+	}
+
+	return new(zproto.StopServerResponse), nil
+}
+
 func (z *ZanderServer) Attach(stream zproto.Zander_AttachServer) error {
 	initial, err := stream.Recv()
 	if err != nil {

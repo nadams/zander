@@ -19,6 +19,7 @@ type CLI struct {
 	Server  command.Server           `cmd:"" help:"Start zander in server mode"`
 	List    command.ListServersCmd   `cmd:"" help:"List configured doom servers"`
 	Restart command.RestartServerCmd `cmd:"" help:"Restart a doom server"`
+	Stop    command.StopServerCmd    `cmd:"" help:"Stops a doom server"`
 	Attach  command.AttachCmd        `cmd:"" help:"Attach to a running doom server"`
 	Version command.VersionCmd       `cmd:"" help:"Print zander version information"`
 

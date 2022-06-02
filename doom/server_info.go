@@ -11,4 +11,5 @@ type ServerInfo struct {
 	IWAD    string
 	PWADs   []string
 	Started time.Time
+	Stopped time.Time
 }

@@ -9,6 +9,7 @@ require (
 
 require (
 	github.com/adrg/xdg v0.4.0
+	github.com/dustin/go-humanize v1.0.0
 	github.com/fatih/structtag v1.2.0
 	github.com/gdamore/tcell/v2 v2.4.1-0.20210905002822-f057f0a857a1
 	github.com/google/uuid v1.1.2

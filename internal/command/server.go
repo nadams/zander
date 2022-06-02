@@ -41,6 +41,8 @@ func (s *Server) Run(cmdctx CmdCtx) error {
 		log.Error(errs)
 	}
 
+	go manager.Watch()
+
 	return s.listenAndServe(manager)
 }
 
