@@ -9,6 +9,8 @@ import (
 	"syscall"
 
 	"github.com/adrg/xdg"
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	grpc_logrus "github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 
@@ -89,7 +91,21 @@ func (s *Server) listenAndServe(manager *doom.Manager) error {
 
 	defer removeSocket()
 
-	var opts []grpc.ServerOption
+	entry := log.NewEntry(log.StandardLogger())
+	grpc_logrus.ReplaceGrpcLogger(entry)
+
+	opts := []grpc.ServerOption{
+		grpc.StreamInterceptor(
+			grpc_middleware.ChainStreamServer(
+				grpc_logrus.StreamServerInterceptor(entry),
+			),
+		),
+		grpc.UnaryInterceptor(
+			grpc_middleware.ChainUnaryServer(
+				grpc_logrus.UnaryServerInterceptor(entry),
+			),
+		),
+	}
 
 	server := grpc.NewServer(opts...)
 	zproto.RegisterZanderServer(server, zserver.New(manager))
