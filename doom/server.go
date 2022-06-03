@@ -42,18 +42,7 @@ type Server struct {
 	stopped   time.Time
 }
 
-func NewServer(binary string, opts map[string]string) *Server {
-	cmd := exec.Command(binary)
-
-	return &Server{
-		binary:    binary,
-		opts:      opts,
-		cmd:       cmd,
-		consumers: make(map[string]chan<- []byte),
-	}
-}
-
-func NewServerWithConfig(binary, waddir string, cfg config.Server) *Server {
+func NewServer(binary, waddir string, cfg config.Server) *Server {
 	s := &Server{
 		binary:    binary,
 		waddir:    waddir,

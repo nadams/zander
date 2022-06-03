@@ -89,7 +89,7 @@ func (m *Manager) Restart(id ID) error {
 	if server, found := m.servers[id]; found {
 		server.Stop()
 
-		newServer := NewServerWithConfig(server.binary, server.waddir, server.cfg)
+		newServer := NewServer(server.binary, server.waddir, server.cfg)
 		m.remove(id)
 		m.add(id, newServer)
 
@@ -176,7 +176,7 @@ func Load(cfg config.Config) (*Manager, error) {
 				return nil, err
 			}
 
-			server := NewServerWithConfig(binary, waddir, cfg)
+			server := NewServer(binary, waddir, cfg)
 
 			m.AddWithID(ID(cfg.ID), server)
 		}
