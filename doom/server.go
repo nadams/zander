@@ -7,6 +7,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
+	"strconv"
 	"strings"
 	"sync"
 	"syscall"
@@ -28,18 +30,19 @@ const (
 )
 
 type Server struct {
-	m         sync.RWMutex
-	binary    string
-	waddir    string
-	opts      map[string]string
-	cfg       config.Server
-	cmd       *exec.Cmd
-	content   []byte
-	stdout    io.ReadCloser
-	stdin     io.WriteCloser
-	consumers map[string]chan<- []byte
-	started   time.Time
-	stopped   time.Time
+	m                  sync.RWMutex
+	binary             string
+	waddir             string
+	opts               map[string]string
+	cfg                config.Server
+	cmd                *exec.Cmd
+	content            []byte
+	stdout             io.ReadCloser
+	stdin              io.WriteCloser
+	consumers          map[string]chan<- []byte
+	started            time.Time
+	stopped            time.Time
+	foundAlternatePort bool
 }
 
 func NewServer(binary, waddir string, cfg config.Server) *Server {
@@ -56,6 +59,8 @@ func NewServer(binary, waddir string, cfg config.Server) *Server {
 
 	return s
 }
+
+var portRegexp = regexp.MustCompile(`^IP address .+:(\d+)$`)
 
 func (s *Server) Start() error {
 	if s.stopped != emptyTime {
@@ -89,8 +94,19 @@ func (s *Server) Start() error {
 		scanner := bufio.NewScanner(s.stdout)
 		for scanner.Scan() {
 			b := scanner.Bytes()
-			b = append(b, '\n')
 
+			const portStr = "IP address "
+			if lineStr := string(b); !s.foundAlternatePort && strings.HasPrefix(lineStr, portStr) {
+				if matches := portRegexp.FindStringSubmatch(lineStr); len(matches) == 2 {
+					if port, err := strconv.Atoi(matches[1]); err == nil {
+						s.cfg.Port = port
+						s.foundAlternatePort = true
+						log.Infof("found alternate port for server %s, %d", s.cfg.ID, s.cfg.Port)
+					}
+				}
+			}
+
+			b = append(b, '\n')
 			s.content = append(s.content, b...)
 
 			s.m.RLock()
