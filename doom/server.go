@@ -16,6 +16,8 @@ import (
 	"gitlab.node-3.net/nadams/zander/config"
 )
 
+var emptyTime = time.Time{}
+
 type ServerStatus string
 
 const (
@@ -40,93 +42,27 @@ type Server struct {
 	stopped   time.Time
 }
 
-func NewServer(binary string, opts map[string]string) *Server {
-	cmd := exec.Command(binary)
-
-	return &Server{
-		binary:    binary,
-		opts:      opts,
-		cmd:       cmd,
-		consumers: make(map[string]chan<- []byte),
-	}
-}
-
-func NewServerWithConfig(binary, waddir string, cfg config.Server) *Server {
-	params, err := cfg.Parameters()
-	if err != nil {
-		panic(err)
-	}
-
-	cvars, err := cfg.CVARs()
-	if err != nil {
-		panic(err)
-	}
-
-	f, err := os.OpenFile(filepath.Join(os.TempDir(), fmt.Sprintf("%s.cfg", cfg.ID)), os.O_TRUNC|os.O_CREATE|os.O_RDWR, 0600)
-	if err != nil {
-		panic(err)
-	}
-
-	defer f.Close()
-
-	if _, err := io.Copy(f, strings.NewReader(cvars)); err != nil {
-		panic(err)
-	}
-
-	params = append(params, "+exec", f.Name())
-
-	switch strings.ToLower(cfg.Mode) {
-	case "ctf":
-		params = append(params, "+ctf 1")
-	case "1ctf":
-		params = append(params, "+oneflagctf 1")
-	case "skulltag":
-		params = append(params, "+skulltag 1")
-	case "duel":
-		params = append(params, "+duel 1")
-	case "teamgame":
-		params = append(params, "+teamgame 1")
-	case "domination":
-		params = append(params, "+domination 1")
-	case "survival":
-		params = append(params, "+survival 1")
-	case "invasion":
-		params = append(params, "+invasion 1")
-	case "cooperative":
-		params = append(params, "+cooperative 1")
-	case "dm":
-		params = append(params, "+deathmatch 1")
-	case "tdm":
-		params = append(params, "+teamplay 1")
-	case "terminator":
-		params = append(params, "+terminator 1")
-	case "possession":
-		params = append(params, "+possession 1")
-	case "tpossession":
-		params = append(params, "+teampossession 1")
-	case "lms":
-		params = append(params, "+lastmanstanding 1")
-	case "tlms":
-		params = append(params, "+teamlms 1")
-	default:
-		cfg.Mode = "dm"
-		params = append(params, "+deathmatch 1")
-	}
-
-	cmd := exec.Command(binary, params...)
-	cmd.Env = append(cmd.Env, fmt.Sprintf("DOOMWADDIR=%s", waddir))
-
-	return &Server{
+func NewServer(binary, waddir string, cfg config.Server) *Server {
+	s := &Server{
 		binary:    binary,
 		waddir:    waddir,
-		cmd:       cmd,
 		cfg:       cfg,
 		consumers: make(map[string]chan<- []byte),
 	}
+
+	if err := s.newCmd(); err != nil {
+		panic(err)
+	}
+
+	return s
 }
 
 func (s *Server) Start() error {
-	s.started = time.Now()
+	if s.stopped != emptyTime {
+		if err := s.newCmd(); err != nil {
+			return err
+		}
+	}
 
 	stdout, err := s.cmd.StdoutPipe()
 	if err != nil {
@@ -140,6 +76,8 @@ func (s *Server) Start() error {
 
 	s.stdout = stdout
 	s.stdin = stdin
+	s.started = time.Now()
+	s.stopped = emptyTime
 
 	if err := s.cmd.Start(); err != nil {
 		return fmt.Errorf("could not start server: %w", err)
@@ -230,11 +168,11 @@ func (s *Server) Disconnect(id string) {
 
 func (s *Server) Status() ServerStatus {
 	switch {
-	case s.started == time.Time{}:
+	case s.started == emptyTime:
 		return NotStarted
-	case s.cmd.ProcessState != nil && s.stopped == time.Time{}:
+	case s.cmd.ProcessState != nil && s.stopped == emptyTime:
 		return Errored
-	case s.stopped != time.Time{}:
+	case s.stopped != emptyTime:
 		return Stopped
 	case s.cmd.ProcessState == nil:
 		return Running
@@ -268,6 +206,74 @@ func (s *Server) attach(id string, send chan<- []byte, recv <-chan []byte) error
 	for line := range consumer {
 		send <- line
 	}
+
+	return nil
+}
+
+func (s *Server) newCmd() error {
+	params, err := s.cfg.Parameters()
+	if err != nil {
+		return fmt.Errorf("could not get config parameters: %w", err)
+	}
+
+	cvars, err := s.cfg.CVARs()
+	if err != nil {
+		return fmt.Errorf("could not get config cvars: %w", err)
+	}
+
+	f, err := os.OpenFile(filepath.Join(os.TempDir(), fmt.Sprintf("%s.cfg", s.cfg.ID)), os.O_TRUNC|os.O_CREATE|os.O_RDWR, 0600)
+	if err != nil {
+		return fmt.Errorf("could not create temp config file: %w", err)
+	}
+
+	defer f.Close()
+
+	if _, err := io.Copy(f, strings.NewReader(cvars)); err != nil {
+		return fmt.Errorf("could not write to temp config file: %w", err)
+	}
+
+	params = append(params, "+exec", f.Name())
+
+	switch strings.ToLower(s.cfg.Mode) {
+	case "ctf":
+		params = append(params, "+ctf 1")
+	case "1ctf":
+		params = append(params, "+oneflagctf 1")
+	case "skulltag":
+		params = append(params, "+skulltag 1")
+	case "duel":
+		params = append(params, "+duel 1")
+	case "teamgame":
+		params = append(params, "+teamgame 1")
+	case "domination":
+		params = append(params, "+domination 1")
+	case "survival":
+		params = append(params, "+survival 1")
+	case "invasion":
+		params = append(params, "+invasion 1")
+	case "cooperative":
+		params = append(params, "+cooperative 1")
+	case "dm":
+		params = append(params, "+deathmatch 1")
+	case "tdm":
+		params = append(params, "+teamplay 1")
+	case "terminator":
+		params = append(params, "+terminator 1")
+	case "possession":
+		params = append(params, "+possession 1")
+	case "tpossession":
+		params = append(params, "+teampossession 1")
+	case "lms":
+		params = append(params, "+lastmanstanding 1")
+	case "tlms":
+		params = append(params, "+teamlms 1")
+	default:
+		s.cfg.Mode = "dm"
+		params = append(params, "+deathmatch 1")
+	}
+
+	s.cmd = exec.Command(s.binary, params...)
+	s.cmd.Env = append(s.cmd.Env, fmt.Sprintf("DOOMWADDIR=%s", s.waddir))
 
 	return nil
 }

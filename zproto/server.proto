@@ -8,8 +8,9 @@ package zproto;
 
 service Zander {
   rpc ListServers(ListServersRequest) returns (ListServersResponse) {}
-  rpc RestartServer(RestartServerRequest) returns (RestartServerResponse) {}
+  rpc StartServer(StartServerRequest) returns (StartServerResponse) {}
   rpc StopServer(StopServerRequest) returns (StopServerResponse) {}
+  rpc RestartServer(RestartServerRequest) returns (RestartServerResponse) {}
   rpc Attach(stream AttachIn) returns (stream AttachOut) {}
 }
 
@@ -30,6 +31,12 @@ message StopServerRequest {
 }
 
 message StopServerResponse {}
+
+message StartServerRequest {
+  string id = 1;  
+}
+
+message StartServerResponse {}
 
 message Server {
   string id = 1;
