@@ -29,27 +29,57 @@ func New(manager *doom.Manager) *ZanderServer {
 }
 
 func (z *ZanderServer) StartServer(ctx context.Context, in *zproto.StartServerRequest) (*zproto.StartServerResponse, error) {
-	if err := z.manager.Start(doom.ID(in.Id)); err != nil {
-		return nil, err
+	var failure []string
+	var success []string
+
+	for _, id := range in.Ids {
+		if err := z.manager.Start(doom.ID(id)); err != nil {
+			failure = append(failure, id)
+		} else {
+			success = append(success, id)
+		}
 	}
 
-	return new(zproto.StartServerResponse), nil
+	return &zproto.StartServerResponse{
+		Success: success,
+		Failure: failure,
+	}, nil
 }
 
 func (z *ZanderServer) StopServer(ctx context.Context, in *zproto.StopServerRequest) (*zproto.StopServerResponse, error) {
-	if err := z.manager.Stop(doom.ID(in.Id)); err != nil {
-		return nil, err
+	var failure []string
+	var success []string
+
+	for _, id := range in.Ids {
+		if err := z.manager.Stop(doom.ID(id)); err != nil {
+			failure = append(failure, id)
+		} else {
+			success = append(success, id)
+		}
 	}
 
-	return new(zproto.StopServerResponse), nil
+	return &zproto.StopServerResponse{
+		Success: success,
+		Failure: failure,
+	}, nil
 }
 
 func (z *ZanderServer) RestartServer(ctx context.Context, in *zproto.RestartServerRequest) (*zproto.RestartServerResponse, error) {
-	if err := z.manager.Restart(doom.ID(in.Id)); err != nil {
-		return nil, err
+	var failure []string
+	var success []string
+
+	for _, id := range in.Ids {
+		if err := z.manager.Restart(doom.ID(id)); err != nil {
+			failure = append(failure, id)
+		} else {
+			success = append(success, id)
+		}
 	}
 
-	return new(zproto.RestartServerResponse), nil
+	return &zproto.RestartServerResponse{
+		Success: success,
+		Failure: failure,
+	}, nil
 }
 
 func (z *ZanderServer) Attach(stream zproto.Zander_AttachServer) error {

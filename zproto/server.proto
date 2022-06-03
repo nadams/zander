@@ -21,22 +21,31 @@ message ListServersResponse {
 }
 
 message RestartServerRequest {
-  string id = 1;  
+  repeated string ids = 1;  
 }
 
-message RestartServerResponse {}
+message RestartServerResponse {
+  repeated string success = 1;
+  repeated string failure = 2;
+}
 
 message StopServerRequest {
-  string id = 1;  
+  repeated string ids = 1;  
 }
 
-message StopServerResponse {}
+message StopServerResponse {
+  repeated string success = 1;
+  repeated string failure = 2;
+}
 
 message StartServerRequest {
-  string id = 1;  
+  repeated string ids = 1;  
 }
 
-message StartServerResponse {}
+message StartServerResponse {
+  repeated string success = 1;
+  repeated string failure = 2;
+}
 
 message Server {
   string id = 1;

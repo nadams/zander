@@ -7,14 +7,12 @@ import (
 )
 
 type RestartServerCmd struct {
-	ID string `arg:"" required:"true"`
+	Ids []string `arg:"" required:"true" help:"Doom servers to restart"`
 }
 
 func (r *RestartServerCmd) Run(cmdCtx CmdCtx) error {
 	return WithConnTimeout(cmdCtx.Socket, DefaultTimeout, func(ctx context.Context, client zproto.ZanderClient) error {
-		_, err := client.RestartServer(ctx, &zproto.RestartServerRequest{
-			Id: r.ID,
-		})
+		_, err := client.RestartServer(ctx, &zproto.RestartServerRequest{Ids: r.Ids})
 
 		return err
 	})

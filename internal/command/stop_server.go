@@ -7,14 +7,12 @@ import (
 )
 
 type StopServerCmd struct {
-	ID string `arg:"" required:"true"`
+	Ids []string `arg:"" required:"true" help:"Doom servers to stop"`
 }
 
 func (r *StopServerCmd) Run(cmdCtx CmdCtx) error {
 	return WithConnTimeout(cmdCtx.Socket, DefaultTimeout, func(ctx context.Context, client zproto.ZanderClient) error {
-		_, err := client.StopServer(ctx, &zproto.StopServerRequest{
-			Id: r.ID,
-		})
+		_, err := client.StopServer(ctx, &zproto.StopServerRequest{Ids: r.Ids})
 
 		return err
 	})
