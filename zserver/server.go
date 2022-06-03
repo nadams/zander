@@ -167,6 +167,7 @@ func (z *ZanderServer) ListServers(ctx context.Context, cmd *zproto.ListServersR
 			Iwad:      s.IWAD,
 			Pwads:     s.PWADs,
 			StartedAt: timestamppb.New(s.Started),
+			StoppedAt: timestamppb.New(s.Stopped),
 		})
 	}
 

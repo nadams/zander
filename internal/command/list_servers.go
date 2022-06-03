@@ -63,13 +63,13 @@ func (l *ListServersCmd) Run(cmdCtx CmdCtx) error {
 
 				t := s.StartedAt.AsTime()
 				updown := "started"
-				nicetime := humanize.Time(t)
 
-				if x := s.StoppedAt.AsTime(); x == (time.Time{}) {
+				if s.StoppedAt.GetSeconds() > 0 {
 					updown = "stopped"
-					t = x
+					t = s.StoppedAt.AsTime()
 				}
 
+				nicetime := humanize.Time(t)
 				status = fmt.Sprintf("%s\n%s %s", status, updown, nicetime)
 
 				pwads := strings.Join(s.Pwads, "\n")
