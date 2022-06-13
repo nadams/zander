@@ -3,10 +3,15 @@
 package main
 
 import (
+	"os"
+
 	"github.com/adrg/xdg"
+	"github.com/alecthomas/kong"
 	log "github.com/sirupsen/logrus"
+	"github.com/willabides/kongplete"
 
 	"gitlab.node-3.net/nadams/zander/internal/command"
+	"gitlab.node-3.net/nadams/zander/internal/command/completions"
 )
 
 var (
@@ -24,9 +29,11 @@ type CLI struct {
 	Attach  command.AttachCmd        `cmd:"" help:"Attach to a running doom server"`
 	Version command.VersionCmd       `cmd:"" help:"Print zander version information"`
 
-	Socket    string `flag:"" short:"s" type:"pathenv" env:"ZANDER_SOCKET" help:"Uses the given socket path for client/server communication. If no value is given, then it defaults to $XDG_RUNTIME_DIR/zander.sock"`
+	Socket    string `flag:"" short:"s" type:"xdgruntimefile" default:"zander.sock" env:"ZANDER_SOCKET" help:"Uses the given socket path for client/server communication. If no value is given, then it defaults to $XDG_RUNTIME_DIR/zander.sock"`
 	LogLevel  string `flag:"" enum:"fatal,error,warn,debug,info,trace" default:"warn" env:"ZANDER_LOG_LEVEL" help:"Only show the given log severity or higher. (valid values: ${enum})"`
 	LogFormat string `flag:"" enum:"text,json" default:"text" env:"ZANDER_LOG_FORMAT" help:"Log output format. (valid values: ${enum})"`
+
+	InstallCompletions kongplete.InstallCompletions `cmd:"" help:"install shell completions"`
 }
 
 func (c CLI) ctx() command.CmdCtx {
@@ -44,18 +51,9 @@ func (c CLI) ctx() command.CmdCtx {
 
 func main() {
 	var cli CLI
-	ctx := command.Parse(&cli)
+	ctx := parse(&cli)
 
 	configureLogger(&cli)
-
-	if len(cli.Socket) == 0 {
-		p, err := xdg.RuntimeFile("zander.sock")
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		cli.Socket = p
-	}
 
 	ctx.FatalIfErrorf(ctx.Run(cli.ctx()))
 }
@@ -80,4 +78,32 @@ func configureLogger(cli *CLI) {
 	case "trace":
 		log.SetLevel(log.TraceLevel)
 	}
+}
+
+func parse(a *CLI, options ...kong.Option) *kong.Context {
+	parser := kong.Must(a,
+		kong.Name("zander"),
+		kong.Description("Doom server manager"),
+		kong.NamedMapper("pathenv", command.PathEnvDecoder()),
+		kong.NamedMapper("xdgruntimefile", command.XDGRuntimeFile()),
+		kong.UsageOnError(),
+	)
+
+	if len(a.Socket) == 0 {
+		p, err := xdg.RuntimeFile("zander.sock")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		a.Socket = p
+	}
+
+	kongplete.Complete(parser,
+		kongplete.WithPredictor("server_list", completions.ServersPredictor(a.Socket)),
+	)
+
+	ctx, err := parser.Parse(os.Args[1:])
+	parser.FatalIfErrorf(err)
+
+	return ctx
 }
