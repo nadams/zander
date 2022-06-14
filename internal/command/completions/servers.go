@@ -3,7 +3,6 @@ package completions
 import (
 	"context"
 	"sort"
-	"strings"
 	"time"
 
 	"github.com/posener/complete"
@@ -28,9 +27,7 @@ func completeServers(addr string) complete.PredictFunc {
 			}
 
 			for _, server := range resp.Servers {
-				if strings.HasPrefix(server.Id, args.Last) {
-					ids = append(ids, server.Id)
-				}
+				ids = append(ids, server.Id)
 			}
 
 			sort.Strings(ids)

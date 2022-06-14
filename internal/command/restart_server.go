@@ -7,7 +7,7 @@ import (
 )
 
 type RestartServerCmd struct {
-	Ids []string `arg:"" required:"true" help:"Doom servers to restart"`
+	Ids []string `arg:"" required:"true" help:"Doom servers to restart" predictor:"server_list"`
 }
 
 func (r *RestartServerCmd) Run(cmdCtx CmdCtx) error {

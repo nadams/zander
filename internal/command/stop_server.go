@@ -7,7 +7,7 @@ import (
 )
 
 type StopServerCmd struct {
-	Ids []string `arg:"" required:"true" help:"Doom servers to stop"`
+	Ids []string `arg:"" required:"true" help:"Doom servers to stop" predictor:"server_list"`
 }
 
 func (r *StopServerCmd) Run(cmdCtx CmdCtx) error {
