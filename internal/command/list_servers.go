@@ -38,17 +38,19 @@ var tableProps = map[string]func(s *zproto.Server) string{
 	"iwad":  func(s *zproto.Server) string { return s.Iwad },
 	"pwads": func(s *zproto.Server) string { return strings.Join(s.Pwads, "\n") },
 	"status": func(s *zproto.Server) string {
-		var status string
+		status := s.Status
 
-		switch doom.ServerStatus(s.Status) {
-		case doom.Running:
-			status = text.FgGreen.Sprint(status)
-		case doom.Stopped:
-			status = text.FgBlue.Sprint(status)
-		case doom.Errored:
-			status = text.FgRed.Sprint(status)
-		case doom.NotStarted:
-			status = text.FgYellow.Sprint(status)
+		if text.ANSICodesSupported {
+			switch doom.ServerStatus(s.Status) {
+			case doom.Running:
+				status = text.FgGreen.Sprint(status)
+			case doom.Stopped:
+				status = text.FgBlue.Sprint(status)
+			case doom.Errored:
+				status = text.FgRed.Sprint(status)
+			case doom.NotStarted:
+				status = text.FgYellow.Sprint(status)
+			}
 		}
 
 		t := s.StartedAt.AsTime()
