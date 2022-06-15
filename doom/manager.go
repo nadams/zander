@@ -2,6 +2,7 @@ package doom
 
 import (
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -89,7 +90,11 @@ func (m *Manager) Restart(id ID) error {
 	if server, found := m.servers[id]; found {
 		server.Stop()
 
-		newServer := NewServer(server.binary, server.waddir, server.cfg)
+		newServer, err := NewServer(server.binary, server.waddir, server.cfg)
+		if err != nil {
+			return err
+		}
+
 		m.remove(id)
 		m.add(id, newServer)
 
@@ -150,7 +155,11 @@ func (m *Manager) add(id ID, server *Server) {
 
 func Load(cfg config.Config) (*Manager, error) {
 	m := NewManager()
-	binary := cfg.Expand(cfg.ServerBinaries.Zandronum)
+	zandbinary := cfg.Expand(cfg.ServerBinaries.Zandronum)
+	if !cfg.Exists(zandbinary) {
+		return nil, fmt.Errorf("server binary %s not found", zandbinary)
+	}
+
 	dir := cfg.ExpandRel(cfg.ServerConfigDir)
 	waddir := cfg.ExpandRel(cfg.WADDir)
 
@@ -176,7 +185,10 @@ func Load(cfg config.Config) (*Manager, error) {
 				return nil, err
 			}
 
-			server := NewServer(binary, waddir, cfg)
+			server, err := NewServer(zandbinary, waddir, cfg)
+			if err != nil {
+				return nil, err
+			}
 
 			m.AddWithID(ID(cfg.ID), server)
 		}

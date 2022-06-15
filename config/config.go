@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 
@@ -38,6 +39,12 @@ func (c Config) ExpandRel(path string) string {
 	}
 
 	return filepath.Join(c.dir, path)
+}
+
+func (c Config) Exists(path string) bool {
+	x, _ := exec.LookPath(path)
+
+	return x != ""
 }
 
 func FromDisk(path string) (Config, error) {

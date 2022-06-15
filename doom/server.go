@@ -45,7 +45,7 @@ type Server struct {
 	foundAlternatePort bool
 }
 
-func NewServer(binary, waddir string, cfg config.Server) *Server {
+func NewServer(binary, waddir string, cfg config.Server) (*Server, error) {
 	s := &Server{
 		binary:    binary,
 		waddir:    waddir,
@@ -54,10 +54,10 @@ func NewServer(binary, waddir string, cfg config.Server) *Server {
 	}
 
 	if err := s.newCmd(); err != nil {
-		panic(err)
+		return nil, err
 	}
 
-	return s
+	return s, nil
 }
 
 var portRegexp = regexp.MustCompile(`^IP address .+:(\d+)$`)
@@ -227,6 +227,16 @@ func (s *Server) attach(id string, send chan<- []byte, recv <-chan []byte) error
 }
 
 func (s *Server) newCmd() error {
+	if _, err := FindWAD(s.cfg.IWAD); err != nil {
+		return fmt.Errorf("could not find IWAD %s", s.cfg.IWAD)
+	}
+
+	for _, pwad := range s.cfg.PWADs {
+		if _, err := FindWAD(pwad); err != nil {
+			return fmt.Errorf("could not find PWAD %s", pwad)
+		}
+	}
+
 	params, err := s.cfg.Parameters()
 	if err != nil {
 		return fmt.Errorf("could not get config parameters: %w", err)
