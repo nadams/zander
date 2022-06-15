@@ -1,18 +1,33 @@
-image: golang:buster
+.go-cache:
+  image: golang:1.18
+  variables:
+    GOPATH: $CI_PROJECT_DIR/.go
+  before_script:
+    - mkdir -p .go
+  cache:
+    paths:
+      - .go/pkg/mod/
 
 stages:
+  - lint
   - test
   - build
   - release
 
-format:
+lint:
+  extends: .go-cache
+  stage: lint
+  script:
+    - go vet $(go list ./... | grep -v /vendor/)
+
+test:
+  extends: .go-cache
   stage: test
   script:
-    - go fmt $(go list ./... | grep -v /vendor/)
-    - go vet $(go list ./... | grep -v /vendor/)
-    - go test -race $(go list ./... | grep -v /vendor/)
+    - go test ./... -v -short
 
-compile:
+build:
+  extends: .go-cache
   stage: build
   script:
     - mkdir -p bin
@@ -22,6 +37,7 @@ compile:
       - bin
 
 release:
+  extends: .go-cache
   stage: release
   image:
     name: goreleaser/goreleaser
