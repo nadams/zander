@@ -13,8 +13,8 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/jedib0t/go-pretty/table"
 	"github.com/jedib0t/go-pretty/text"
-	"gitlab.node-3.net/nadams/zander/doom"
-	"gitlab.node-3.net/nadams/zander/zproto"
+	"gitlab.node-3.net/zander/zander/doom"
+	"gitlab.node-3.net/zander/zander/zproto"
 	"gopkg.in/yaml.v2"
 )
 

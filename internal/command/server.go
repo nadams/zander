@@ -14,10 +14,10 @@ import (
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 
-	"gitlab.node-3.net/nadams/zander/config"
-	"gitlab.node-3.net/nadams/zander/doom"
-	"gitlab.node-3.net/nadams/zander/zproto"
-	"gitlab.node-3.net/nadams/zander/zserver"
+	"gitlab.node-3.net/zander/zander/config"
+	"gitlab.node-3.net/zander/zander/doom"
+	"gitlab.node-3.net/zander/zander/zproto"
+	"gitlab.node-3.net/zander/zander/zserver"
 )
 
 type Server struct {

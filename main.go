@@ -10,8 +10,8 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/willabides/kongplete"
 
-	"gitlab.node-3.net/nadams/zander/internal/command"
-	"gitlab.node-3.net/nadams/zander/internal/command/completions"
+	"gitlab.node-3.net/zander/zander/internal/command"
+	"gitlab.node-3.net/zander/zander/internal/command/completions"
 )
 
 var (

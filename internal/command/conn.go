@@ -8,7 +8,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	"gitlab.node-3.net/nadams/zander/zproto"
+	"gitlab.node-3.net/zander/zander/zproto"
 )
 
 const DefaultTimeout = time.Second * 15

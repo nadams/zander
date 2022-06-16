@@ -8,8 +8,8 @@ import (
 	"github.com/posener/complete"
 	log "github.com/sirupsen/logrus"
 
-	"gitlab.node-3.net/nadams/zander/internal/command"
-	"gitlab.node-3.net/nadams/zander/zproto"
+	"gitlab.node-3.net/zander/zander/internal/command"
+	"gitlab.node-3.net/zander/zander/zproto"
 )
 
 func ServersPredictor(addr string) complete.Predictor {

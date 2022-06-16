@@ -15,8 +15,8 @@ import (
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc/status"
 
-	"gitlab.node-3.net/nadams/zander/internal/history"
-	"gitlab.node-3.net/nadams/zander/zproto"
+	"gitlab.node-3.net/zander/zander/internal/history"
+	"gitlab.node-3.net/zander/zander/zproto"
 )
 
 type AttachCmd struct {

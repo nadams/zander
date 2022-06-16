@@ -15,7 +15,7 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
-	"gitlab.node-3.net/nadams/zander/config"
+	"gitlab.node-3.net/zander/zander/config"
 )
 
 var emptyTime = time.Time{}

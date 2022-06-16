@@ -1,4 +1,4 @@
-module gitlab.node-3.net/nadams/zander
+module gitlab.node-3.net/zander/zander
 
 go 1.18
 

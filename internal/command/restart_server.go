@@ -3,7 +3,7 @@ package command
 import (
 	"context"
 
-	"gitlab.node-3.net/nadams/zander/zproto"
+	"gitlab.node-3.net/zander/zander/zproto"
 )
 
 type RestartServerCmd struct {

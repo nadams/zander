@@ -12,8 +12,8 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"gitlab.node-3.net/nadams/zander/doom"
-	"gitlab.node-3.net/nadams/zander/zproto"
+	"gitlab.node-3.net/zander/zander/doom"
+	"gitlab.node-3.net/zander/zander/zproto"
 )
 
 type ZanderServer struct {
