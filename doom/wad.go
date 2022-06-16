@@ -10,13 +10,7 @@ import (
 
 var ErrWADNotFound = errors.New("wad not found")
 
-func FindWAD(name string) (string, error) {
-	dirs := []string{
-		os.Getenv("DOOMWADDIR"),
-	}
-
-	//dirs = append(dirs, strings.Split(os.Getenv("DOOMWADPATH"), string(os.PathListSeparator))...)
-
+func FindWAD(name string, dirs ...string) (string, error) {
 	for _, dir := range dirs {
 		path, err := findWADInDir(name, dir)
 		if err != nil {

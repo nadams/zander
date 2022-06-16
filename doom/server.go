@@ -227,12 +227,12 @@ func (s *Server) attach(id string, send chan<- []byte, recv <-chan []byte) error
 }
 
 func (s *Server) newCmd() error {
-	if _, err := FindWAD(s.cfg.IWAD); err != nil {
+	if _, err := FindWAD(s.cfg.IWAD, s.waddir); err != nil {
 		return fmt.Errorf("could not find IWAD %s", s.cfg.IWAD)
 	}
 
 	for _, pwad := range s.cfg.PWADs {
-		if _, err := FindWAD(pwad); err != nil {
+		if _, err := FindWAD(pwad, s.waddir); err != nil {
 			return fmt.Errorf("could not find PWAD %s", pwad)
 		}
 	}
