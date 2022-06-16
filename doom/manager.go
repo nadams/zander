@@ -33,16 +33,10 @@ func NewManager() *Manager {
 	}
 }
 
-func (m *Manager) Add(server *Server) ID {
-	//id := ID(uuid.New().String())
-	id := ID("1")
+func (m *Manager) Add(id ID, server *Server) ID {
 	m.add(id, server)
 
 	return id
-}
-
-func (m *Manager) AddWithID(id ID, server *Server) {
-	m.add(id, server)
 }
 
 func (m *Manager) StartAll() []error {
@@ -190,7 +184,7 @@ func Load(cfg config.Config) (*Manager, error) {
 				return nil, err
 			}
 
-			m.AddWithID(ID(cfg.ID), server)
+			m.Add(ID(cfg.ID), server)
 		}
 	}
 
