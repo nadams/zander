@@ -84,7 +84,7 @@ func (m *Manager) Restart(id ID) error {
 	if server, found := m.servers[id]; found {
 		server.Stop()
 
-		newServer, err := NewServer(server.binary, server.waddir, server.cfg)
+		newServer, err := server.Copy()
 		if err != nil {
 			return err
 		}

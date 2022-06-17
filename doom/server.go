@@ -188,6 +188,10 @@ func (s *Server) Status() ServerStatus {
 	}
 }
 
+func (s *Server) Copy() (*Server, error) {
+	return NewServer(s.binary, s.waddir, s.cfg)
+}
+
 func (s *Server) attach(id string, send chan<- []byte, recv <-chan []byte) error {
 	if s.cmd.ProcessState != nil {
 		send <- s.content
