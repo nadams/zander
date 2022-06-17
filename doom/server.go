@@ -15,6 +15,7 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
+
 	"gitlab.node-3.net/zander/zander/config"
 )
 
@@ -24,7 +25,6 @@ type Server struct {
 	m                  sync.RWMutex
 	binary             string
 	waddir             string
-	opts               map[string]string
 	cfg                config.Server
 	cmd                *exec.Cmd
 	content            []byte
