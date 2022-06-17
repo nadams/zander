@@ -22,10 +22,10 @@ import (
 type AttachCmd struct {
 	ID string `arg:"" required:"true" help:"ID of doom server to attach to" predictor:"server_list"`
 
-	Output                      string `flag:"" enum:"raw,default" default:"default" help:"Output mode. (valid values: ${enum})"`
-	ScrollLines                 int    `flag:"" default:"5" help:"How many lines to scroll when pgup and pgdn are pressed. Only valid in default output mode"`
-	CmdHistoryLen               int    `flag:"" default:"500" help:"How many entered commands to remember"`
-	NoDeDuplicatedHistoryAppend bool   `flag:"" help:"Do not duplicate history entries if the previous and submitted commands are the same"`
+	Output                    string `flag:"" enum:"raw,default" default:"default" help:"Output mode. (valid values: ${enum})"`
+	ScrollLines               int    `flag:"" default:"5" help:"How many lines to scroll when pgup and pgdn are pressed. Only valid in default output mode"`
+	CmdHistoryLen             int    `flag:"" default:"500" help:"How many entered commands to remember"`
+	DeDuplicatedHistoryAppend bool   `flag:"" negatable:"" default:"true" help:"Do not duplicate history entries if the previous and submitted commands are the same"`
 
 	stickToBottom bool
 }
@@ -108,7 +108,7 @@ func (a *AttachCmd) Run(cmdCtx CmdCtx) error {
 func (a *AttachCmd) setupDefaultOutput(cancel func(), in <-chan string, out chan<- string) error {
 	cmdHistory := history.NewCmdHistory(
 		history.WithMaxHistory(a.CmdHistoryLen),
-		history.WithDeDuplicatedAppend(!a.NoDeDuplicatedHistoryAppend),
+		history.WithDeDuplicatedAppend(a.DeDuplicatedHistoryAppend),
 	)
 
 	cmdptr := cmdHistory.Ptr()
