@@ -22,7 +22,7 @@ var (
 
 type CLI struct {
 	Server  command.Server           `cmd:"" help:"Start zander in server mode"`
-	List    command.ListServersCmd   `cmd:"" help:"List configured doom servers"`
+	List    command.ListServersCmd   `cmd:"" help:"List configured doom servers" aliases:"ls,ps"`
 	Start   command.StartServerCmd   `cmd:"" help:"Starts a doom server"`
 	Stop    command.StopServerCmd    `cmd:"" help:"Stops a doom server"`
 	Restart command.RestartServerCmd `cmd:"" help:"Restart a doom server"`
