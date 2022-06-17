@@ -20,15 +20,6 @@ import (
 
 var emptyTime = time.Time{}
 
-type ServerStatus string
-
-const (
-	Running    ServerStatus = "running"
-	Stopped                 = "stopped"
-	Errored                 = "errored"
-	NotStarted              = "not started"
-)
-
 type Server struct {
 	m                  sync.RWMutex
 	binary             string
