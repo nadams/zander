@@ -188,6 +188,20 @@ func (s *Server) Status() ServerStatus {
 	}
 }
 
+func (s *Server) Info() ServerInfo {
+	return ServerInfo{
+		ID:      string(s.cfg.ID),
+		Name:    s.cfg.Hostname,
+		Mode:    s.cfg.Mode,
+		Status:  string(s.Status()),
+		Port:    s.cfg.Port,
+		IWAD:    s.cfg.IWAD,
+		PWADs:   s.cfg.PWADs,
+		Started: s.started,
+		Stopped: s.stopped,
+	}
+}
+
 func (s *Server) Copy() (*Server, error) {
 	return NewServer(s.binary, s.waddir, s.cfg)
 }

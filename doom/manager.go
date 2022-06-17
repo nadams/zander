@@ -104,18 +104,8 @@ func (m *Manager) List() []ServerInfo {
 
 	out := make([]ServerInfo, 0, len(m.servers))
 
-	for key, server := range m.servers {
-		out = append(out, ServerInfo{
-			ID:      string(key),
-			Name:    server.cfg.Hostname,
-			Mode:    server.cfg.Mode,
-			Status:  string(server.Status()),
-			Port:    server.cfg.Port,
-			IWAD:    server.cfg.IWAD,
-			PWADs:   server.cfg.PWADs,
-			Started: server.started,
-			Stopped: server.stopped,
-		})
+	for _, server := range m.servers {
+		out = append(out, server.Info())
 	}
 
 	return out
