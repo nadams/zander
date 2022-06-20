@@ -11,6 +11,7 @@ import (
 	"syscall"
 
 	"github.com/gdamore/tcell/v2"
+	"github.com/jedib0t/go-pretty/table"
 	"github.com/rivo/tview"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc/status"
@@ -118,6 +119,7 @@ func (a *AttachCmd) setupDefaultOutput(cancel func(), in <-chan string, out chan
 	output.SetBorder(false)
 	output.SetBackgroundColor(tcell.ColorDefault)
 	output.SetScrollable(true)
+	output.SetWrap(true)
 	output.SetChangedFunc(func() {
 		app.Draw()
 	})
@@ -163,8 +165,8 @@ func (a *AttachCmd) setupDefaultOutput(cancel func(), in <-chan string, out chan
 			cmdptr.Reset()
 
 			switch intercept {
-			case "help":
-				fmt.Fprintln(output, "help requested")
+			case "help", "?", "h":
+				fmt.Fprintln(output, a.renderHelp(output))
 			default:
 				out <- input.GetText()
 			}
@@ -259,6 +261,31 @@ func (a *AttachCmd) setupRawOutput(cancel func(), in <-chan string, out chan<- s
 	return nil
 }
 
+func (a *AttachCmd) renderHelp(out *tview.TextView) string {
+	header := table.Row{"Cmd", "Example", "Description"}
+	_, _, wi, _ := out.GetInnerRect()
+	wi -= len(header)*len(header) + 1
+	w := float64(wi)
+
+	style := table.StyleLight
+	style.Options.SeparateRows = true
+
+	tw := table.NewWriter()
+	tw.SetStyle(style)
+	tw.AppendHeader(header)
+	tw.SetColumnConfigs([]table.ColumnConfig{
+		{Name: "Cmd", WidthMax: int(w * 0.2)},
+		{Name: "Example", WidthMax: int(w * 0.3)},
+		{Name: "Description", WidthMax: int(w * 0.5)},
+	})
+
+	for _, cmd := range a.serverCommands() {
+		tw.AppendRow(table.Row{cmd.Cmd, cmd.Example, strings.TrimSpace(cmd.Description)})
+	}
+
+	return tw.Render()
+}
+
 type servercmd struct {
 	Cmd         string
 	Example     string
@@ -270,14 +297,13 @@ func (a *AttachCmd) serverCommands() []servercmd {
 		{
 			Cmd:     "AddBan",
 			Example: "AddBan 192.168.2.* 2min \"Test Ban\"",
-			Description: `
-			Issues a ban on an individual client or clients. Syntax for AddBan is: AddBan <IPv4> ["Reason"]. Additionally, range bans are acceptable by using wildcards, such as ( * ). However, when the client or clients are blacklisted, they will not be able to communicate with that server until the client or clients are whitelisted or expunged from the blacklist.
+			Description: `Issues a ban on an individual client or clients. Syntax for AddBan is: AddBan <IPv4> ["Reason"]. Additionally, range bans are acceptable by using wildcards, such as ( * ). However, when the client or clients are blacklisted, they will not be able to communicate with that server until the client or clients are whitelisted or expunged from the blacklist.
 
-			Time
-				When approaching this argument, the time can be inputted as 6days or even 1345years. The allowed time/date formats are: minutes, hours, days, months, and years.
-				Perm (or permanent ban) is what it is, permanent. This can also be used as the time argument.
+Time
+	When approaching this argument, the time can be inputted as 6days or even 1345years. The allowed time/date formats are: minutes, hours, days, months, and years.
+	Perm (or permanent ban) is what it is, permanent. This can also be used as the time argument.
 
-				Note: IPv4 is only supported; IPv6 is unsupported at the mean time.`,
+	Note: IPv4 is only supported; IPv6 is unsupported at the mean time.`,
 		},
 		{
 			Cmd:         "AddBanExemption",
