@@ -81,8 +81,8 @@ var tableProps = map[string]func(s *zproto.Server) string{
 }
 
 type ListServersCmd struct {
-	Output  string   `flag:"" short:"o" enum:"table,json,yaml,csv,raw" default:"table" help:"Output format. valid values: (${enum})"`
-	Columns []string `flag:"" short:"c" enum:"id,name,port,mode,status,iwad,pwads,started_at,stopped_at" default:"id,name,port,mode,status,iwad,pwads" sep:"," help:"Which columns to show in table output and csv format. valid values: (${enum})"`
+	Output  string   `flag:"" short:"o" env:"ZANDER_LIST_OUTPUT" enum:"table,json,yaml,csv,raw" default:"table" help:"Output format. valid values: (${enum})"`
+	Columns []string `flag:"" short:"c" env:"ZANDER_LIST_COLUMNS" enum:"id,name,port,mode,status,iwad,pwads,started_at,stopped_at" default:"id,name,port,mode,status,iwad,pwads" sep:"," help:"Which columns to show in table output and csv format. valid values: (${enum})"`
 
 	header []string
 }
