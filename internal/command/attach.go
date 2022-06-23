@@ -126,12 +126,10 @@ func (a *AttachCmd) setupDefaultOutput(cancel func(), in <-chan string, out chan
 
 	go func() {
 		for content := range in {
-			if content != "" {
-				fmt.Fprint(output, string(content))
+			fmt.Fprintln(output, string(content))
 
-				if a.stickToBottom {
-					output.ScrollToEnd()
-				}
+			if a.stickToBottom {
+				output.ScrollToEnd()
 			}
 		}
 

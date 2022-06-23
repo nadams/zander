@@ -27,7 +27,7 @@ type Server struct {
 	waddir             string
 	cfg                config.Server
 	cmd                *exec.Cmd
-	content            []byte
+	content            *LogBuffer
 	stdout             io.ReadCloser
 	stdin              io.WriteCloser
 	consumers          map[string]chan<- []byte
@@ -42,6 +42,7 @@ func NewServer(binary, waddir string, cfg config.Server) (*Server, error) {
 		waddir:    waddir,
 		cfg:       cfg,
 		consumers: make(map[string]chan<- []byte),
+		content:   NewLogBuffer(cfg.MaxLogLines),
 	}
 
 	if err := s.newCmd(); err != nil {
@@ -97,8 +98,8 @@ func (s *Server) Start() error {
 				}
 			}
 
-			b = append(b, '\n')
-			s.content = append(s.content, b...)
+			//b = append(b, '\n')
+			s.content.Write(b)
 
 			s.m.RLock()
 			for _, consumer := range s.consumers {
@@ -208,7 +209,7 @@ func (s *Server) Copy() (*Server, error) {
 
 func (s *Server) attach(id string, send chan<- []byte, recv <-chan []byte) error {
 	if s.cmd.ProcessState != nil {
-		send <- s.content
+		send <- s.content.Content()
 
 		return nil
 	}
@@ -226,7 +227,7 @@ func (s *Server) attach(id string, send chan<- []byte, recv <-chan []byte) error
 		}
 	}()
 
-	send <- s.content
+	send <- s.content.Content()
 
 	for line := range consumer {
 		send <- line

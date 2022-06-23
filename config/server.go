@@ -25,6 +25,7 @@ type Server struct {
 	ID            string        `toml:"id,omitempty" zander:"-"`
 	Disabled      bool          `toml:"disabled,omitempty" zander:"-"`
 	RestartPolicy RestartPolicy `toml:"restart_policy,omitempty" zander:"-"`
+	MaxLogLines   int           `toml:"max_log_lines,omitempty" zander:"-"`
 	Mode          string        `toml:"mode,omitempty" zander:"mode"`
 	Email         string        `toml:"email,omitempty" zander:"sv_hostemail,cvar"`
 	Port          int           `toml:"port,omitempty" zander:"port"`
