@@ -12,6 +12,7 @@ service Zander {
   rpc StopServer(StopServerRequest) returns (StopServerResponse) {}
   rpc RestartServer(RestartServerRequest) returns (RestartServerResponse) {}
   rpc Attach(stream AttachIn) returns (stream AttachOut) {}
+  rpc Tail(TailIn) returns (stream TailOut) {}
 }
 
 message ListServersRequest {}
@@ -66,4 +67,12 @@ message AttachIn {
 
 message AttachOut {
   bytes content = 1;  
+}
+
+message TailIn {
+  string id = 1;
+}
+
+message TailOut {
+  bytes content = 1;
 }
