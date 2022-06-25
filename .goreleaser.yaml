@@ -22,8 +22,11 @@ changelog:
     exclude:
       - '^docs:'
       - '^test:'
-env_files:
-  gitlab_token: "gitlab_token"
+release:
+  github:
+    owner: nadams
+    name: zander
+
 gitlab_urls:
   api: https://gitlab.node-3.net/api/v4/
   download: https://gitlab.node-3.net
