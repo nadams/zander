@@ -48,7 +48,7 @@ build:
   extends: .go-cache
   stage: release
   image:
-    name: goreleaser/goreleaser
+    name: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/goreleaser/goreleaser:latest
     entrypoint: ['']
   only:
     - tags
