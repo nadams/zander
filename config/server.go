@@ -21,8 +21,16 @@ const (
 	UnlessStopped               = "unless-stopped"
 )
 
+type Engine string
+
+const (
+	Zandronum = "zandronum"
+	Odamex    = "odamex"
+)
+
 type Server struct {
 	ID            string        `toml:"id,omitempty" zander:"-"`
+	Engine        Engine        `toml:"engine,omitempty" zander:"-"`
 	Disabled      bool          `toml:"disabled,omitempty" zander:"-"`
 	RestartPolicy RestartPolicy `toml:"restart_policy,omitempty" zander:"-"`
 	MaxLogLines   int           `toml:"max_log_lines,omitempty" zander:"-"`
