@@ -21,6 +21,7 @@ import (
 var columns = map[string]string{
 	"id":         "ID",
 	"name":       "Name",
+	"engine":     "Engine",
 	"port":       "Port",
 	"mode":       "Mode",
 	"status":     "Status",
@@ -31,12 +32,13 @@ var columns = map[string]string{
 }
 
 var tableProps = map[string]func(s *zproto.Server) string{
-	"id":    func(s *zproto.Server) string { return s.Id },
-	"name":  func(s *zproto.Server) string { return s.Name },
-	"port":  func(s *zproto.Server) string { return fmt.Sprintf("%d", s.Port) },
-	"mode":  func(s *zproto.Server) string { return s.Mode },
-	"iwad":  func(s *zproto.Server) string { return s.Iwad },
-	"pwads": func(s *zproto.Server) string { return strings.Join(s.Pwads, "\n") },
+	"id":     func(s *zproto.Server) string { return s.Id },
+	"name":   func(s *zproto.Server) string { return s.Name },
+	"engine": func(s *zproto.Server) string { return s.Engine },
+	"port":   func(s *zproto.Server) string { return fmt.Sprintf("%d", s.Port) },
+	"mode":   func(s *zproto.Server) string { return s.Mode },
+	"iwad":   func(s *zproto.Server) string { return s.Iwad },
+	"pwads":  func(s *zproto.Server) string { return strings.Join(s.Pwads, "\n") },
 	"status": func(s *zproto.Server) string {
 		status := s.Status
 
@@ -82,7 +84,7 @@ var tableProps = map[string]func(s *zproto.Server) string{
 
 type ListServersCmd struct {
 	Output  string   `flag:"" short:"o" env:"ZANDER_LIST_OUTPUT" enum:"table,json,yaml,csv,raw" default:"table" help:"Output format. valid values: (${enum})"`
-	Columns []string `flag:"" short:"c" env:"ZANDER_LIST_COLUMNS" enum:"id,name,port,mode,status,iwad,pwads,started_at,stopped_at" default:"id,name,port,mode,status,iwad,pwads" sep:"," help:"Which columns to show in table output and csv format. valid values: (${enum})"`
+	Columns []string `flag:"" short:"c" env:"ZANDER_LIST_COLUMNS" enum:"id,name,engine,port,mode,status,iwad,pwads,started_at,stopped_at" default:"id,engine,name,port,mode,status,iwad,pwads" sep:"," help:"Which columns to show in table output and csv format. valid values: (${enum})"`
 
 	header []string
 }

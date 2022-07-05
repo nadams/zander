@@ -164,6 +164,7 @@ func (s *server) Info() ServerInfo {
 	return ServerInfo{
 		ID:      string(s.cfg.ID),
 		Name:    s.cfg.Hostname,
+		Engine:  s.cfg.Engine,
 		Mode:    s.cfg.Mode,
 		Status:  string(s.status()),
 		Port:    s.cfg.Port,

@@ -72,6 +72,7 @@ func DefaultConfig(dir string) Config {
 		WADDir:          "wads",
 		ServerBinaries: ServerBinaries{
 			Zandronum: "zandronum-server",
+			Odamex:    "odasrv",
 		},
 
 		dir: dir,
