@@ -181,6 +181,17 @@ func Load(cfg config.Config) (*Manager, error) {
 				}
 
 				server, err = NewZandronumServer(binaryPaths[config.Zandronum], waddir, scfg)
+			case config.Odamex:
+				if _, found := binaryPaths[config.Odamex]; !found {
+					odabinary := cfg.Expand(cfg.ServerBinaries.Odamex)
+					if !cfg.Exists(odabinary) {
+						return nil, fmt.Errorf("server binary %s not found", odabinary)
+					}
+
+					binaryPaths[config.Odamex] = odabinary
+				}
+
+				server, err = NewOdamexServer(binaryPaths[config.Odamex], waddir, scfg)
 			default:
 				err = fmt.Errorf("unknown engine: '%s'", scfg.Engine)
 			}
