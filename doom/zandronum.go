@@ -22,13 +22,7 @@ var portRegexp = regexp.MustCompile(`^IP address .+:(\d+)$`)
 
 func NewZandronumServer(binary, waddir string, cfg config.Server) (*ZandronumServer, error) {
 	s := &ZandronumServer{
-		server: &server{
-			binary:    binary,
-			waddir:    waddir,
-			cfg:       cfg,
-			consumers: make(map[string]chan<- []byte),
-			content:   NewLogBuffer(cfg.MaxLogLines),
-		},
+		server: newServer(binary, waddir, cfg),
 	}
 
 	s.server.logMappers = []logMapper{s.scanPort}
