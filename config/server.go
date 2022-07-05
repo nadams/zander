@@ -77,11 +77,27 @@ func LoadServer(path string) (Server, error) {
 var rawcvarRegexp = regexp.MustCompile(`(\w+)\s+(.+)`)
 
 func (s Server) Parameters() ([]string, error) {
+	return serverParams(s)
+}
+
+func serverParams(s any) ([]string, error) {
 	var out []string
 
 	t := reflect.TypeOf(s)
 	v := reflect.ValueOf(s)
 	for i := 0; i < t.NumField(); i++ {
+		field := v.Field(i)
+
+		switch field.Kind() {
+		case reflect.Struct:
+			x, err := serverParams(field.Interface())
+			if err != nil {
+				return nil, err
+			}
+
+			out = append(out, x...)
+		}
+
 		tag := t.Field(i).Tag
 
 		tags, err := structtag.Parse(string(tag))
@@ -91,6 +107,10 @@ func (s Server) Parameters() ([]string, error) {
 
 		zanderTag, err := tags.Get("zander")
 		if err != nil {
+			if err.Error() == "tag does not exist" {
+				continue
+			}
+
 			return nil, err
 		}
 
@@ -100,7 +120,7 @@ func (s Server) Parameters() ([]string, error) {
 
 		option := fmt.Sprintf("-%s", zanderTag.Name)
 
-		switch v := v.Field(i).Interface().(type) {
+		switch v := field.Interface().(type) {
 		case []string:
 			for _, x := range v {
 				if x != "" {
