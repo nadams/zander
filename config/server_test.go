@@ -12,10 +12,18 @@ func Test_serverParams(t *testing.T) {
 	}
 
 	type ts struct {
-		Inner inner
+		Str      string   `zander:"str"`
+		Skipped  string   `zander:"-"`
+		Int      int      `zander:"int"`
+		StrSlice []string `zander:"strslice"`
+		Inner    inner
 	}
 
 	x := ts{
+		Str:      "str",
+		Skipped:  "skipped",
+		Int:      10,
+		StrSlice: []string{"a", "b", "c"},
 		Inner: inner{
 			Prop: "test",
 		},
@@ -24,5 +32,12 @@ func Test_serverParams(t *testing.T) {
 	out, err := serverParams(x)
 
 	assert.NoError(t, err)
-	assert.Equal(t, []string{"-prop", "test"}, out)
+	assert.Equal(t, []string{
+		"-str", "str",
+		"-int", "10",
+		"-strslice", "a",
+		"-strslice", "b",
+		"-strslice", "c",
+		"-prop", "test",
+	}, out)
 }
