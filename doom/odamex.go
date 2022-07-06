@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	log "github.com/sirupsen/logrus"
+
 	"gitlab.node-3.net/zander/zander/config"
 )
 
@@ -19,13 +20,7 @@ type OdamexServer struct {
 
 func NewOdamexServer(binary, waddir string, cfg config.Server) (*OdamexServer, error) {
 	s := &OdamexServer{
-		server: &server{
-			binary:    binary,
-			waddir:    waddir,
-			cfg:       cfg,
-			consumers: make(map[string]chan<- []byte),
-			content:   NewLogBuffer(cfg.MaxLogLines),
-		},
+		server: newServer(binary, waddir, cfg),
 	}
 
 	s.server.logMappers = []logMapper{s.scanPort}

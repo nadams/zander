@@ -44,6 +44,16 @@ type server struct {
 	preStart           func() error
 }
 
+func newServer(binary, waddir string, cfg config.Server) *server {
+	return &server{
+		binary:    binary,
+		waddir:    waddir,
+		cfg:       cfg,
+		consumers: make(map[string]chan<- []byte),
+		content:   NewLogBuffer(cfg.MaxLogLines),
+	}
+}
+
 func (s *server) Start() error {
 	if s.stopped != emptyTime {
 		if s.preStart != nil {
