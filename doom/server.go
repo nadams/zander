@@ -30,7 +30,7 @@ type logMapper func([]byte) []byte
 type server struct {
 	m                  sync.RWMutex
 	binary             string
-	waddir             string
+	wadPaths           config.WADPaths
 	cfg                config.Server
 	cmd                *exec.Cmd
 	content            *LogBuffer
@@ -44,10 +44,10 @@ type server struct {
 	preStart           func() error
 }
 
-func newServer(binary, waddir string, cfg config.Server) *server {
+func newServer(binary string, wadPaths config.WADPaths, cfg config.Server) *server {
 	return &server{
 		binary:    binary,
-		waddir:    waddir,
+		wadPaths:  wadPaths,
 		cfg:       cfg,
 		consumers: make(map[string]chan<- []byte),
 		content:   NewLogBuffer(cfg.MaxLogLines),

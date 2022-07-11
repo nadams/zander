@@ -18,9 +18,9 @@ type OdamexServer struct {
 	*server
 }
 
-func NewOdamexServer(binary, waddir string, cfg config.Server) (*OdamexServer, error) {
+func NewOdamexServer(binary string, wadPaths config.WADPaths, cfg config.Server) (*OdamexServer, error) {
 	s := &OdamexServer{
-		server: newServer(binary, waddir, cfg),
+		server: newServer(binary, wadPaths, cfg),
 	}
 
 	s.server.logMappers = []logMapper{s.scanPort}
@@ -34,16 +34,16 @@ func NewOdamexServer(binary, waddir string, cfg config.Server) (*OdamexServer, e
 }
 
 func (s *OdamexServer) Copy() (Server, error) {
-	return NewOdamexServer(s.binary, s.waddir, s.cfg)
+	return NewOdamexServer(s.binary, s.wadPaths, s.cfg)
 }
 
 func (s *OdamexServer) newCmd() error {
-	if _, err := FindWAD(s.cfg.IWAD, s.waddir); err != nil {
+	if _, err := FindWAD(s.cfg.IWAD, s.wadPaths.Expanded()...); err != nil {
 		return fmt.Errorf("could not find IWAD %s", s.cfg.IWAD)
 	}
 
 	for _, pwad := range s.cfg.PWADs {
-		if _, err := FindWAD(pwad, s.waddir); err != nil {
+		if _, err := FindWAD(pwad, s.wadPaths.Expanded()...); err != nil {
 			return fmt.Errorf("could not find PWAD %s", pwad)
 		}
 	}
@@ -90,7 +90,7 @@ func (s *OdamexServer) newCmd() error {
 	}
 
 	s.cmd = exec.Command(s.binary, params...)
-	s.cmd.Env = append(s.cmd.Env, fmt.Sprintf("DOOMWADPATH=%s", s.waddir))
+	s.cmd.Env = append(s.cmd.Env, fmt.Sprintf("DOOMWADPATH=%s", s.wadPaths.String()))
 
 	return nil
 }

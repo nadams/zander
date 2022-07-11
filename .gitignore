@@ -4,3 +4,4 @@ dist/
 gitlab_token
 test.db
 .go
+banlist.json

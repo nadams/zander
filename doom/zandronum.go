@@ -20,9 +20,9 @@ type ZandronumServer struct {
 
 var portRegexp = regexp.MustCompile(`^IP address .+:(\d+)$`)
 
-func NewZandronumServer(binary, waddir string, cfg config.Server) (*ZandronumServer, error) {
+func NewZandronumServer(binary string, wadPath config.WADPaths, cfg config.Server) (*ZandronumServer, error) {
 	s := &ZandronumServer{
-		server: newServer(binary, waddir, cfg),
+		server: newServer(binary, wadPath, cfg),
 	}
 
 	s.server.logMappers = []logMapper{s.scanPort}
@@ -36,16 +36,16 @@ func NewZandronumServer(binary, waddir string, cfg config.Server) (*ZandronumSer
 }
 
 func (s *ZandronumServer) Copy() (Server, error) {
-	return NewZandronumServer(s.binary, s.waddir, s.cfg)
+	return NewZandronumServer(s.binary, s.wadPaths, s.cfg)
 }
 
 func (s *ZandronumServer) newCmd() error {
-	if _, err := FindWAD(s.cfg.IWAD, s.waddir); err != nil {
+	if _, err := FindWAD(s.cfg.IWAD, s.wadPaths.Expanded()...); err != nil {
 		return fmt.Errorf("could not find IWAD %s", s.cfg.IWAD)
 	}
 
 	for _, pwad := range s.cfg.PWADs {
-		if _, err := FindWAD(pwad, s.waddir); err != nil {
+		if _, err := FindWAD(pwad, s.wadPaths.Expanded()...); err != nil {
 			return fmt.Errorf("could not find PWAD %s", pwad)
 		}
 	}
@@ -112,7 +112,7 @@ func (s *ZandronumServer) newCmd() error {
 	}
 
 	s.cmd = exec.Command(s.binary, params...)
-	s.cmd.Env = append(s.cmd.Env, fmt.Sprintf("DOOMWADDIR=%s", s.waddir))
+	s.cmd.Env = append(s.cmd.Env, fmt.Sprintf("DOOMWADPATH=%s", s.wadPaths.String()))
 
 	return nil
 }

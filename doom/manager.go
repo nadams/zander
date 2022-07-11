@@ -139,9 +139,7 @@ func (m *Manager) add(id ID, server Server) {
 
 func Load(cfg config.Config) (*Manager, error) {
 	m := NewManager()
-
 	dir := cfg.ExpandRel(cfg.ServerConfigDir)
-	waddir := cfg.ExpandRel(cfg.WADDir)
 
 	if _, err := os.Stat(dir); err != nil {
 		if err := os.MkdirAll(dir, 0755); err != nil {
@@ -180,7 +178,7 @@ func Load(cfg config.Config) (*Manager, error) {
 					binaryPaths[config.Zandronum] = zandbinary
 				}
 
-				server, err = NewZandronumServer(binaryPaths[config.Zandronum], waddir, scfg)
+				server, err = NewZandronumServer(binaryPaths[config.Zandronum], cfg.WADPaths, scfg)
 			case config.Odamex:
 				if _, found := binaryPaths[config.Odamex]; !found {
 					odabinary := cfg.Expand(cfg.ServerBinaries.Odamex)
@@ -191,7 +189,7 @@ func Load(cfg config.Config) (*Manager, error) {
 					binaryPaths[config.Odamex] = odabinary
 				}
 
-				server, err = NewOdamexServer(binaryPaths[config.Odamex], waddir, scfg)
+				server, err = NewOdamexServer(binaryPaths[config.Odamex], cfg.WADPaths, scfg)
 			default:
 				err = fmt.Errorf("unknown engine: '%s'", scfg.Engine)
 			}

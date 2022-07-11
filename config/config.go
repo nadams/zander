@@ -10,9 +10,43 @@ import (
 	"github.com/pelletier/go-toml/v2"
 )
 
+type WADPaths []string
+
+func (w WADPaths) Exists(wad string) bool {
+	return false
+}
+
+func (w WADPaths) String() string {
+	return strings.Join(w.Expanded(), string(os.PathListSeparator))
+}
+
+func (w WADPaths) Expanded() []string {
+	paths := make([]string, 0, len(w))
+
+	for _, p := range w {
+		paths = append(paths, expanded(p))
+	}
+
+	return paths
+}
+
+func (w *WADPaths) FromEnv() {
+	paths := strings.Split(os.Getenv("DOOMWADPATH"), string(os.PathListSeparator))
+	if p := os.Getenv("DOOMWADDIR"); p != "" {
+		paths = append(paths, p)
+	}
+
+	x := make(WADPaths, 0, len(paths))
+	for _, p := range paths {
+		x = append(x, p)
+	}
+
+	*w = x
+}
+
 type Config struct {
 	ServerConfigDir string         `toml:"server_config_dir,omitempty"`
-	WADDir          string         `toml:"wad_dir,omitempty"`
+	WADPaths        WADPaths       `toml:"wad_paths,omitempty"`
 	ServerBinaries  ServerBinaries `toml:"server_binaries,omitempty"`
 
 	dir string
@@ -69,7 +103,6 @@ func FromDisk(path string) (Config, error) {
 func DefaultConfig(dir string) Config {
 	return Config{
 		ServerConfigDir: "servers",
-		WADDir:          "wads",
 		ServerBinaries: ServerBinaries{
 			Zandronum: "zandronum-server",
 			Odamex:    "odasrv",
@@ -83,4 +116,17 @@ type ServerBinaries struct {
 	Zandronum string `toml:"zandronum,omitempty"`
 	Odamex    string `toml:"odamex,omitempty"`
 	ZDaemon   string `toml:"zdaemon,omitempty"`
+}
+
+func expanded(path string) string {
+	if strings.HasPrefix(path, "~/") {
+		homedir, err := os.UserHomeDir()
+		if err != nil {
+			panic(err)
+		}
+
+		path = filepath.Join(homedir, path[2:])
+	}
+
+	return os.ExpandEnv(path)
 }

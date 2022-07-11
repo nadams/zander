@@ -59,6 +59,10 @@ func (s *Server) loadConfig() (config.Config, string, error) {
 		return config.Config{}, "", err
 	}
 
+	if len(cfg.WADPaths) == 0 {
+		cfg.WADPaths.FromEnv()
+	}
+
 	return cfg, configPath, err
 }
 
