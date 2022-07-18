@@ -3,10 +3,15 @@ package config
 type Collector string
 
 const (
-	Prometheus Collector = "pometheus"
+	Prometheus Collector = "prometheus"
 )
 
 type Metrics struct {
-	Enabled   bool      `toml:"enabled"`
-	Collector Collector `toml:"collector"`
+	Collector  Collector        `toml:"collector"`
+	Prometheus PrometheusConfig `toml:"prometheus"`
+}
+
+type PrometheusConfig struct {
+	Port int    `toml:"port"`
+	Path string `toml:"path"`
 }

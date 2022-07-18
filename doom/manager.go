@@ -154,12 +154,20 @@ func (m *Manager) add(id ID, server *Server) {
 }
 
 func Load(cfg config.Config) (*Manager, error) {
-	var met metrics.Metrics
+	var met metrics.Metrics = &metrics.Noop{}
 
-	if mcfg := cfg.Metrics; mcfg.Enabled {
+	if mcfg := cfg.Metrics; mcfg.Collector != "" {
 		switch mcfg.Collector {
 		case config.Prometheus:
-			met = &metrics.Prometheus{}
+			prom := &metrics.Prometheus{}
+			go func() {
+				if err := prom.Start(); err != nil {
+					panic(err)
+				}
+
+				met = prom
+			}()
+
 		default:
 			met = &metrics.Noop{}
 
