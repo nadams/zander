@@ -59,6 +59,6 @@ aurs:
 
       # TODO: completions
     commit_author:
-      name: zander
+      name: Nick Adams
       email: zander@node-3.net
     url_template: 'https://gitlab.node-3.net/zander/zander/-/releases/{{ .Tag }}/downloads/{{ .ArtifactName }}'
