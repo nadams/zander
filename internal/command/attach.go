@@ -169,6 +169,7 @@ func (a *AttachCmd) setupDefaultOutput(cancel func(), in <-chan string, out chan
 				out <- input.GetText()
 			}
 
+			a.stickToBottom = true
 			input.SetText("")
 			output.ScrollToEnd()
 		}
