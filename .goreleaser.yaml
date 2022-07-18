@@ -42,7 +42,7 @@ gitlab_urls:
 
 aurs:
   - name: zander-bin
-    homepage: 'https://zander.node-3.net'
+    homepage: 'https://node-3.net/zander'
     description: 'Software to manage dedicated doom server instances'
     maintainers:
       - 'Nick Adams <zander at node-3.net>'
@@ -52,10 +52,10 @@ aurs:
     skip_upload: false
     package: |-
       # bin
-      install -Dm755 "./zander" "${pkgdir}/usr/bin/zander"
+      install -Dm755 "zander_${pkgver}_linux_${CARCH}/zander" "${pkgdir}/usr/bin/zander"
 
       # license
-      install -Dm644 "./LICENSE" "${pkgdir}/usr/share/licenses/zander/LICENSE"
+      install -Dm644 "zander_${pkgver}_linux_${CARCH}/LICENSE" "${pkgdir}/usr/share/licenses/zander/LICENSE"
 
       # TODO: completions
     commit_author:
