@@ -14,6 +14,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"gitlab.node-3.net/zander/zander/config"
+	"gitlab.node-3.net/zander/zander/internal/metrics"
 )
 
 var (
@@ -23,14 +24,29 @@ var (
 type Manager struct {
 	m       sync.RWMutex
 	servers map[ID]*Server
+	metrics metrics.Metrics
+}
+
+type ManagerOpt func(m *Manager)
+
+func WithMetrics(c metrics.Metrics) ManagerOpt {
+	return func(m *Manager) {
+		m.metrics = c
+	}
 }
 
 type ID string
 
-func NewManager() *Manager {
-	return &Manager{
+func NewManager(opts ...ManagerOpt) *Manager {
+	m := &Manager{
 		servers: map[ID]*Server{},
 	}
+
+	for _, opt := range opts {
+		opt(m)
+	}
+
+	return m
 }
 
 func (m *Manager) Add(id ID, server *Server) ID {
@@ -138,7 +154,28 @@ func (m *Manager) add(id ID, server *Server) {
 }
 
 func Load(cfg config.Config) (*Manager, error) {
-	m := NewManager()
+	var met metrics.Metrics = &metrics.Noop{}
+
+	if mcfg := cfg.Metrics; mcfg.Collector != "" {
+		switch mcfg.Collector {
+		case config.Prometheus:
+			prom := metrics.NewPrometheus(mcfg.Prometheus)
+			met = prom
+
+			go func() {
+				if err := prom.Start(); err != nil {
+					panic(err)
+				}
+
+			}()
+		default:
+			met = &metrics.Noop{}
+
+			log.Warnf("invalid collector configured \"%s\", using no-op collector", mcfg.Collector)
+		}
+	}
+
+	m := NewManager(WithMetrics(met))
 	zandbinary := cfg.Expand(cfg.ServerBinaries.Zandronum)
 	if !cfg.Exists(zandbinary) {
 		return nil, fmt.Errorf("server binary %s not found", zandbinary)
@@ -169,7 +206,7 @@ func Load(cfg config.Config) (*Manager, error) {
 				return nil, err
 			}
 
-			server, err := NewServer(zandbinary, waddir, cfg)
+			server, err := NewServer(zandbinary, waddir, cfg, met)
 			if err != nil {
 				return nil, err
 			}

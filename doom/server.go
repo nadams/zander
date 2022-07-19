@@ -17,6 +17,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"gitlab.node-3.net/zander/zander/config"
+	"gitlab.node-3.net/zander/zander/internal/metrics"
 )
 
 var emptyTime = time.Time{}
@@ -33,14 +34,16 @@ type Server struct {
 	consumers          map[string]chan<- []byte
 	started            time.Time
 	stopped            time.Time
+	metrics            metrics.Metrics
 	foundAlternatePort bool
 }
 
-func NewServer(binary, waddir string, cfg config.Server) (*Server, error) {
+func NewServer(binary, waddir string, cfg config.Server, metrics metrics.Metrics) (*Server, error) {
 	s := &Server{
 		binary:    binary,
 		waddir:    waddir,
 		cfg:       cfg,
+		metrics:   metrics,
 		consumers: make(map[string]chan<- []byte),
 		content:   NewLogBuffer(cfg.MaxLogLines),
 	}
@@ -52,7 +55,11 @@ func NewServer(binary, waddir string, cfg config.Server) (*Server, error) {
 	return s, nil
 }
 
-var portRegexp = regexp.MustCompile(`^IP address .+:(\d+)$`)
+var (
+	portRegexp             = regexp.MustCompile(`^IP address .+:(\d+)$`)
+	clientConnectRegexp    = regexp.MustCompile(`^.+ \(.+\) has connected\.$`)
+	clientDisconnectRegexp = regexp.MustCompile(`^client .+ \(.+\) disconnected\.$`)
+)
 
 func (s *Server) Start() error {
 	if s.stopped != emptyTime {
@@ -80,6 +87,8 @@ func (s *Server) Start() error {
 		return fmt.Errorf("could not start server: %w", err)
 	}
 
+	s.metrics.SetPlayerCount(s.cfg.ID, 0)
+
 	go s.cmd.Wait()
 
 	go func() {
@@ -87,18 +96,18 @@ func (s *Server) Start() error {
 		for scanner.Scan() {
 			b := scanner.Bytes()
 
-			const portStr = "IP address "
-			if lineStr := string(b); !s.foundAlternatePort && strings.HasPrefix(lineStr, portStr) {
-				if matches := portRegexp.FindStringSubmatch(lineStr); len(matches) == 2 {
-					if port, err := strconv.Atoi(matches[1]); err == nil {
-						s.cfg.Port = port
-						s.foundAlternatePort = true
-						log.Infof("found alternate port for server %s, %d", s.cfg.ID, s.cfg.Port)
-					}
+			if matches := portRegexp.FindStringSubmatch(string(b)); len(matches) == 2 {
+				if port, err := strconv.Atoi(matches[1]); err == nil {
+					s.cfg.Port = port
+					s.foundAlternatePort = true
+					log.Infof("found alternate port for server %s, %d", s.cfg.ID, s.cfg.Port)
 				}
+			} else if clientConnectRegexp.Match(b) {
+				s.metrics.IncPlayerCount(s.cfg.ID)
+			} else if clientDisconnectRegexp.Match(b) {
+				s.metrics.DecPlayerCount(s.cfg.ID)
 			}
 
-			//b = append(b, '\n')
 			s.content.Write(b)
 
 			s.m.RLock()
@@ -135,6 +144,8 @@ func (s *Server) Start() error {
 
 func (s *Server) Stop() error {
 	if s.cmd != nil {
+		defer s.metrics.SetPlayerCount(s.cfg.ID, 0)
+
 		s.stopped = time.Now()
 
 		if s.stdin != nil {
@@ -204,7 +215,7 @@ func (s *Server) Info() ServerInfo {
 }
 
 func (s *Server) Copy() (*Server, error) {
-	return NewServer(s.binary, s.waddir, s.cfg)
+	return NewServer(s.binary, s.waddir, s.cfg, s.metrics)
 }
 
 func (s *Server) attach(id string, send chan<- []byte, recv <-chan []byte) error {
