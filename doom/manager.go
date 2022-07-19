@@ -159,15 +159,15 @@ func Load(cfg config.Config) (*Manager, error) {
 	if mcfg := cfg.Metrics; mcfg.Collector != "" {
 		switch mcfg.Collector {
 		case config.Prometheus:
-			prom := &metrics.Prometheus{}
+			prom := metrics.NewPrometheus(mcfg.Prometheus)
+			met = prom
+
 			go func() {
 				if err := prom.Start(); err != nil {
 					panic(err)
 				}
 
-				met = prom
 			}()
-
 		default:
 			met = &metrics.Noop{}
 
@@ -206,7 +206,7 @@ func Load(cfg config.Config) (*Manager, error) {
 				return nil, err
 			}
 
-			server, err := NewServer(zandbinary, waddir, cfg)
+			server, err := NewServer(zandbinary, waddir, cfg, met)
 			if err != nil {
 				return nil, err
 			}
