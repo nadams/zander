@@ -166,7 +166,15 @@ func Load(cfg config.Config) (*Manager, error) {
 				if err := prom.Start(); err != nil {
 					panic(err)
 				}
+			}()
+		case config.StatsD:
+			sd := metrics.NewStatsD(mcfg.StatsD)
+			met = sd
 
+			go func() {
+				if err := sd.Open(); err != nil {
+					panic(err)
+				}
 			}()
 		default:
 			met = &metrics.Noop{}
