@@ -154,35 +154,34 @@ func (m *Manager) add(id ID, server *Server) {
 }
 
 func Load(cfg config.Config) (*Manager, error) {
-	var met metrics.Metrics = &metrics.Noop{}
+	var coll []metrics.Metrics
 
-	if mcfg := cfg.Metrics; mcfg.Collector != "" {
-		switch mcfg.Collector {
-		case config.Prometheus:
-			prom := metrics.NewPrometheus(mcfg.Prometheus)
-			met = prom
+	mcfg := cfg.Metrics
+	if mcfg.Prometheus != nil && mcfg.Prometheus.Enabled {
+		prom := metrics.NewPrometheus(*mcfg.Prometheus)
 
-			go func() {
-				if err := prom.Start(); err != nil {
-					panic(err)
-				}
-			}()
-		case config.StatsD:
-			sd := metrics.NewStatsD(mcfg.StatsD)
-			met = sd
+		go func() {
+			if err := prom.Start(); err != nil {
+				panic(err)
+			}
+		}()
 
-			go func() {
-				if err := sd.Open(); err != nil {
-					panic(err)
-				}
-			}()
-		default:
-			met = &metrics.Noop{}
-
-			log.Warnf("invalid collector configured \"%s\", using no-op collector", mcfg.Collector)
-		}
+		coll = append(coll, prom)
 	}
 
+	if mcfg.StatsD != nil && mcfg.StatsD.Enabled {
+		sd := metrics.NewStatsD(*mcfg.StatsD)
+
+		go func() {
+			if err := sd.Open(); err != nil {
+				panic(err)
+			}
+		}()
+
+		coll = append(coll, sd)
+	}
+
+	met := metrics.NewMulti(coll...)
 	m := NewManager(WithMetrics(met))
 	zandbinary := cfg.Expand(cfg.ServerBinaries.Zandronum)
 	if !cfg.Exists(zandbinary) {
