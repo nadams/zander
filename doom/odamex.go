@@ -134,7 +134,7 @@ func (s *OdamexServer) scanPort(b []byte) []byte {
 
 var (
 	odaClientConnectRegexp    = regexp.MustCompile(`^\[\d{2}:\d{2}:\d{2}\] .+ has connected\.$`)
-	odaClientDisconnectRegexp = regexp.MustCompile(`^\[\d{2}:\d{2}:\d{2}\] .+ disconnected\.( \(SPECTATOR\))?$`)
+	odaClientDisconnectRegexp = regexp.MustCompile(`^\[\d{2}:\d{2}:\d{2}\] .+ disconnected\. \(.+\)$`)
 )
 
 func (s *OdamexServer) scanPlayerConnect(b []byte) []byte {
