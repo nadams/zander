@@ -1,6 +1,7 @@
 before:
   hooks:
     - go mod tidy
+
 builds:
   - env:
       - CGO_ENABLED=0
@@ -12,10 +13,16 @@ archives:
       linux: linux
       386: i386
       amd64: x86_64
+    files:
+      - LICENSE
+    wrap_in_directory: true
+
 checksum:
   name_template: 'checksums.txt'
+
 snapshot:
   name_template: "{{ incpatch .Version }}-next"
+
 changelog:
   sort: asc
   filters:
@@ -32,3 +39,26 @@ gitlab_urls:
   download: https://gitlab.node-3.net
   skip_tls_verify: false
   use_package_registry: false
+
+aurs:
+  - name: zander-bin
+    homepage: 'https://node-3.net/zander'
+    description: 'Software to manage dedicated doom server instances'
+    maintainers:
+      - 'Nick Adams <zander at node-3.net>'
+    license: 'MIT'
+    private_key: '{{ .Env.AUR_KEY }}'
+    git_url: 'ssh://aur@aur.archlinux.org/zander-bin.git'
+    skip_upload: false
+    package: |-
+      # bin
+      install -Dm755 "zander_${pkgver}_linux_${CARCH}/zander" "${pkgdir}/usr/bin/zander"
+
+      # license
+      install -Dm644 "zander_${pkgver}_linux_${CARCH}/LICENSE" "${pkgdir}/usr/share/licenses/zander/LICENSE"
+
+      # TODO: completions
+    commit_author:
+      name: Nick Adams
+      email: zander@node-3.net
+    url_template: 'https://gitlab.node-3.net/zander/zander/-/releases/{{ .Tag }}/downloads/{{ .ArtifactName }}'

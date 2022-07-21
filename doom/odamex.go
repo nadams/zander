@@ -6,24 +6,31 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
 
 	"gitlab.node-3.net/zander/zander/config"
+	"gitlab.node-3.net/zander/zander/internal/metrics"
 )
 
 type OdamexServer struct {
 	*server
 }
 
-func NewOdamexServer(binary string, wadPaths config.WADPaths, cfg config.Server) (*OdamexServer, error) {
+func NewOdamexServer(binary string, wadPaths config.WADPaths, cfg config.Server, met metrics.Metrics) (*OdamexServer, error) {
 	s := &OdamexServer{
-		server: newServer(binary, wadPaths, cfg),
+		server: newServer(binary, wadPaths, cfg, met),
 	}
 
-	s.server.logMappers = []logMapper{s.scanPort}
+	s.server.logMappers = []logMapper{
+		s.scanPort,
+		s.scanPlayerConnect,
+		s.scanPlayerDisconnect,
+	}
+
 	s.server.preStart = s.newCmd
 
 	if err := s.newCmd(); err != nil {
@@ -34,7 +41,7 @@ func NewOdamexServer(binary string, wadPaths config.WADPaths, cfg config.Server)
 }
 
 func (s *OdamexServer) Copy() (Server, error) {
-	return NewOdamexServer(s.binary, s.wadPaths, s.cfg)
+	return NewOdamexServer(s.binary, s.wadPaths, s.cfg, s.metrics)
 }
 
 func (s *OdamexServer) newCmd() error {
@@ -96,9 +103,18 @@ func (s *OdamexServer) newCmd() error {
 }
 
 const (
-	odaTimestamp = "[00:00:00] "
-	odaPortStr   = "Bound to local port "
+	odaTimestamp  = "[00:00:00] "
+	odaPortStr    = "Bound to local port "
+	odaChatPrefix = "<CHAT> "
 )
+
+func (s *OdamexServer) isChat(b []byte) bool {
+	if str := string(b); len(str) >= len(odaTimestamp)+len(odaChatPrefix) {
+		return strings.HasPrefix(str[len(odaTimestamp):], odaChatPrefix)
+	}
+
+	return false
+}
 
 func (s *OdamexServer) scanPort(b []byte) []byte {
 	if !s.foundAlternatePort && len(b) > len(odaPortStr) {
@@ -111,6 +127,27 @@ func (s *OdamexServer) scanPort(b []byte) []byte {
 				log.Infof("found alternate port for server %s, %d", s.cfg.ID, s.cfg.Port)
 			}
 		}
+	}
+
+	return b
+}
+
+var (
+	odaClientConnectRegexp    = regexp.MustCompile(`^\[\d{2}:\d{2}:\d{2}\] .+ has connected\.$`)
+	odaClientDisconnectRegexp = regexp.MustCompile(`^\[\d{2}:\d{2}:\d{2}\] .+ disconnected\.( \(SPECTATOR\))?$`)
+)
+
+func (s *OdamexServer) scanPlayerConnect(b []byte) []byte {
+	if !s.isChat(b) && odaClientConnectRegexp.Match(b) {
+		s.metrics.IncPlayerCount(s.cfg.ID)
+	}
+
+	return b
+}
+
+func (s *OdamexServer) scanPlayerDisconnect(b []byte) []byte {
+	if !s.isChat(b) && odaClientDisconnectRegexp.Match(b) {
+		s.metrics.DecPlayerCount(s.cfg.ID)
 	}
 
 	return b

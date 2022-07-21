@@ -11,21 +11,26 @@ import (
 	"strings"
 
 	log "github.com/sirupsen/logrus"
+
 	"gitlab.node-3.net/zander/zander/config"
+	"gitlab.node-3.net/zander/zander/internal/metrics"
 )
 
 type ZandronumServer struct {
 	*server
 }
 
-var portRegexp = regexp.MustCompile(`^IP address .+:(\d+)$`)
-
-func NewZandronumServer(binary string, wadPath config.WADPaths, cfg config.Server) (*ZandronumServer, error) {
+func NewZandronumServer(binary string, wadPath config.WADPaths, cfg config.Server, met metrics.Metrics) (*ZandronumServer, error) {
 	s := &ZandronumServer{
-		server: newServer(binary, wadPath, cfg),
+		server: newServer(binary, wadPath, cfg, met),
 	}
 
-	s.server.logMappers = []logMapper{s.scanPort}
+	s.server.logMappers = []logMapper{
+		s.scanPort,
+		s.scanPlayerConnect,
+		s.scanPlayerDisconnect,
+	}
+
 	s.server.preStart = s.newCmd
 
 	if err := s.newCmd(); err != nil {
@@ -36,7 +41,7 @@ func NewZandronumServer(binary string, wadPath config.WADPaths, cfg config.Serve
 }
 
 func (s *ZandronumServer) Copy() (Server, error) {
-	return NewZandronumServer(s.binary, s.wadPaths, s.cfg)
+	return NewZandronumServer(s.binary, s.wadPaths, s.cfg, s.metrics)
 }
 
 func (s *ZandronumServer) newCmd() error {
@@ -117,16 +122,35 @@ func (s *ZandronumServer) newCmd() error {
 	return nil
 }
 
+var (
+	zandPortRegexp             = regexp.MustCompile(`^IP address .+:(\d+)$`)
+	zandClientConnectRegexp    = regexp.MustCompile(`^.+ \(.+\) has connected\.$`)
+	zandClientDisconnectRegexp = regexp.MustCompile(`^client .+ \(.+\) disconnected\.$`)
+)
+
 func (s *ZandronumServer) scanPort(b []byte) []byte {
-	const portStr = "IP address "
-	if lineStr := string(b); !s.foundAlternatePort && strings.HasPrefix(lineStr, portStr) {
-		if matches := portRegexp.FindStringSubmatch(lineStr); len(matches) == 2 {
-			if port, err := strconv.Atoi(matches[1]); err == nil {
-				s.cfg.Port = port
-				s.foundAlternatePort = true
-				log.Infof("found alternate port for server %s, %d", s.cfg.ID, s.cfg.Port)
-			}
+	if matches := zandPortRegexp.FindStringSubmatch(string(b)); len(matches) == 2 {
+		if port, err := strconv.Atoi(matches[1]); err == nil {
+			s.cfg.Port = port
+			s.foundAlternatePort = true
+			log.Infof("found alternate port for server %s, %d", s.cfg.ID, s.cfg.Port)
 		}
+	}
+
+	return b
+}
+
+func (s *ZandronumServer) scanPlayerConnect(b []byte) []byte {
+	if zandClientConnectRegexp.Match(b) {
+		s.metrics.IncPlayerCount(s.cfg.ID)
+	}
+
+	return b
+}
+
+func (s *ZandronumServer) scanPlayerDisconnect(b []byte) []byte {
+	if zandClientDisconnectRegexp.Match(b) {
+		s.metrics.DecPlayerCount(s.cfg.ID)
 	}
 
 	return b

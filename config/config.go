@@ -48,6 +48,7 @@ type Config struct {
 	ServerConfigDir string         `toml:"server_config_dir,omitempty"`
 	WADPaths        WADPaths       `toml:"wad_paths,omitempty"`
 	ServerBinaries  ServerBinaries `toml:"server_binaries,omitempty"`
+	Metrics         Metrics        `toml:"metrics,omitempty"`
 
 	dir string
 }

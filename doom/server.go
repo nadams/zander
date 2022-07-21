@@ -11,6 +11,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"gitlab.node-3.net/zander/zander/config"
+	"gitlab.node-3.net/zander/zander/internal/metrics"
 )
 
 var emptyTime = time.Time{}
@@ -39,16 +40,18 @@ type server struct {
 	consumers          map[string]chan<- []byte
 	started            time.Time
 	stopped            time.Time
+	metrics            metrics.Metrics
 	foundAlternatePort bool
 	logMappers         []logMapper
 	preStart           func() error
 }
 
-func newServer(binary string, wadPaths config.WADPaths, cfg config.Server) *server {
+func newServer(binary string, wadPaths config.WADPaths, cfg config.Server, metrics metrics.Metrics) *server {
 	return &server{
 		binary:    binary,
 		wadPaths:  wadPaths,
 		cfg:       cfg,
+		metrics:   metrics,
 		consumers: make(map[string]chan<- []byte),
 		content:   NewLogBuffer(cfg.MaxLogLines),
 	}
@@ -81,6 +84,8 @@ func (s *server) Start() error {
 	if err := s.cmd.Start(); err != nil {
 		return fmt.Errorf("could not start server: %w", err)
 	}
+
+	s.metrics.SetPlayerCount(s.cfg.ID, 0)
 
 	go s.cmd.Wait()
 
@@ -131,6 +136,8 @@ func (s *server) Start() error {
 
 func (s *server) Stop() error {
 	if s.cmd != nil {
+		defer s.metrics.SetPlayerCount(s.cfg.ID, 0)
+
 		s.stopped = time.Now()
 
 		if s.stdin != nil {

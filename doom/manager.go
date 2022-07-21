@@ -14,6 +14,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"gitlab.node-3.net/zander/zander/config"
+	"gitlab.node-3.net/zander/zander/internal/metrics"
 )
 
 var (
@@ -23,14 +24,29 @@ var (
 type Manager struct {
 	m       sync.RWMutex
 	servers map[ID]Server
+	metrics metrics.Metrics
+}
+
+type ManagerOpt func(m *Manager)
+
+func WithMetrics(c metrics.Metrics) ManagerOpt {
+	return func(m *Manager) {
+		m.metrics = c
+	}
 }
 
 type ID string
 
-func NewManager() *Manager {
-	return &Manager{
+func NewManager(opts ...ManagerOpt) *Manager {
+	m := &Manager{
 		servers: map[ID]Server{},
 	}
+
+	for _, opt := range opts {
+		opt(m)
+	}
+
+	return m
 }
 
 func (m *Manager) Add(id ID, server Server) ID {
@@ -138,7 +154,36 @@ func (m *Manager) add(id ID, server Server) {
 }
 
 func Load(cfg config.Config) (*Manager, error) {
-	m := NewManager()
+	var coll []metrics.Metrics
+
+	mcfg := cfg.Metrics
+	if mcfg.Prometheus != nil && mcfg.Prometheus.Enabled {
+		prom := metrics.NewPrometheus(*mcfg.Prometheus)
+
+		go func() {
+			if err := prom.Start(); err != nil {
+				panic(err)
+			}
+		}()
+
+		coll = append(coll, prom)
+	}
+
+	if mcfg.StatsD != nil && mcfg.StatsD.Enabled {
+		sd := metrics.NewStatsD(*mcfg.StatsD)
+
+		go func() {
+			if err := sd.Open(); err != nil {
+				panic(err)
+			}
+		}()
+
+		coll = append(coll, sd)
+	}
+
+	met := metrics.NewMulti(coll...)
+	m := NewManager(WithMetrics(met))
+
 	dir := cfg.ExpandRel(cfg.ServerConfigDir)
 
 	if _, err := os.Stat(dir); err != nil {
@@ -178,7 +223,7 @@ func Load(cfg config.Config) (*Manager, error) {
 					binaryPaths[config.Zandronum] = zandbinary
 				}
 
-				server, err = NewZandronumServer(binaryPaths[config.Zandronum], cfg.WADPaths, scfg)
+				server, err = NewZandronumServer(binaryPaths[config.Zandronum], cfg.WADPaths, scfg, met)
 			case config.Odamex:
 				if _, found := binaryPaths[config.Odamex]; !found {
 					odabinary := cfg.Expand(cfg.ServerBinaries.Odamex)
@@ -189,7 +234,7 @@ func Load(cfg config.Config) (*Manager, error) {
 					binaryPaths[config.Odamex] = odabinary
 				}
 
-				server, err = NewOdamexServer(binaryPaths[config.Odamex], cfg.WADPaths, scfg)
+				server, err = NewOdamexServer(binaryPaths[config.Odamex], cfg.WADPaths, scfg, met)
 			default:
 				err = fmt.Errorf("unknown engine: '%s'", scfg.Engine)
 			}
