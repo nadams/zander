@@ -11,6 +11,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"gitlab.node-3.net/zander/zander/config"
+	"gitlab.node-3.net/zander/zander/internal/util"
 )
 
 const (
@@ -49,7 +50,15 @@ func (p *Prometheus) SetPlayerCount(serverID string, count uint) {
 
 func (p *Prometheus) Start() error {
 	port := 2112
-	if p.cfg.Port > 0 {
+	switch {
+	case p.cfg.Port <= 0:
+		newPort, err := util.FreeTCPPortFrom(port)
+		if err != nil {
+			return fmt.Errorf("could not find port for prometheus: %w", err)
+		}
+
+		port = newPort
+	default:
 		port = p.cfg.Port
 	}
 
