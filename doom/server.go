@@ -87,7 +87,7 @@ func (s *Server) Start() error {
 		return fmt.Errorf("could not start server: %w", err)
 	}
 
-	s.metrics.SetPlayerCount(s.cfg.ID, 0)
+	s.metrics.SetPlayerCount(s.cfg.ID, "zandronum", 0)
 
 	go s.cmd.Wait()
 
@@ -103,9 +103,9 @@ func (s *Server) Start() error {
 					log.Infof("found alternate port for server %s, %d", s.cfg.ID, s.cfg.Port)
 				}
 			} else if clientConnectRegexp.Match(b) {
-				s.metrics.IncPlayerCount(s.cfg.ID)
+				s.metrics.IncPlayerCount(s.cfg.ID, "zandronum")
 			} else if clientDisconnectRegexp.Match(b) {
-				s.metrics.DecPlayerCount(s.cfg.ID)
+				s.metrics.DecPlayerCount(s.cfg.ID, "zandronum")
 			}
 
 			s.content.Write(b)
@@ -144,7 +144,7 @@ func (s *Server) Start() error {
 
 func (s *Server) Stop() error {
 	if s.cmd != nil {
-		defer s.metrics.SetPlayerCount(s.cfg.ID, 0)
+		defer s.metrics.SetPlayerCount(s.cfg.ID, "zandronum", 0)
 
 		s.stopped = time.Now()
 

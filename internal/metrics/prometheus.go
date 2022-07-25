@@ -16,6 +16,7 @@ import (
 
 const (
 	LabelServerID = "server_id"
+	LabelEngine   = "engine"
 )
 
 var _ Metrics = (*Prometheus)(nil)
@@ -32,20 +33,29 @@ func NewPrometheus(cfg config.PrometheusConfig) *Prometheus {
 		playerCountTotal: promauto.NewGaugeVec(prometheus.GaugeOpts{
 			Name: "zander_player_count_total",
 			Help: "Total number of players in a given server",
-		}, []string{"server_id"}),
+		}, []string{"server_id", "engine"}),
 	}
 }
 
-func (p *Prometheus) IncPlayerCount(serverID string) {
-	p.playerCountTotal.With(prometheus.Labels{LabelServerID: serverID}).Inc()
+func (p *Prometheus) IncPlayerCount(serverID, engine string) {
+	p.playerCountTotal.With(prometheus.Labels{
+		LabelServerID: serverID,
+		LabelEngine:   engine,
+	}).Inc()
 }
 
-func (p *Prometheus) DecPlayerCount(serverID string) {
-	p.playerCountTotal.With(prometheus.Labels{LabelServerID: serverID}).Dec()
+func (p *Prometheus) DecPlayerCount(serverID, engine string) {
+	p.playerCountTotal.With(prometheus.Labels{
+		LabelServerID: serverID,
+		LabelEngine:   engine,
+	}).Dec()
 }
 
-func (p *Prometheus) SetPlayerCount(serverID string, count uint) {
-	p.playerCountTotal.With(prometheus.Labels{LabelServerID: serverID}).Set(float64(count))
+func (p *Prometheus) SetPlayerCount(serverID, engine string, count uint) {
+	p.playerCountTotal.With(prometheus.Labels{
+		LabelServerID: serverID,
+		LabelEngine:   engine,
+	}).Set(float64(count))
 }
 
 func (p *Prometheus) Start() error {

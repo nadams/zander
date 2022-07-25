@@ -46,14 +46,23 @@ func (s *StatsD) Close() error {
 	return nil
 }
 
-func (s *StatsD) IncPlayerCount(serverID string) {
-	s.client.Inc(statsdPlayerCountTotal, 1, 1.0, statsd.Tag{"server_id", serverID})
+func (s *StatsD) IncPlayerCount(serverID, engine string) {
+	s.client.Inc(statsdPlayerCountTotal, 1, 1.0,
+		statsd.Tag{"server_id", serverID},
+		statsd.Tag{"engine", engine},
+	)
 }
 
-func (s *StatsD) DecPlayerCount(serverID string) {
-	s.client.Dec(statsdPlayerCountTotal, 1, 1.0, statsd.Tag{"server_id", serverID})
+func (s *StatsD) DecPlayerCount(serverID, engine string) {
+	s.client.Dec(statsdPlayerCountTotal, 1, 1.0,
+		statsd.Tag{"server_id", serverID},
+		statsd.Tag{"engine", engine},
+	)
 }
 
-func (s *StatsD) SetPlayerCount(serverID string, count uint) {
-	s.client.SetInt(statsdPlayerCountTotal, int64(count), 1.0, statsd.Tag{"server_id", serverID})
+func (s *StatsD) SetPlayerCount(serverID, engine string, count uint) {
+	s.client.SetInt(statsdPlayerCountTotal, int64(count), 1.0,
+		statsd.Tag{"server_id", serverID},
+		statsd.Tag{"engine", engine},
+	)
 }
