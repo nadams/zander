@@ -12,20 +12,20 @@ func NewMulti(m ...Metrics) *Multi {
 	}
 }
 
-func (m *Multi) IncPlayerCount(serverID string) {
+func (m *Multi) IncPlayerCount(serverID, engine string) {
 	for _, x := range m.m {
-		x.IncPlayerCount(serverID)
+		x.IncPlayerCount(serverID, engine)
 	}
 }
 
-func (m *Multi) DecPlayerCount(serverID string) {
+func (m *Multi) DecPlayerCount(serverID, engine string) {
 	for _, x := range m.m {
-		x.DecPlayerCount(serverID)
+		x.DecPlayerCount(serverID, engine)
 	}
 }
 
-func (m *Multi) SetPlayerCount(serverID string, count uint) {
+func (m *Multi) SetPlayerCount(serverID, engine string, count uint) {
 	for _, x := range m.m {
-		x.SetPlayerCount(serverID, count)
+		x.SetPlayerCount(serverID, engine, count)
 	}
 }

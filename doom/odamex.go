@@ -139,7 +139,7 @@ var (
 
 func (s *OdamexServer) scanPlayerConnect(b []byte) []byte {
 	if !s.isChat(b) && odaClientConnectRegexp.Match(b) {
-		s.metrics.IncPlayerCount(s.cfg.ID)
+		s.metrics.IncPlayerCount(s.cfg.ID, string(s.cfg.Engine))
 	}
 
 	return b
@@ -147,7 +147,7 @@ func (s *OdamexServer) scanPlayerConnect(b []byte) []byte {
 
 func (s *OdamexServer) scanPlayerDisconnect(b []byte) []byte {
 	if !s.isChat(b) && odaClientDisconnectRegexp.Match(b) {
-		s.metrics.DecPlayerCount(s.cfg.ID)
+		s.metrics.DecPlayerCount(s.cfg.ID, string(s.cfg.Engine))
 	}
 
 	return b

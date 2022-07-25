@@ -85,7 +85,7 @@ func (s *server) Start() error {
 		return fmt.Errorf("could not start server: %w", err)
 	}
 
-	s.metrics.SetPlayerCount(s.cfg.ID, 0)
+	s.metrics.SetPlayerCount(s.cfg.ID, string(s.cfg.Engine), 0)
 
 	go s.cmd.Wait()
 
@@ -136,7 +136,7 @@ func (s *server) Start() error {
 
 func (s *server) Stop() error {
 	if s.cmd != nil {
-		defer s.metrics.SetPlayerCount(s.cfg.ID, 0)
+		defer s.metrics.SetPlayerCount(s.cfg.ID, "zandronum", 0)
 
 		s.stopped = time.Now()
 

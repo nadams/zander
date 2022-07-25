@@ -142,7 +142,7 @@ func (s *ZandronumServer) scanPort(b []byte) []byte {
 
 func (s *ZandronumServer) scanPlayerConnect(b []byte) []byte {
 	if zandClientConnectRegexp.Match(b) {
-		s.metrics.IncPlayerCount(s.cfg.ID)
+		s.metrics.IncPlayerCount(s.cfg.ID, string(s.cfg.Engine))
 	}
 
 	return b
@@ -150,7 +150,7 @@ func (s *ZandronumServer) scanPlayerConnect(b []byte) []byte {
 
 func (s *ZandronumServer) scanPlayerDisconnect(b []byte) []byte {
 	if zandClientDisconnectRegexp.Match(b) {
-		s.metrics.DecPlayerCount(s.cfg.ID)
+		s.metrics.DecPlayerCount(s.cfg.ID, string(s.cfg.Engine))
 	}
 
 	return b

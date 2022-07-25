@@ -1,7 +1,7 @@
 package metrics
 
 type Metrics interface {
-	IncPlayerCount(string)
-	DecPlayerCount(string)
-	SetPlayerCount(string, uint)
+	IncPlayerCount(string, string)
+	DecPlayerCount(string, string)
+	SetPlayerCount(string, string, uint)
 }
