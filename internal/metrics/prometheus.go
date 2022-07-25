@@ -2,6 +2,7 @@ package metrics
 
 import (
 	"fmt"
+	"net"
 	"net/http"
 	"strings"
 
@@ -81,9 +82,19 @@ func (p *Prometheus) Start() error {
 		path = "/" + path
 	}
 
-	log.Infof("metrics being served at :%d%s", port, path)
+	var address string
+
+	if net.ParseIP(p.cfg.Address) != nil {
+		address = p.cfg.Address
+
+		if strings.Contains(address, ":") && !strings.HasPrefix(address, "[") && !strings.HasSuffix(address, "]") {
+			address = fmt.Sprintf("[%s]", address)
+		}
+	}
+
+	log.Infof("metrics being served at %s:%d%s", address, port, path)
 
 	http.Handle(path, promhttp.Handler())
 
-	return http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
+	return http.ListenAndServe(fmt.Sprintf("%s:%d", address, port), nil)
 }

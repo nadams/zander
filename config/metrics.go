@@ -9,6 +9,7 @@ type Metrics struct {
 
 type PrometheusConfig struct {
 	Enabled bool   `toml:"enabled"`
+	Address string `toml:"address,omitempty"`
 	Port    int    `toml:"port,omitempty"`
 	Path    string `toml:"path,omitempty"`
 }
