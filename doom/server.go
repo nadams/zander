@@ -57,7 +57,7 @@ func NewServer(binary, waddir string, cfg config.Server, metrics metrics.Metrics
 
 var (
 	portRegexp             = regexp.MustCompile(`^IP address .+:(\d+)$`)
-	clientConnectRegexp    = regexp.MustCompile(`^.+ \(.+\) has connected\.$`)
+	clientConnectRegexp    = regexp.MustCompile(`^.+ \(.+\) has connected\.(\s*\(from.+\))?$`)
 	clientDisconnectRegexp = regexp.MustCompile(`^client .+ \(.+\) disconnected\.$`)
 )
 
