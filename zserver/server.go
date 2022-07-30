@@ -197,6 +197,7 @@ func (z *ZanderServer) ListServers(ctx context.Context, cmd *zproto.ListServersR
 		serversOut = append(serversOut, &zproto.Server{
 			Id:        s.ID,
 			Name:      s.Name,
+			Engine:    string(s.Engine),
 			Mode:      s.Mode,
 			Status:    s.Status,
 			Port:      int32(s.Port),

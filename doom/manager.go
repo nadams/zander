@@ -23,7 +23,7 @@ var (
 
 type Manager struct {
 	m       sync.RWMutex
-	servers map[ID]*Server
+	servers map[ID]Server
 	metrics metrics.Metrics
 }
 
@@ -39,7 +39,7 @@ type ID string
 
 func NewManager(opts ...ManagerOpt) *Manager {
 	m := &Manager{
-		servers: map[ID]*Server{},
+		servers: map[ID]Server{},
 	}
 
 	for _, opt := range opts {
@@ -49,7 +49,7 @@ func NewManager(opts ...ManagerOpt) *Manager {
 	return m
 }
 
-func (m *Manager) Add(id ID, server *Server) ID {
+func (m *Manager) Add(id ID, server Server) ID {
 	m.add(id, server)
 
 	return id
@@ -62,7 +62,7 @@ func (m *Manager) StartAll() []error {
 	var errs []error
 
 	for _, server := range m.servers {
-		if server.cfg.Disabled {
+		if server.Config().Disabled {
 			continue
 		}
 
@@ -127,7 +127,7 @@ func (m *Manager) List() []ServerInfo {
 	return out
 }
 
-func (m *Manager) Get(id ID) (*Server, bool) {
+func (m *Manager) Get(id ID) (Server, bool) {
 	server, found := m.servers[id]
 
 	return server, found
@@ -136,7 +136,7 @@ func (m *Manager) Get(id ID) (*Server, bool) {
 func (m *Manager) Watch() {
 	for range time.NewTicker(time.Second).C {
 		for id, server := range m.servers {
-			if server.cfg.RestartPolicy == config.OnFailure && server.Status() == Errored {
+			if server.Config().RestartPolicy == config.OnFailure && server.Info().Status == Errored {
 				log.Infof("found server to restart: %v", id)
 
 				m.Restart(id)
@@ -149,7 +149,7 @@ func (m *Manager) remove(id ID) {
 	delete(m.servers, id)
 }
 
-func (m *Manager) add(id ID, server *Server) {
+func (m *Manager) add(id ID, server Server) {
 	m.servers[id] = server
 }
 
@@ -183,13 +183,8 @@ func Load(cfg config.Config) (*Manager, error) {
 
 	met := metrics.NewMulti(coll...)
 	m := NewManager(WithMetrics(met))
-	zandbinary := cfg.Expand(cfg.ServerBinaries.Zandronum)
-	if !cfg.Exists(zandbinary) {
-		return nil, fmt.Errorf("server binary %s not found", zandbinary)
-	}
 
 	dir := cfg.ExpandRel(cfg.ServerConfigDir)
-	waddir := cfg.ExpandRel(cfg.WADDir)
 
 	if _, err := os.Stat(dir); err != nil {
 		if err := os.MkdirAll(dir, 0755); err != nil {
@@ -206,19 +201,49 @@ func Load(cfg config.Config) (*Manager, error) {
 		return entries[i].Name() < entries[j].Name()
 	})
 
+	binaryPaths := map[config.Engine]string{}
+
 	for _, entry := range entries {
 		if !entry.IsDir() && strings.HasSuffix(entry.Name(), ".toml") {
-			cfg, err := config.LoadServer(filepath.Join(dir, entry.Name()))
+			scfg, err := config.LoadServer(filepath.Join(dir, entry.Name()))
 			if err != nil {
 				return nil, err
 			}
 
-			server, err := NewServer(zandbinary, waddir, cfg, met)
+			var server Server
+
+			switch scfg.Engine {
+			case config.Zandronum:
+				if _, found := binaryPaths[config.Zandronum]; !found {
+					zandbinary := cfg.Expand(cfg.ServerBinaries.Zandronum)
+					if !cfg.Exists(zandbinary) {
+						return nil, fmt.Errorf("server binary %s not found", zandbinary)
+					}
+
+					binaryPaths[config.Zandronum] = zandbinary
+				}
+
+				server, err = NewZandronumServer(binaryPaths[config.Zandronum], cfg.WADPaths, scfg, met)
+			case config.Odamex:
+				if _, found := binaryPaths[config.Odamex]; !found {
+					odabinary := cfg.Expand(cfg.ServerBinaries.Odamex)
+					if !cfg.Exists(odabinary) {
+						return nil, fmt.Errorf("server binary %s not found", odabinary)
+					}
+
+					binaryPaths[config.Odamex] = odabinary
+				}
+
+				server, err = NewOdamexServer(binaryPaths[config.Odamex], cfg.WADPaths, scfg, met)
+			default:
+				err = fmt.Errorf("unknown engine: '%s'", scfg.Engine)
+			}
+
 			if err != nil {
 				return nil, err
 			}
 
-			m.Add(ID(cfg.ID), server)
+			m.Add(ID(scfg.ID), server)
 		}
 	}
 

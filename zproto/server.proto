@@ -51,13 +51,14 @@ message StartServerResponse {
 message Server {
   string id = 1;
   string name = 2;
-  string mode = 3;
-  string status = 4;
-  int32 port = 5;
-  string iwad = 6;
-  repeated string pwads = 7;
-  google.protobuf.Timestamp started_at = 8;
-  google.protobuf.Timestamp stopped_at = 9;
+  string engine = 3;
+  string mode = 4;
+  string status = 5;
+  int32 port = 6;
+  string iwad = 7;
+  repeated string pwads = 8;
+  google.protobuf.Timestamp started_at = 9;
+  google.protobuf.Timestamp stopped_at = 10;
 }
 
 message AttachIn {
