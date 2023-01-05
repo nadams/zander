@@ -24,6 +24,7 @@ type Server interface {
 	Info() ServerInfo
 	Copy() (Server, error)
 	Config() config.Server
+	Logs(n int) []string
 }
 
 type logMapper func([]byte) []byte
@@ -238,4 +239,12 @@ func (s *server) attach(id string, send chan<- []byte, recv <-chan []byte) error
 	}
 
 	return nil
+}
+
+func (s *server) Logs(n int) []string {
+	if n <= 0 || n > len(s.content.lines) {
+		return s.content.lines
+	}
+
+	return s.content.lines[len(s.content.lines)-n:]
 }
