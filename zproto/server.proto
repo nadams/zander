@@ -13,6 +13,7 @@ service Zander {
   rpc RestartServer(RestartServerRequest) returns (RestartServerResponse) {}
   rpc Attach(stream AttachIn) returns (stream AttachOut) {}
   rpc Tail(TailIn) returns (stream TailOut) {}
+  rpc Logs(LogsIn) returns (LogsOut) {}
 }
 
 message ListServersRequest {}
@@ -75,5 +76,14 @@ message TailIn {
 }
 
 message TailOut {
+  bytes content = 1;
+}
+
+message LogsIn {
+  string id = 1;
+  int32 num = 2;
+}
+
+message LogsOut {
   bytes content = 1;
 }

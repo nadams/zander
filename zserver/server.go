@@ -1,6 +1,7 @@
 package zserver
 
 import (
+	"bytes"
 	"context"
 	"io"
 	"strings"
@@ -187,6 +188,24 @@ func (z *ZanderServer) Tail(in *zproto.TailIn, stream zproto.Zander_TailServer) 
 	srv.Disconnect(id)
 
 	return nil
+}
+
+func (z *ZanderServer) Logs(ctx context.Context, in *zproto.LogsIn) (*zproto.LogsOut, error) {
+	srv, found := z.manager.Get(doom.ID(in.Id))
+	if !found {
+		return nil, grpc.Errorf(codes.NotFound, "server with id '%v' not found", in.Id)
+	}
+
+	var b bytes.Buffer
+
+	for _, line := range srv.Logs(int(in.Num)) {
+		b.WriteString(line)
+		b.WriteRune('\n')
+	}
+
+	return &zproto.LogsOut{
+		Content: b.Bytes(),
+	}, nil
 }
 
 func (z *ZanderServer) ListServers(ctx context.Context, cmd *zproto.ListServersRequest) (*zproto.ListServersResponse, error) {
