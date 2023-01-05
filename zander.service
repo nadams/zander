@@ -1,0 +1,8 @@
+[Unit]
+Description=Zander doom server manager
+
+[Service]
+ExecStart=/usr/bin/zander server --log-level info
+
+[Install]
+WantedBy=default.target
