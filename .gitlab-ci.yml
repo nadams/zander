@@ -1,5 +1,5 @@
 .go-cache:
-  image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/golang:1.18
+  image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/golang:1.19
   variables:
     GOPATH: $CI_PROJECT_DIR/.go
   before_script:
