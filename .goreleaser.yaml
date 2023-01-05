@@ -8,6 +8,8 @@ builds:
     goos:
       - linux
       - freebsd
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}} -X main.builtBy=goreleaser -X "main.goversion={{.Env.GOVERSION}}"
 archives:
   - replacements:
       linux: linux

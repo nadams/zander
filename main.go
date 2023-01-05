@@ -15,9 +15,10 @@ import (
 )
 
 var (
-	version string
-	commit  string
-	date    string
+	version   string
+	commit    string
+	date      string
+	goversion string
 )
 
 type CLI struct {
@@ -44,10 +45,11 @@ func (c CLI) ctx() command.CmdCtx {
 	}
 
 	return command.CmdCtx{
-		Socket:  c.Socket,
-		Commit:  commit,
-		Version: version,
-		Date:    date,
+		Socket:    c.Socket,
+		Commit:    commit,
+		Version:   version,
+		GoVersion: goversion,
+		Date:      date,
 	}
 }
 
