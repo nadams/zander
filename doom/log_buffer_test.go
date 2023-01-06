@@ -54,7 +54,7 @@ func Test_LogBuffer_MaxLines(t *testing.T) {
 			logger.lines = test.lines
 			logger.Write([]byte(test.content))
 
-			assert.Equal(t, test.expectedLines, strings.Split(string(logger.Content()), "\n"))
+			assert.Equal(t, test.expectedLines, strings.Split(string(logger.Bytes(0)), "\n"))
 		})
 	}
 }

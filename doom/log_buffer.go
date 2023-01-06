@@ -47,6 +47,18 @@ func (l *LogBuffer) Write(b []byte) (int, error) {
 	return len(b), nil
 }
 
-func (l *LogBuffer) Content() []byte {
-	return []byte(strings.Join(l.lines, "\n"))
+func (l *LogBuffer) Lines(n int) []string {
+	if n <= 0 || n > len(l.lines) {
+		return l.lines
+	}
+
+	return l.lines[len(l.lines)-n:]
+}
+
+func (l *LogBuffer) Bytes(n int) []byte {
+	return l.asBytes(l.Lines(n))
+}
+
+func (*LogBuffer) asBytes(lines []string) []byte {
+	return []byte(strings.Join(lines, "\n"))
 }

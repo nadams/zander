@@ -28,8 +28,7 @@ type CLI struct {
 	Stop    command.StopServerCmd    `cmd:"" help:"Stops a doom server"`
 	Restart command.RestartServerCmd `cmd:"" help:"Restart a doom server"`
 	Attach  command.AttachCmd        `cmd:"" help:"Attach to a running doom server"`
-	Tail    command.TailCmd          `cmd:"" help:"Tail the log of a doom serevr"`
-	Logs    command.LogsCmd          `cmd:"" help:"Print log of a doom server"`
+	Logs    command.LogsCmd          `cmd:"" help:"View log of a doom server"`
 	Version command.VersionCmd       `cmd:"" help:"Print zander version information"`
 
 	Socket    string `flag:"" short:"s" type:"xdgruntimefile" default:"zander.sock" env:"ZANDER_SOCKET" help:"Uses the given socket path for client/server communication. If no value is given, then it defaults to $XDG_RUNTIME_DIR/zander.sock"`

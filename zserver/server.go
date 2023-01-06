@@ -141,7 +141,9 @@ func (z *ZanderServer) Attach(stream zproto.Zander_AttachServer) error {
 			wait <- struct{}{}
 		}()
 
-		if err := srv.Connect(id, send, recv); err != nil {
+		opts := doom.ConnectOpts{ID: id}
+
+		if err := srv.Connect(opts, send, recv); err != nil {
 			log.Error(err)
 			return
 		}
@@ -174,7 +176,12 @@ func (z *ZanderServer) Tail(in *zproto.TailIn, stream zproto.Zander_TailServer) 
 
 	id := uuid.New().String()
 	go func() {
-		if err := srv.Connect(id, send, recv); err != nil {
+		opts := doom.ConnectOpts{
+			ID:    id,
+			Lines: int(in.Num),
+		}
+
+		if err := srv.Connect(opts, send, recv); err != nil {
 			log.Error(err)
 			return
 		}

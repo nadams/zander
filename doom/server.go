@@ -16,10 +16,15 @@ import (
 
 var emptyTime = time.Time{}
 
+type ConnectOpts struct {
+	ID    string
+	Lines int
+}
+
 type Server interface {
 	Start() error
 	Stop() error
-	Connect(id string, send chan<- []byte, recv <-chan []byte) error
+	Connect(opts ConnectOpts, send chan<- []byte, recv <-chan []byte) error
 	Disconnect(id string)
 	Info() ServerInfo
 	Copy() (Server, error)
@@ -155,11 +160,11 @@ func (s *server) Stop() error {
 	return nil
 }
 
-func (s *server) Connect(id string, send chan<- []byte, recv <-chan []byte) error {
-	log.Infof("client %s connecting", id)
+func (s *server) Connect(opts ConnectOpts, send chan<- []byte, recv <-chan []byte) error {
+	log.Infof("client %s connecting", opts.ID)
 
 	if s.cmd != nil {
-		return s.attach(id, send, recv)
+		return s.attach(opts, send, recv)
 	}
 
 	return nil
@@ -212,9 +217,9 @@ func (s *server) status() ServerStatus {
 	}
 }
 
-func (s *server) attach(id string, send chan<- []byte, recv <-chan []byte) error {
+func (s *server) attach(opts ConnectOpts, send chan<- []byte, recv <-chan []byte) error {
 	if s.cmd.ProcessState != nil {
-		send <- s.content.Content()
+		send <- s.content.Bytes(opts.Lines)
 
 		return nil
 	}
@@ -222,7 +227,7 @@ func (s *server) attach(id string, send chan<- []byte, recv <-chan []byte) error
 	consumer := make(chan []byte)
 
 	s.m.Lock()
-	s.consumers[id] = consumer
+	s.consumers[opts.ID] = consumer
 	s.m.Unlock()
 
 	go func() {
@@ -232,7 +237,7 @@ func (s *server) attach(id string, send chan<- []byte, recv <-chan []byte) error
 		}
 	}()
 
-	send <- s.content.Content()
+	send <- s.content.Bytes(opts.Lines)
 
 	for line := range consumer {
 		send <- line
@@ -242,9 +247,5 @@ func (s *server) attach(id string, send chan<- []byte, recv <-chan []byte) error
 }
 
 func (s *server) Logs(n int) []string {
-	if n <= 0 || n > len(s.content.lines) {
-		return s.content.lines
-	}
-
-	return s.content.lines[len(s.content.lines)-n:]
+	return s.content.Lines(n)
 }
