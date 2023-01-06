@@ -6,7 +6,7 @@ Zander is a Doom server manager.
 - Automatically restart crashed servers
 - Collect metrics (prometheus and statsd are supported)
 - Attach to a running server
-- Tail server logs
+- View and tail server logs
 - Shell completion
 
 ## Installation
