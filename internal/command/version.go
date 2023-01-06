@@ -1,25 +1,24 @@
 package command
 
 import (
-	"fmt"
-	"strings"
+	"io"
+	"os"
 )
 
 type VersionCmd struct{}
 
 func (v *VersionCmd) Run(ctx CmdCtx) error {
-	out := &strings.Builder{}
+	out := os.Stdout
+
 	v.writeProp(out, "Version", ctx.Version)
 	v.writeProp(out, "Go Version", ctx.GoVersion)
 	v.writeProp(out, "Commit", ctx.Commit)
 	v.writeProp(out, "Date", ctx.Date)
 
-	fmt.Print(out.String())
-
 	return nil
 }
 
-func (v *VersionCmd) writeProp(out *strings.Builder, name, value string) {
+func (v *VersionCmd) writeProp(out io.StringWriter, name, value string) {
 	if value == "" {
 		return
 	}
