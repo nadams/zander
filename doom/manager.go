@@ -204,7 +204,39 @@ func Load(cfg config.Config) (*Manager, error) {
 		return entries[i].Name() < entries[j].Name()
 	})
 
+	servers, err := m.LoadServers(cfg, met)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, server := range servers {
+		m.Add(ID(server.Config().ID), server)
+	}
+
+	return m, nil
+}
+
+func (m *Manager) LoadServers(cfg config.Config, met metrics.Metrics) ([]Server, error) {
+	dir := cfg.ExpandRel(cfg.ServerConfigDir)
+
+	if _, err := os.Stat(dir); err != nil {
+		if err := os.MkdirAll(dir, 0755); err != nil {
+			return nil, err
+		}
+	}
+
+	entries, err := ioutil.ReadDir(dir)
+	if err != nil {
+		return nil, err
+	}
+
+	sort.Slice(entries, func(i, j int) bool {
+		return entries[i].Name() < entries[j].Name()
+	})
+
 	binaryPaths := map[config.Engine]string{}
+
+	var servers []Server
 
 	for _, entry := range entries {
 		if !entry.IsDir() && strings.HasSuffix(entry.Name(), ".toml") {
@@ -246,9 +278,9 @@ func Load(cfg config.Config) (*Manager, error) {
 				return nil, err
 			}
 
-			m.Add(ID(scfg.ID), server)
+			servers = append(servers, server)
 		}
 	}
 
-	return m, nil
+	return servers, nil
 }
