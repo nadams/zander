@@ -29,10 +29,12 @@ type Server struct {
 func (s *Server) Run(cmdctx CmdCtx) error {
 	s.ctx = cmdctx
 
-	cfg, _, err := s.loadConfig()
+	cfg, cfgPath, err := s.loadConfig()
 	if err != nil {
 		return err
 	}
+
+	log.Infof("loaded config from %s", cfgPath)
 
 	manager, err := doom.Load(cfg)
 	if err != nil {

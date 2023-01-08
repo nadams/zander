@@ -61,15 +61,18 @@ func (m *Manager) StartAll() []error {
 
 	var errs []error
 
-	for _, server := range m.servers {
+	for id, server := range m.servers {
 		if server.Config().Disabled {
 			continue
 		}
 
 		if err := server.Start(); err != nil {
+			log.Errorf("error starting server: %s", err.Error())
 			errs = append(errs, err)
 			continue
 		}
+
+		log.Infof("started server %s", id)
 	}
 
 	return errs
