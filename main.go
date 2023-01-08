@@ -27,9 +27,10 @@ type CLI struct {
 	Start   command.StartServerCmd   `cmd:"" help:"Starts a doom server"`
 	Stop    command.StopServerCmd    `cmd:"" help:"Stops a doom server"`
 	Restart command.RestartServerCmd `cmd:"" help:"Restart a doom server"`
-	Attach  command.AttachCmd        `cmd:"" help:"Attach to a running doom server"`
-	Logs    command.LogsCmd          `cmd:"" help:"View log of a doom server"`
-	Version command.VersionCmd       `cmd:"" help:"Print zander version information"`
+	Attach  command.AttachCmd        `cmd:"" help:"Attach to a running doom server" aliases:"a"`
+	Logs    command.LogsCmd          `cmd:"" help:"View log of a doom server" aliases:"l"`
+	Reload  command.ReloadCmd        `cmd:"" help:"Reload doom server configuration"`
+	Version command.VersionCmd       `cmd:"" help:"Print zander version information" aliases:"v,ver"`
 
 	Socket    string `flag:"" short:"s" type:"xdgruntimefile" default:"zander.sock" env:"ZANDER_SOCKET" help:"Uses the given socket path for client/server communication. If no value is given, then it defaults to $XDG_RUNTIME_DIR/zander.sock"`
 	LogLevel  string `flag:"" enum:"fatal,error,warn,debug,info,trace" default:"warn" env:"ZANDER_LOG_LEVEL" help:"Only show the given log severity or higher. (valid values: ${enum})"`

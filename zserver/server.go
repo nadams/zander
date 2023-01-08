@@ -238,3 +238,7 @@ func (z *ZanderServer) ListServers(ctx context.Context, cmd *zproto.ListServersR
 		Servers: serversOut,
 	}, nil
 }
+
+func (z *ZanderServer) Reload(ctx context.Context, cmd *zproto.ReloadIn) (*zproto.ReloadOut, error) {
+	return &zproto.ReloadOut{}, nil
+}
