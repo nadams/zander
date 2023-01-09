@@ -14,6 +14,7 @@ service Zander {
   rpc Attach(stream AttachIn) returns (stream AttachOut) {}
   rpc Tail(TailIn) returns (stream TailOut) {}
   rpc Logs(LogsIn) returns (LogsOut) {}
+  rpc Reload(ReloadIn) returns (ReloadOut) {}
 }
 
 message ListServersRequest {}
@@ -87,4 +88,12 @@ message LogsIn {
 
 message LogsOut {
   bytes content = 1;
+}
+
+message ReloadIn {
+  string config_path = 1;
+}
+
+message ReloadOut {
+  // maybe some kind of status can go here
 }

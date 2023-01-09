@@ -64,6 +64,10 @@ func newServer(binary string, wadPaths config.WADPaths, cfg config.Server, metri
 }
 
 func (s *server) Start() error {
+	if s.cfg.Disabled {
+		return nil
+	}
+
 	if s.stopped != emptyTime {
 		if s.preStart != nil {
 			if err := s.preStart(); err != nil {
@@ -154,7 +158,9 @@ func (s *server) Stop() error {
 			s.stdout.Close()
 		}
 
-		return s.cmd.Process.Signal(syscall.SIGTERM)
+		if s.cmd.Process != nil {
+			return s.cmd.Process.Signal(syscall.SIGTERM)
+		}
 	}
 
 	return nil

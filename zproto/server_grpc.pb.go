@@ -29,6 +29,7 @@ type ZanderClient interface {
 	Attach(ctx context.Context, opts ...grpc.CallOption) (Zander_AttachClient, error)
 	Tail(ctx context.Context, in *TailIn, opts ...grpc.CallOption) (Zander_TailClient, error)
 	Logs(ctx context.Context, in *LogsIn, opts ...grpc.CallOption) (*LogsOut, error)
+	Reload(ctx context.Context, in *ReloadIn, opts ...grpc.CallOption) (*ReloadOut, error)
 }
 
 type zanderClient struct {
@@ -147,6 +148,15 @@ func (c *zanderClient) Logs(ctx context.Context, in *LogsIn, opts ...grpc.CallOp
 	return out, nil
 }
 
+func (c *zanderClient) Reload(ctx context.Context, in *ReloadIn, opts ...grpc.CallOption) (*ReloadOut, error) {
+	out := new(ReloadOut)
+	err := c.cc.Invoke(ctx, "/zproto.Zander/Reload", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ZanderServer is the server API for Zander service.
 // All implementations must embed UnimplementedZanderServer
 // for forward compatibility
@@ -158,6 +168,7 @@ type ZanderServer interface {
 	Attach(Zander_AttachServer) error
 	Tail(*TailIn, Zander_TailServer) error
 	Logs(context.Context, *LogsIn) (*LogsOut, error)
+	Reload(context.Context, *ReloadIn) (*ReloadOut, error)
 	mustEmbedUnimplementedZanderServer()
 }
 
@@ -185,6 +196,9 @@ func (UnimplementedZanderServer) Tail(*TailIn, Zander_TailServer) error {
 }
 func (UnimplementedZanderServer) Logs(context.Context, *LogsIn) (*LogsOut, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Logs not implemented")
+}
+func (UnimplementedZanderServer) Reload(context.Context, *ReloadIn) (*ReloadOut, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Reload not implemented")
 }
 func (UnimplementedZanderServer) mustEmbedUnimplementedZanderServer() {}
 
@@ -336,6 +350,24 @@ func _Zander_Logs_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Zander_Reload_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReloadIn)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ZanderServer).Reload(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/zproto.Zander/Reload",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ZanderServer).Reload(ctx, req.(*ReloadIn))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Zander_ServiceDesc is the grpc.ServiceDesc for Zander service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -362,6 +394,10 @@ var Zander_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Logs",
 			Handler:    _Zander_Logs_Handler,
+		},
+		{
+			MethodName: "Reload",
+			Handler:    _Zander_Reload_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

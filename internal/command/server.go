@@ -29,7 +29,7 @@ type Server struct {
 func (s *Server) Run(cmdctx CmdCtx) error {
 	s.ctx = cmdctx
 
-	cfg, cfgPath, err := s.loadConfig()
+	cfg, cfgPath, err := loadConfig()
 	if err != nil {
 		return err
 	}
@@ -48,24 +48,6 @@ func (s *Server) Run(cmdctx CmdCtx) error {
 	go manager.Watch()
 
 	return s.listenAndServe(manager)
-}
-
-func (s *Server) loadConfig() (config.Config, string, error) {
-	configPath, err := xdg.ConfigFile("zander/zander.toml")
-	if err != nil {
-		return config.Config{}, "", fmt.Errorf("could not get config file path: %w", err)
-	}
-
-	cfg, err := config.FromDisk(configPath)
-	if err != nil {
-		return config.Config{}, "", err
-	}
-
-	if len(cfg.WADPaths) == 0 {
-		cfg.WADPaths.FromEnv()
-	}
-
-	return cfg, configPath, err
 }
 
 func (s *Server) listenAndServe(manager *doom.Manager) error {
@@ -123,4 +105,31 @@ func (s *Server) listenAndServe(manager *doom.Manager) error {
 	}()
 
 	return server.Serve(l)
+}
+
+func configPath() (string, error) {
+	configPath, err := xdg.ConfigFile("zander/zander.toml")
+	if err != nil {
+		return "", fmt.Errorf("could not get config file path: %w", err)
+	}
+
+	return configPath, nil
+}
+
+func loadConfig() (config.Config, string, error) {
+	configPath, err := configPath()
+	if err != nil {
+		return config.Config{}, "", err
+	}
+
+	cfg, err := config.FromDisk(configPath)
+	if err != nil {
+		return config.Config{}, "", err
+	}
+
+	if len(cfg.WADPaths) == 0 {
+		cfg.WADPaths.FromEnv()
+	}
+
+	return cfg, configPath, err
 }
