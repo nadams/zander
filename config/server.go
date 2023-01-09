@@ -208,13 +208,13 @@ func (s Server) Equals(s2 Server) bool {
 
 	sjson, err := json.Marshal(s)
 	if err != nil {
-		log.Errorf("could not marshal left config for comparison: %w", err)
+		log.Errorf("could not marshal left config for comparison: %s", err.Error())
 		return false
 	}
 
 	s2json, err := json.Marshal(s2)
 	if err != nil {
-		log.Errorf("could not marshal right config for comparison: %w", err)
+		log.Errorf("could not marshal right config for comparison: %s", err.Error())
 		return false
 	}
 
