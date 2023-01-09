@@ -91,7 +91,9 @@ message LogsOut {
 }
 
 message ReloadIn {
+  string config_path = 1;
 }
 
 message ReloadOut {
+  // maybe some kind of status can go here
 }

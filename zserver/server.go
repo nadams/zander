@@ -13,6 +13,7 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	"gitlab.node-3.net/zander/zander/config"
 	"gitlab.node-3.net/zander/zander/doom"
 	"gitlab.node-3.net/zander/zander/zproto"
 )
@@ -215,7 +216,7 @@ func (z *ZanderServer) Logs(ctx context.Context, in *zproto.LogsIn) (*zproto.Log
 	}, nil
 }
 
-func (z *ZanderServer) ListServers(ctx context.Context, cmd *zproto.ListServersRequest) (*zproto.ListServersResponse, error) {
+func (z *ZanderServer) ListServers(ctx context.Context, in *zproto.ListServersRequest) (*zproto.ListServersResponse, error) {
 	servers := z.manager.List()
 	serversOut := make([]*zproto.Server, 0, len(servers))
 
@@ -239,6 +240,15 @@ func (z *ZanderServer) ListServers(ctx context.Context, cmd *zproto.ListServersR
 	}, nil
 }
 
-func (z *ZanderServer) Reload(ctx context.Context, cmd *zproto.ReloadIn) (*zproto.ReloadOut, error) {
+func (z *ZanderServer) Reload(ctx context.Context, in *zproto.ReloadIn) (*zproto.ReloadOut, error) {
+	cfg, err := config.FromDisk(in.ConfigPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := z.manager.Reload(cfg); err != nil {
+		return nil, err
+	}
+
 	return &zproto.ReloadOut{}, nil
 }

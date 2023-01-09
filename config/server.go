@@ -1,6 +1,7 @@
 package config
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -11,6 +12,7 @@ import (
 
 	"github.com/fatih/structtag"
 	"github.com/pelletier/go-toml/v2"
+	log "github.com/sirupsen/logrus"
 )
 
 type RestartPolicy string
@@ -197,4 +199,24 @@ func (s Server) CVARs() (string, error) {
 	}
 
 	return out.String(), nil
+}
+
+func (s Server) Equals(s2 Server) bool {
+	if s.Port == 0 {
+		s.Port = s2.Port
+	}
+
+	sjson, err := json.Marshal(s)
+	if err != nil {
+		log.Errorf("could not marshal left config for comparison: %w", err)
+		return false
+	}
+
+	s2json, err := json.Marshal(s2)
+	if err != nil {
+		log.Errorf("could not marshal right config for comparison: %w", err)
+		return false
+	}
+
+	return string(sjson) == string(s2json)
 }

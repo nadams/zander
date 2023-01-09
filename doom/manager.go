@@ -15,11 +15,14 @@ import (
 
 	"gitlab.node-3.net/zander/zander/config"
 	"gitlab.node-3.net/zander/zander/internal/metrics"
+	"gitlab.node-3.net/zander/zander/internal/util"
 )
 
 var (
 	ErrServerNotFound = errors.New("server not found")
 )
+
+var binaryPaths = map[config.Engine]string{}
 
 type Manager struct {
 	m       sync.RWMutex
@@ -62,10 +65,6 @@ func (m *Manager) StartAll() []error {
 	var errs []error
 
 	for id, server := range m.servers {
-		if server.Config().Disabled {
-			continue
-		}
-
 		if err := server.Start(); err != nil {
 			log.Errorf("error starting server: %s", err.Error())
 			errs = append(errs, err)
@@ -204,7 +203,7 @@ func Load(cfg config.Config) (*Manager, error) {
 		return entries[i].Name() < entries[j].Name()
 	})
 
-	servers, err := m.LoadServers(cfg, met)
+	servers, err := m.LoadServers(cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -216,7 +215,7 @@ func Load(cfg config.Config) (*Manager, error) {
 	return m, nil
 }
 
-func (m *Manager) LoadServers(cfg config.Config, met metrics.Metrics) ([]Server, error) {
+func (m *Manager) LoadServers(cfg config.Config) ([]Server, error) {
 	dir := cfg.ExpandRel(cfg.ServerConfigDir)
 
 	if _, err := os.Stat(dir); err != nil {
@@ -234,8 +233,6 @@ func (m *Manager) LoadServers(cfg config.Config, met metrics.Metrics) ([]Server,
 		return entries[i].Name() < entries[j].Name()
 	})
 
-	binaryPaths := map[config.Engine]string{}
-
 	var servers []Server
 
 	for _, entry := range entries {
@@ -245,35 +242,7 @@ func (m *Manager) LoadServers(cfg config.Config, met metrics.Metrics) ([]Server,
 				return nil, err
 			}
 
-			var server Server
-
-			switch scfg.Engine {
-			case config.Zandronum:
-				if _, found := binaryPaths[config.Zandronum]; !found {
-					zandbinary := cfg.Expand(cfg.ServerBinaries.Zandronum)
-					if !cfg.Exists(zandbinary) {
-						return nil, fmt.Errorf("server binary %s not found", zandbinary)
-					}
-
-					binaryPaths[config.Zandronum] = zandbinary
-				}
-
-				server, err = NewZandronumServer(binaryPaths[config.Zandronum], cfg.WADPaths, scfg, met)
-			case config.Odamex:
-				if _, found := binaryPaths[config.Odamex]; !found {
-					odabinary := cfg.Expand(cfg.ServerBinaries.Odamex)
-					if !cfg.Exists(odabinary) {
-						return nil, fmt.Errorf("server binary %s not found", odabinary)
-					}
-
-					binaryPaths[config.Odamex] = odabinary
-				}
-
-				server, err = NewOdamexServer(binaryPaths[config.Odamex], cfg.WADPaths, scfg, met)
-			default:
-				err = fmt.Errorf("unknown engine: '%s'", scfg.Engine)
-			}
-
+			server, err := m.serverFromConfig(cfg, scfg)
 			if err != nil {
 				return nil, err
 			}
@@ -283,4 +252,115 @@ func (m *Manager) LoadServers(cfg config.Config, met metrics.Metrics) ([]Server,
 	}
 
 	return servers, nil
+}
+
+func (m *Manager) Reload(cfg config.Config) error {
+	newServers, err := m.LoadServers(cfg)
+	if err != nil {
+		return fmt.Errorf("could not reload servers: %w", err)
+	}
+
+	oldCfgs := util.NewSet[ID, config.Server]()
+
+	for _, s := range m.servers {
+		cfg := s.Config()
+
+		oldCfgs.Put(ID(cfg.ID), cfg)
+	}
+
+	newCfgs := util.NewSet[ID, config.Server]()
+
+	for _, s := range newServers {
+		cfg := s.Config()
+
+		newCfgs.Put(ID(cfg.ID), cfg)
+	}
+
+	n := newCfgs.Difference(oldCfgs)
+	r := oldCfgs.Difference(newCfgs)
+	e := newCfgs.Intersection(oldCfgs)
+
+	m.m.Lock()
+	defer m.m.Unlock()
+
+	for id, c := range n.Entries() {
+		ns, err := m.serverFromConfig(cfg, c)
+		if err != nil {
+			return err
+		}
+
+		m.Add(id, ns)
+	}
+
+	for i, neew := range e.Entries() {
+		old, found := m.Get(i)
+		if !found {
+			return fmt.Errorf("should have found server config for comparison but didn't")
+		}
+
+		if neew.Equals(old.Config()) {
+			e.Del(i)
+			continue
+		}
+
+		ns, err := m.serverFromConfig(cfg, neew)
+		if err != nil {
+			return err
+		}
+
+		id := ID(old.Config().ID)
+
+		m.Stop(id)
+		m.remove(id)
+		m.Add(id, ns)
+	}
+
+	for _, id := range r.Keys() {
+		m.Stop(id)
+		m.remove(id)
+	}
+
+	for _, k := range n.Keys() {
+		m.Start(k)
+	}
+
+	for _, k := range e.Keys() {
+		m.Start(k)
+	}
+
+	return nil
+}
+
+func (m *Manager) serverFromConfig(cfg config.Config, scfg config.Server) (Server, error) {
+	var server Server
+	var err error
+
+	switch scfg.Engine {
+	case config.Zandronum:
+		if _, found := binaryPaths[config.Zandronum]; !found {
+			zandbinary := cfg.Expand(cfg.ServerBinaries.Zandronum)
+			if !cfg.Exists(zandbinary) {
+				return nil, fmt.Errorf("server binary %s not found", zandbinary)
+			}
+
+			binaryPaths[config.Zandronum] = zandbinary
+		}
+
+		server, err = NewZandronumServer(binaryPaths[config.Zandronum], cfg.WADPaths, scfg, m.metrics)
+	case config.Odamex:
+		if _, found := binaryPaths[config.Odamex]; !found {
+			odabinary := cfg.Expand(cfg.ServerBinaries.Odamex)
+			if !cfg.Exists(odabinary) {
+				return nil, fmt.Errorf("server binary %s not found", odabinary)
+			}
+
+			binaryPaths[config.Odamex] = odabinary
+		}
+
+		server, err = NewOdamexServer(binaryPaths[config.Odamex], cfg.WADPaths, scfg, m.metrics)
+	default:
+		err = fmt.Errorf("unknown engine: '%s'", scfg.Engine)
+	}
+
+	return server, err
 }
