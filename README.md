@@ -8,6 +8,7 @@ Zander is a Doom server manager.
 - Attach to a running server
 - View and tail server logs
 - Shell completion
+- Hot reloading of server configurations
 
 ## Installation
 
