@@ -117,7 +117,10 @@ func (s *ZandronumServer) newCmd() error {
 	}
 
 	s.cmd = exec.Command(s.binary, params...)
-	s.cmd.Env = append(s.cmd.Env, fmt.Sprintf("DOOMWADPATH=%s", s.wadPaths.String()))
+	if len(s.wadPaths) > 0 {
+		s.cmd.Env = append(s.cmd.Env, fmt.Sprintf("DOOMWADPATH=%s", s.wadPaths.String()))
+		s.cmd.Env = append(s.cmd.Env, fmt.Sprintf("DOOMWADDIR=%s", s.wadPaths.Expanded()[0]))
+	}
 
 	return nil
 }
