@@ -6,7 +6,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -24,7 +23,6 @@ var (
 func Test_FindWAD_FoundInSingleDirectory(t *testing.T) {
 	x, err := FindWAD("test.wad", wadDir)
 
-	spew.Dump(x)
 	assert.NoError(t, err)
 	assert.True(t, strings.HasSuffix(x, "test.wad"))
 }
