@@ -33,10 +33,6 @@ changelog:
     exclude:
       - '^docs:'
       - '^test:'
-release:
-  github:
-    owner: nadams
-    name: zander
 
 gitlab_urls:
   api: https://gitlab.node-3.net/api/v4/
