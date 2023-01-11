@@ -45,17 +45,7 @@ func (s *OdamexServer) Copy() (Server, error) {
 }
 
 func (s *OdamexServer) newCmd() error {
-	if _, err := FindWAD(s.cfg.IWAD, s.wadPaths.Expanded()...); err != nil {
-		return fmt.Errorf("could not find IWAD %s", s.cfg.IWAD)
-	}
-
-	for _, pwad := range s.cfg.PWADs {
-		if _, err := FindWAD(pwad, s.wadPaths.Expanded()...); err != nil {
-			return fmt.Errorf("could not find PWAD %s", pwad)
-		}
-	}
-
-	params, err := s.cfg.Parameters()
+	params, err := s.cfg.Parameters(s.wadPaths.Expanded())
 	if err != nil {
 		return fmt.Errorf("could not get config parameters: %w", err)
 	}
@@ -97,10 +87,6 @@ func (s *OdamexServer) newCmd() error {
 	}
 
 	s.cmd = exec.Command(s.binary, params...)
-	if len(s.wadPaths) > 0 {
-		s.cmd.Env = append(s.cmd.Env, fmt.Sprintf("DOOMWADPATH=%s", s.wadPaths.String()))
-		s.cmd.Env = append(s.cmd.Env, fmt.Sprintf("DOOMWADDIR=%s", s.wadPaths.Expanded()[0]))
-	}
 
 	return nil
 }

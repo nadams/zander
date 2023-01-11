@@ -41,8 +41,8 @@ type Server struct {
 	Port          int           `toml:"port,omitempty" zander:"port"`
 	Hostname      string        `toml:"hostname,omitempty" zander:"sv_hostname,cvar"`
 	Website       string        `toml:"website,omitempty" zander:"sv_website,cvar"`
-	IWAD          string        `toml:"iwad,omitempty" zander:"iwad"`
-	PWADs         []string      `toml:"pwads,omitempty" zander:"file"`
+	IWAD          string        `toml:"iwad,omitempty" zander:"iwad,find_in_path"`
+	PWADs         []string      `toml:"pwads,omitempty" zander:"file,find_in_path"`
 	Skill         int           `toml:"skill,omitempty" zander:"skill"`
 	MOTD          string        `toml:"motd,multiline,omitempty" zander:"sv_motd,cvar"`
 	Maplist       []string      `toml:"maplist,omitempty" zander:"addmap,cvar"`
@@ -78,11 +78,11 @@ func LoadServer(path string) (Server, error) {
 
 var rawcvarRegexp = regexp.MustCompile(`(\w+)\s+(.+)`)
 
-func (s Server) Parameters() ([]string, error) {
-	return serverParams(s)
+func (s Server) Parameters(wadDirs []string) ([]string, error) {
+	return serverParams(s, wadDirs)
 }
 
-func serverParams(s any) ([]string, error) {
+func serverParams(s any, wadDirs []string) ([]string, error) {
 	var out []string
 
 	t := reflect.TypeOf(s)
@@ -92,7 +92,7 @@ func serverParams(s any) ([]string, error) {
 
 		switch field.Kind() {
 		case reflect.Struct:
-			x, err := serverParams(field.Interface())
+			x, err := serverParams(field.Interface(), wadDirs)
 			if err != nil {
 				return nil, err
 			}
@@ -126,11 +126,29 @@ func serverParams(s any) ([]string, error) {
 		case []string:
 			for _, x := range v {
 				if x != "" {
+					if zanderTag.HasOption("find_in_path") && !strings.Contains(x, string(os.PathSeparator)) {
+						y, err := FindWAD(x, wadDirs...)
+						if err != nil {
+							return nil, fmt.Errorf("%w: %s", err, x)
+						}
+
+						x = y
+					}
+
 					out = append(out, option, x)
 				}
 			}
 		case string:
 			if v != "" {
+				if zanderTag.HasOption("find_in_path") && !strings.Contains(v, string(os.PathSeparator)) {
+					x, err := FindWAD(v, wadDirs...)
+					if err != nil {
+						return nil, fmt.Errorf("%w: %s", err, v)
+					}
+
+					v = x
+				}
+
 				out = append(out, option, v)
 			}
 		case int:

@@ -29,7 +29,7 @@ func Test_serverParams(t *testing.T) {
 		},
 	}
 
-	out, err := serverParams(x)
+	out, err := serverParams(x, []string{})
 
 	assert.NoError(t, err)
 	assert.Equal(t, []string{

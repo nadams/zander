@@ -1,4 +1,4 @@
-package doom
+package config
 
 import (
 	"errors"
