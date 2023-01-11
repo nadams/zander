@@ -61,8 +61,3 @@ release-gitlab:
   extends: .release
   before_script:
     - unset GITHUB_TOKEN
-
-release-github:
-  extends: .release
-  before_script:
-    - unset GITLAB_TOKEN
