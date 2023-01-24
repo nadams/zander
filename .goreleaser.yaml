@@ -1,24 +1,25 @@
 before:
   hooks:
-    - go mod tidy
+    - 'go mod tidy'
 
 builds:
   - env:
-      - CGO_ENABLED=0
+      - 'CGO_ENABLED=0'
     goos:
-      - linux
-      - freebsd
+      - 'linux'
+      - 'freebsd'
     ldflags:
       - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}} -X main.builtBy=goreleaser -X "main.goversion={{.Env.GOVERSION}}"
 archives:
   - replacements:
-      linux: linux
-      386: i386
-      amd64: x86_64
+      linux: 'linux'
+      386: 'i386'
+      amd64: 'x86_64'
     files:
-      - LICENSE
-      - README.md
-      - zander.service
+      - 'LICENSE'
+      - 'README.md'
+      - 'zander.service'
+      - 'zander.toml'
     wrap_in_directory: true
 
 checksum:
@@ -34,14 +35,31 @@ changelog:
       - '^docs:'
       - '^test:'
 
+nfpms:
+  - homepage: 'https://node-3.net/zander'
+    maintainer: 'Nick Adams <zander@node-3.net>'
+    description: |-
+      Software to manage dedicated doom server instances
+    license: 'MIT'
+    formats:
+      - 'deb'
+      - 'rpm'
+      - 'archlinux'
+    contents:
+      - src: 'zander.service'
+        dst: '/lib/systemd/system/zander.service'
+      - src: 'zander.toml'
+        dst: '/etc/zander/zander.toml'
+        type: 'config|noreplace'
+
 gitlab_urls:
-  api: https://gitlab.node-3.net/api/v4/
-  download: https://gitlab.node-3.net
+  api: 'https://gitlab.node-3.net/api/v4/'
+  download: 'https://gitlab.node-3.net'
   skip_tls_verify: false
   use_package_registry: false
 
 aurs:
-  - name: zander-bin
+  - name: 'zander-bin'
     homepage: 'https://node-3.net/zander'
     description: 'Software to manage dedicated doom server instances'
     maintainers:
@@ -59,6 +77,6 @@ aurs:
 
       # TODO: completions
     commit_author:
-      name: Nick Adams
-      email: zander@node-3.net
+      name: 'Nick Adams'
+      email: 'zander@node-3.net'
     url_template: 'https://gitlab.node-3.net/zander/zander/-/releases/{{ .Tag }}/downloads/{{ .ArtifactName }}'

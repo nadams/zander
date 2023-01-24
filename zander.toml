@@ -1,0 +1,23 @@
+# The location of all server config files.
+# This can be a relative path (to the config dir) or absolute.
+server_config_dir = "servers"
+
+# This is a list of all directories that contain wad files.
+wad_paths = []
+
+# The server_binaries section will let you configure the location
+# of supported binary files. This isn't needed if the binaries can
+# be found in your PATH variable.
+#
+# [server_binaries]
+# zandronum = ""
+# odamex = ""
+
+# This configures the exposure of metrics via prometheus.
+# Collected metrics will be exposed on the configured port and path.
+#
+# [metrics.prometheus]
+# enabled = true
+# port = 2112
+# path = "/metrics"
+
