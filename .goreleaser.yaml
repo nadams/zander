@@ -47,6 +47,8 @@ nfpms:
       - 'deb'
       - 'rpm'
       - 'archlinux'
+    archlinux:
+      packager: 'Nick Adams <zander@node-3.net>'
     contents:
       - src: '.pkg/zander.service'
         dst: '/usr/lib/systemd/system/zander.service'
