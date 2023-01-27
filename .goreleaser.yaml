@@ -18,8 +18,10 @@ archives:
     files:
       - 'LICENSE'
       - 'README.md'
-      - 'zander.service'
-      - 'zander.toml'
+      - src: '.pkg'
+        dst: 'config'
+        strip_parent: true
+
     wrap_in_directory: true
 
 checksum:
@@ -46,11 +48,19 @@ nfpms:
       - 'rpm'
       - 'archlinux'
     contents:
-      - src: 'zander.service'
+      - src: '.pkg/zander.service'
         dst: '/lib/systemd/system/zander.service'
-      - src: 'zander.toml'
-        dst: '/etc/zander/zander.toml'
+      - src: '.pkg/zander.toml'
+        dst: '/etc/xdg/zander/zander.toml'
         type: 'config|noreplace'
+      - src: '.pkg/zander.toml'
+        dst: '/usr/share/zander/zander.toml'
+      - src: '.pkg/servers/doom2.toml'
+        dst: '/usr/share/zander/servers/doom2.toml'
+      - dst: '/etc/xdg/zander/servers'
+        type: 'dir'
+        file_info:
+          mode: 0755
 
 gitlab_urls:
   api: 'https://gitlab.node-3.net/api/v4/'

@@ -108,7 +108,7 @@ func (s *Server) listenAndServe(manager *doom.Manager) error {
 }
 
 func configPath() (string, error) {
-	configPath, err := xdg.ConfigFile("zander/zander.toml")
+	configPath, err := xdg.SearchConfigFile("zander/zander.toml")
 	if err != nil {
 		return "", fmt.Errorf("could not get config file path: %w", err)
 	}

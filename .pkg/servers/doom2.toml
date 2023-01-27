@@ -1,0 +1,71 @@
+# REQUIRED
+# Which doom engine to use.
+# Valid values are: zandronum, odamex
+engine = "zandronum"
+
+# REQUIRED
+# Which IWAD to use. Zander will attempt to locate this file in the
+# configured wad_paths setting.
+iwad = "doom2.wad"
+
+# REQUIRED
+# The name of the server to be advertised to the master server.
+hostname = "My DOOM2 Server"
+
+# Set the skill level for this server. 
+# The default value would be 0, which is I'm too young to die.
+skill = 3
+
+# Set the port for this server. Setting this to a value of 0 (the default)
+# will let the engine pick an open port. If the engine doesn't support
+# this functionality, then a number should be set here.
+# port = 0
+
+# PWADs to load. Zander will attempt to locate these files in the
+# configured wad_paths setting.
+# pwads = [
+#   "my-wad.wad"
+# ]
+
+# Enable or disable this server.
+# disabled = false
+
+# What to do when the server needs to be restarted.
+# The default is unless-stopped
+# Valid values are: no, on-failure, and unless-stopped
+# restart_policy = "unless-stopped"
+
+# The maximum number of log lines kept in memory.
+# A value of 0 (the default) will not discard lines and keep all
+# lines in memory until the server is stopped or restarted.
+# max_log_lines = 0
+
+# This sets the game mode for the given engine. This varies by
+# engine, so refer to the engine"s documentation to use the
+# correct value.
+# mode = ""
+
+# The email that can be used to contact the admin of this server.
+# email = ""
+
+# Set the website that will be advertised for this server.
+# website = "https://my-website.com"
+
+# Set the maplist for the server.
+# maplist = [
+#   "map01",
+#   "map02"
+# ]
+
+# Sets the message of the day for the server.
+# motd = '''
+# Enjoy playing on this server!
+# '''
+
+# Sets the rcon password for this server.
+# rcon_password = 'my_password!'
+
+# Lets you set raw parameters for settings that are not
+# supported in zander.
+# raw_params = '''
+# '''
