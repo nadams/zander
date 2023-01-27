@@ -49,7 +49,7 @@ nfpms:
       - 'archlinux'
     contents:
       - src: '.pkg/zander.service'
-        dst: '/lib/systemd/system/zander.service'
+        dst: '/usr/lib/systemd/system/zander.service'
       - src: '.pkg/zander.toml'
         dst: '/etc/xdg/zander/zander.toml'
         type: 'config|noreplace'
