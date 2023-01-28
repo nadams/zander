@@ -15,12 +15,25 @@ Zander is a Doom server manager.
 ### Arch Linux
 https://aur.archlinux.org/packages/zander-bin
 
+You can also grab a pre-built package from the [releases](https://gitlab.node-3.net/zander/zander/-/releases) page.
+
 ### Other
 Download current release for your platform and architecture.
 
 https://gitlab.node-3.net/zander/zander/-/releases
 
 Add `zander` to your `PATH`.
+
+### Run as a Systemd User Service
+
+```sh
+mkdir -p $HOME/.config/{systemd/user,zander/servers}
+cp .pkg/zander.service $HOME/.config/systemd/user
+cp .pkg/zander.toml $HOME/.config/zander
+systemctl --user daemon-reload
+systemctl --user enable zander
+sudo loginctl enable-linger
+```
 
 ### Configuration
 Configuration for zander is stored in `$XDG_CONFIG_HOME/zander`, which usually defaults to `$HOME/.config`.
