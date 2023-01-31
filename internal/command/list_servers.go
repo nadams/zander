@@ -64,6 +64,10 @@ var tableProps = map[string]func(s *zproto.Server) string{
 		}
 
 		nicetime := humanize.Time(t)
+		if t.Equal(time.Unix(0, 0)) {
+			return status
+		}
+
 		return fmt.Sprintf("%s\n%s %s", status, updown, nicetime)
 	},
 	"started_at": func(s *zproto.Server) string {
