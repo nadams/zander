@@ -52,6 +52,8 @@ var tableProps = map[string]func(s *zproto.Server) string{
 				status = text.FgRed.Sprint(status)
 			case doom.NotStarted:
 				status = text.FgYellow.Sprint(status)
+			case doom.Disabled:
+				status = text.FgWhite.Sprint(status)
 			}
 		}
 

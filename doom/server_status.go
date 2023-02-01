@@ -7,4 +7,5 @@ const (
 	Stopped                 = "stopped"
 	Errored                 = "errored"
 	NotStarted              = "not started"
+	Disabled                = "disabled"
 )

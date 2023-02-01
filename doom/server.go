@@ -210,6 +210,8 @@ func (s *server) Config() config.Server {
 
 func (s *server) status() ServerStatus {
 	switch {
+	case s.cfg.Disabled:
+		return Disabled
 	case s.started == emptyTime:
 		return NotStarted
 	case s.cmd.ProcessState != nil && s.stopped == emptyTime:
