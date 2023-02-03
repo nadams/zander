@@ -1,3 +1,6 @@
+include:
+  - template: Security/SAST.gitlab-ci.yml
+
 .go-cache:
   image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/golang:1.19
   variables:
@@ -15,13 +18,13 @@ stages:
   - release
 
 lint:
-  extends: .go-cache
+  extends: ".go-cache"
   stage: lint
   script:
     - go vet $(go list ./... | grep -v /vendor/)
 
 test:
-  extends: .go-cache
+  extends: ".go-cache"
   stage: test
   script:
     - go install
@@ -34,8 +37,11 @@ test:
         coverage_format: cobertura
         path: coverage.xml
 
+sast:
+  stage: test
+
 build:
-  extends: .go-cache
+  extends: ".go-cache"
   stage: build
   script:
     - mkdir -p bin
@@ -45,7 +51,7 @@ build:
       - bin
 
 .release:
-  extends: .go-cache
+  extends: ".go-cache"
   stage: release
   image:
     name: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/goreleaser/goreleaser:latest
@@ -58,6 +64,7 @@ build:
     - GOVERSION=$(go version) goreleaser release --clean
 
 release-gitlab:
-  extends: .release
+  extends: ".release"
   before_script:
     - unset GITHUB_TOKEN
+
