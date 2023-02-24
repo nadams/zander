@@ -1,6 +1,6 @@
 module gitlab.node-3.net/zander/zander
 
-go 1.19
+go 1.20
 
 require (
 	github.com/alecthomas/kong v0.7.1
