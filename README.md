@@ -53,8 +53,13 @@ The Systemd service file can be found in this repository (`.pkg/zander.service`)
 
 ## Usage
 
+Zander is split into two parts. One part is the service which is typically run as a Systemd service. The second part is the client which will attempt
+to communicate with the service via a unix socket. This socket is located here `$XDG_RUNTIME_DIR/zander.sock` by default. This value can overwritten by
+setting the `$ZANDER_SOCKET` environment variable or by setting the `-s`/`--socket` flag. Using the Zander client without a running service will
+result in a connection error.
+
 ## Contributing
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+Pull/merge requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
 
