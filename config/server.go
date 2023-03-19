@@ -189,7 +189,7 @@ func (s Server) CVARs() (string, error) {
 				out.WriteString(zanderTag.Name)
 				out.WriteString(" ")
 				out.WriteString("\"")
-				out.WriteString(z)
+				out.WriteString(escapeNewlines(z))
 				out.WriteString("\"")
 				out.WriteString("\n")
 			case []string:
@@ -197,7 +197,7 @@ func (s Server) CVARs() (string, error) {
 					out.WriteString(zanderTag.Name)
 					out.WriteString(" ")
 					out.WriteString("\"")
-					out.WriteString(a)
+					out.WriteString(escapeNewlines(a))
 					out.WriteString("\"")
 					out.WriteString("\n")
 				}
@@ -237,4 +237,10 @@ func (s Server) Equals(s2 Server) bool {
 	}
 
 	return string(sjson) == string(s2json)
+}
+
+var newlineReplacer = strings.NewReplacer("\n", "\\n", "\r", "\\r")
+
+func escapeNewlines(z string) string {
+	return newlineReplacer.Replace(z)
 }
