@@ -156,7 +156,7 @@ func (m *Manager) add(id ID, server Server) {
 }
 
 func Load(cfg config.Config) (*Manager, error) {
-	var coll []metrics.Metrics
+	coll := []metrics.Metrics{metrics.NewMemory()}
 
 	mcfg := cfg.Metrics
 	if mcfg.Prometheus != nil && mcfg.Prometheus.Enabled {
