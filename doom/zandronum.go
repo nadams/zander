@@ -115,6 +115,7 @@ var (
 	zandPortRegexp             = regexp.MustCompile(`^IP address .+:(\d+)$`)
 	zandClientConnectRegexp    = regexp.MustCompile(`^.+ \(.+\) has connected\.(\s*\(from.+\))?$`)
 	zandClientDisconnectRegexp = regexp.MustCompile(`^client .+ \(.+\) disconnected\.$`)
+	zandTimedOutRegexp         = regexp.MustCompile(`^.+ \(.+\) timed out\.$`)
 )
 
 func (s *ZandronumServer) scanPort(b []byte) []byte {
@@ -138,7 +139,7 @@ func (s *ZandronumServer) scanPlayerConnect(b []byte) []byte {
 }
 
 func (s *ZandronumServer) scanPlayerDisconnect(b []byte) []byte {
-	if zandClientDisconnectRegexp.Match(b) {
+	if zandClientDisconnectRegexp.Match(b) || zandTimedOutRegexp.Match(b) {
 		s.metrics.DecPlayerCount(s.cfg.ID, string(s.cfg.Engine))
 	}
 

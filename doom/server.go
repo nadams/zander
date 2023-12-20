@@ -98,50 +98,57 @@ func (s *server) Start() error {
 	s.metrics.SetPlayerCount(s.cfg.ID, string(s.cfg.Engine), 0)
 
 	go s.cmd.Wait()
-
 	go func() {
-		scanner := bufio.NewScanner(s.stdout)
-		for scanner.Scan() {
-			b := scanner.Bytes()
-
-			for _, mapper := range s.logMappers {
-				if mapper != nil {
-					b = mapper(b)
-				}
-			}
-
-			s.content.Write(b)
-
-			s.m.RLock()
-			for _, consumer := range s.consumers {
-				consumer <- b
-			}
-			s.m.RUnlock()
-		}
-
-		s.m.Lock()
-		defer s.m.Unlock()
-
-		consIDs := make([]string, 0, len(s.consumers))
-		cons := make([]chan<- []byte, 0, len(s.consumers))
-
-		for key, consumer := range s.consumers {
-			consIDs = append(consIDs, key)
-			cons = append(cons, consumer)
-		}
-
-		for _, id := range consIDs {
-			delete(s.consumers, id)
-		}
-
-		for _, consumer := range cons {
-			close(consumer)
-		}
-
-		s.Stop()
+		s.scanStdout()
+		s.scanCleanup()
 	}()
 
 	return nil
+}
+
+func (s *server) scanStdout() {
+	scanner := bufio.NewScanner(s.stdout)
+	for scanner.Scan() {
+		b := scanner.Bytes()
+
+		for _, mapper := range s.logMappers {
+			if mapper != nil {
+				b = mapper(b)
+			}
+		}
+
+		s.content.Write(b)
+
+		s.m.RLock()
+		for _, consumer := range s.consumers {
+			consumer <- b
+		}
+		s.m.RUnlock()
+	}
+}
+
+func (s *server) scanCleanup() {
+	s.m.Lock()
+	defer s.m.Unlock()
+
+	consIDs := make([]string, 0, len(s.consumers))
+	cons := make([]chan<- []byte, 0, len(s.consumers))
+
+	for key, consumer := range s.consumers {
+		consIDs = append(consIDs, key)
+		cons = append(cons, consumer)
+	}
+
+	for _, id := range consIDs {
+		delete(s.consumers, id)
+	}
+
+	for _, consumer := range cons {
+		close(consumer)
+	}
+
+	s.Stop()
+
 }
 
 func (s *server) Stop() error {
