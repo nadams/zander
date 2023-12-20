@@ -29,3 +29,7 @@ func (m *Multi) SetPlayerCount(serverID, engine string, count uint) {
 		x.SetPlayerCount(serverID, engine, count)
 	}
 }
+
+func (m *Multi) List() []Metrics {
+	return m.m
+}

@@ -24,9 +24,10 @@ var (
 var binaryPaths = map[config.Engine]string{}
 
 type Manager struct {
-	m       sync.RWMutex
-	servers map[ID]Server
-	metrics metrics.Metrics
+	m             sync.RWMutex
+	servers       map[ID]Server
+	metrics       metrics.Metrics
+	memoryMetrics *metrics.Memory
 }
 
 type ManagerOpt func(m *Manager)
@@ -39,9 +40,10 @@ func WithMetrics(c metrics.Metrics) ManagerOpt {
 
 type ID string
 
-func NewManager(opts ...ManagerOpt) *Manager {
+func NewManager(memoryMetrics *metrics.Memory, opts ...ManagerOpt) *Manager {
 	m := &Manager{
-		servers: map[ID]Server{},
+		servers:       map[ID]Server{},
+		memoryMetrics: memoryMetrics,
 	}
 
 	for _, opt := range opts {
@@ -146,6 +148,10 @@ func (m *Manager) Watch() {
 	}
 }
 
+func (m *Manager) Metrics() *metrics.Memory {
+	return m.memoryMetrics
+}
+
 func (m *Manager) remove(id ID) {
 	delete(m.servers, id)
 }
@@ -155,7 +161,8 @@ func (m *Manager) add(id ID, server Server) {
 }
 
 func Load(cfg config.Config) (*Manager, error) {
-	coll := []metrics.Metrics{metrics.NewMemory()}
+	mem := metrics.NewMemory()
+	coll := []metrics.Metrics{mem}
 
 	mcfg := cfg.Metrics
 	if mcfg.Prometheus != nil && mcfg.Prometheus.Enabled {
@@ -183,7 +190,7 @@ func Load(cfg config.Config) (*Manager, error) {
 	}
 
 	met := metrics.NewMulti(coll...)
-	m := NewManager(WithMetrics(met))
+	m := NewManager(mem, WithMetrics(met))
 
 	dir := cfg.ExpandRel(cfg.ServerConfigDir)
 

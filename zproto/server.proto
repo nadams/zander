@@ -61,6 +61,7 @@ message Server {
   repeated string pwads = 8;
   google.protobuf.Timestamp started_at = 9;
   google.protobuf.Timestamp stopped_at = 10;
+  uint32 players = 11;
 }
 
 message AttachIn {

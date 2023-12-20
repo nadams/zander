@@ -218,6 +218,7 @@ func (z *ZanderServer) Logs(ctx context.Context, in *zproto.LogsIn) (*zproto.Log
 
 func (z *ZanderServer) ListServers(ctx context.Context, in *zproto.ListServersRequest) (*zproto.ListServersResponse, error) {
 	servers := z.manager.List()
+	playerCounts := z.manager.Metrics().PlayerCounts()
 	serversOut := make([]*zproto.Server, 0, len(servers))
 
 	for _, s := range servers {
@@ -232,6 +233,7 @@ func (z *ZanderServer) ListServers(ctx context.Context, in *zproto.ListServersRe
 			Pwads:     s.PWADs,
 			StartedAt: timestamppb.New(s.Started),
 			StoppedAt: timestamppb.New(s.Stopped),
+			Players:   playerCounts[s.ID],
 		})
 	}
 

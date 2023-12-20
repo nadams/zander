@@ -13,8 +13,8 @@ import (
 func Test_ZandronumMetricsPlayerDisconnect(t *testing.T) {
 	for name, test := range map[string]struct {
 		text                string
-		initialPlayerCount  uint
-		expectedPlayerCount uint
+		initialPlayerCount  uint32
+		expectedPlayerCount uint32
 	}{
 		"disconnect not matched": {
 			text:                "garbage\n",
@@ -58,11 +58,11 @@ func Test_ZandronumMetricsPlayerDisconnect(t *testing.T) {
 
 			zand.stdout = io.NopCloser(text)
 
-			met.SetPlayerCount(serverID, string(config.Zandronum), test.initialPlayerCount)
+			met.SetPlayerCount(serverID, string(config.Zandronum), uint(test.initialPlayerCount))
 
 			zand.scanStdout()
 
-			assert.Equal(t, test.expectedPlayerCount, met.PlayerCounts(string(config.Zandronum))[serverID])
+			assert.Equal(t, test.expectedPlayerCount, met.PlayerCounts()[serverID])
 		})
 	}
 }
