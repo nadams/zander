@@ -90,9 +90,7 @@ func (c *CmdHistory) All() []string {
 	defer c.m.RUnlock()
 
 	out := make([]string, 0)
-	for i := range c.cmds {
-		out[i] = c.cmds[i]
-	}
+	copy(out, c.cmds)
 
 	return out
 }

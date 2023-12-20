@@ -6,7 +6,6 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
-	"regexp"
 	"strconv"
 	"strings"
 
@@ -19,8 +18,8 @@ type RestartPolicy string
 
 const (
 	No            RestartPolicy = "no"
-	OnFailure                   = "on-failure"
-	UnlessStopped               = "unless-stopped"
+	OnFailure     RestartPolicy = "on-failure"
+	UnlessStopped RestartPolicy = "unless-stopped"
 )
 
 type Engine string
@@ -75,8 +74,6 @@ func LoadServer(path string) (Server, error) {
 
 	return s, nil
 }
-
-var rawcvarRegexp = regexp.MustCompile(`(\w+)\s+(.+)`)
 
 func (s Server) Parameters(wadDirs []string) ([]string, error) {
 	return serverParams(s, wadDirs)
