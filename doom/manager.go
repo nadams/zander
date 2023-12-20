@@ -3,7 +3,6 @@ package doom
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sort"
@@ -194,7 +193,7 @@ func Load(cfg config.Config) (*Manager, error) {
 		}
 	}
 
-	entries, err := ioutil.ReadDir(dir)
+	entries, err := os.ReadDir(dir)
 	if err != nil {
 		return nil, err
 	}
@@ -224,7 +223,7 @@ func (m *Manager) LoadServers(cfg config.Config) ([]Server, error) {
 		}
 	}
 
-	entries, err := ioutil.ReadDir(dir)
+	entries, err := os.ReadDir(dir)
 	if err != nil {
 		return nil, err
 	}
