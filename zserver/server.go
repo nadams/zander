@@ -8,7 +8,6 @@ import (
 
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -92,7 +91,7 @@ func (z *ZanderServer) Attach(stream zproto.Zander_AttachServer) error {
 
 	srv, found := z.manager.Get(doom.ID(initial.Id))
 	if !found {
-		return grpc.Errorf(codes.NotFound, "server with id '%v' not found", initial.Id)
+		return status.Errorf(codes.NotFound, "server with id '%v' not found", initial.Id)
 	}
 
 	wait := make(chan struct{}, 1)
@@ -160,7 +159,7 @@ func (z *ZanderServer) Attach(stream zproto.Zander_AttachServer) error {
 func (z *ZanderServer) Tail(in *zproto.TailIn, stream zproto.Zander_TailServer) error {
 	srv, found := z.manager.Get(doom.ID(in.Id))
 	if !found {
-		return grpc.Errorf(codes.NotFound, "server with id '%v' not found", in.Id)
+		return status.Errorf(codes.NotFound, "server with id '%v' not found", in.Id)
 	}
 
 	send := make(chan []byte)
@@ -201,7 +200,7 @@ func (z *ZanderServer) Tail(in *zproto.TailIn, stream zproto.Zander_TailServer) 
 func (z *ZanderServer) Logs(ctx context.Context, in *zproto.LogsIn) (*zproto.LogsOut, error) {
 	srv, found := z.manager.Get(doom.ID(in.Id))
 	if !found {
-		return nil, grpc.Errorf(codes.NotFound, "server with id '%v' not found", in.Id)
+		return nil, status.Errorf(codes.NotFound, "server with id '%v' not found", in.Id)
 	}
 
 	var b bytes.Buffer
