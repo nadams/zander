@@ -120,7 +120,11 @@ func (l *ListServersCmd) Run(cmdCtx CmdCtx) error {
 		}
 
 		sort.Slice(resp.Servers, func(i, j int) bool {
-			return resp.Servers[i].Name < resp.Servers[j].Name
+			if resp.Servers[i].Name != resp.Servers[j].Name {
+				return resp.Servers[i].Name < resp.Servers[j].Name
+			}
+
+			return resp.Servers[i].Id < resp.Servers[j].Id
 		})
 
 		switch l.Output {
