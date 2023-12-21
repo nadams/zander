@@ -66,7 +66,10 @@ func (s *OdamexServer) newCmd() error {
 		return fmt.Errorf("could not write to temp config file: %w", err)
 	}
 
-	params = append(params, "+exec", f.Name())
+	params = append(params,
+		"+exec", f.Name(),
+		"+logfile", os.DevNull,
+	)
 
 	switch strings.ToLower(s.cfg.Mode) {
 	case "dm", "deathmatch":
