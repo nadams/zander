@@ -73,20 +73,20 @@ func (s *OdamexServer) newCmd() error {
 
 	switch strings.ToLower(s.cfg.Mode) {
 	case "dm", "deathmatch":
-		params = append(params, "+sv_gametype 1", "-deathmatch")
+		params = append(params, "+sv_gametype", "1", "+sv_itemsrespawn", "0", "+sv_weaponstay", "1")
 	case "altdeath":
-		params = append(params, "+sv_gametype 1", "-altdeath")
+		params = append(params, "+sv_gametype", "1", "+sv_itemsrespawn", "1", "+sv_weaponstay", "0")
 	case "nsdm":
-		params = append(params, "+sv_gametype 1", "\"Newschool\"")
+		params = append(params, "+sv_gametype", "1", "+sv_itemsrespawn", "1", "+sv_weaponstay", "1")
 	case "cooperative":
-		params = append(params, "+sv_gametype 0")
+		params = append(params, "+sv_gametype", "0")
 	case "tdm":
-		params = append(params, "+sv_gametype 2")
+		params = append(params, "+sv_gametype", "2")
 	case "ctf":
-		params = append(params, "+sv_gametype 3")
+		params = append(params, "+sv_gametype", "3")
 	default:
 		s.cfg.Mode = "dm"
-		params = append(params, "+sv_gametype 1", "-deathmatch")
+		params = append(params, "+sv_gametype", "1", "+sv_itemsrespawn", "0", "+sv_weaponstay", "1")
 	}
 
 	s.cmd = exec.Command(s.binary, params...)
