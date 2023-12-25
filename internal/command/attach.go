@@ -11,7 +11,7 @@ import (
 	"syscall"
 
 	"github.com/gdamore/tcell/v2"
-	"github.com/jedib0t/go-pretty/table"
+	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/rivo/tview"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc/status"

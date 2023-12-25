@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"github.com/dustin/go-humanize"
-	"github.com/jedib0t/go-pretty/table"
-	"github.com/jedib0t/go-pretty/text"
+	"github.com/jedib0t/go-pretty/v6/table"
+	"github.com/jedib0t/go-pretty/v6/text"
 	"gitlab.node-3.net/zander/zander/doom"
 	"gitlab.node-3.net/zander/zander/zproto"
 	"gopkg.in/yaml.v2"
