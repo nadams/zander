@@ -27,6 +27,7 @@ func NewZandronumServer(binary string, wadPath config.WADPaths, cfg config.Serve
 
 	s.server.logMappers = []logMapper{
 		s.scanPort,
+		s.scanMapChange,
 		s.scanPlayerConnect,
 		s.scanPlayerDisconnect,
 	}
@@ -116,6 +117,7 @@ var (
 	zandClientConnectRegexp    = regexp.MustCompile(`^.+ \(.+\) has connected\.(\s*\(from.+\))?$`)
 	zandClientDisconnectRegexp = regexp.MustCompile(`^client .+ \(.+\) disconnected\.$`)
 	zandTimedOutRegexp         = regexp.MustCompile(`^.+ \(.+\) timed out\.$`)
+	zandMapChange              = regexp.MustCompile(`^\*\*\* .+: .+ \*\*\*$`)
 )
 
 func (s *ZandronumServer) scanPort(b []byte) []byte {
@@ -141,6 +143,14 @@ func (s *ZandronumServer) scanPlayerConnect(b []byte) []byte {
 func (s *ZandronumServer) scanPlayerDisconnect(b []byte) []byte {
 	if zandClientDisconnectRegexp.Match(b) || zandTimedOutRegexp.Match(b) {
 		s.metrics.DecPlayerCount(s.cfg.ID, string(s.cfg.Engine))
+	}
+
+	return b
+}
+
+func (s *ZandronumServer) scanMapChange(b []byte) []byte {
+	if zandMapChange.Match(b) {
+		s.resetPlayerCount()
 	}
 
 	return b

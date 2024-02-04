@@ -264,3 +264,7 @@ func (s *server) attach(opts ConnectOpts, send chan<- []byte, recv <-chan []byte
 func (s *server) Logs(n int) []string {
 	return s.content.Lines(n)
 }
+
+func (s *server) resetPlayerCount() {
+	s.metrics.SetPlayerCount(s.cfg.ID, string(s.cfg.Engine), 0)
+}

@@ -27,6 +27,7 @@ func NewOdamexServer(binary string, wadPaths config.WADPaths, cfg config.Server,
 
 	s.server.logMappers = []logMapper{
 		s.scanPort,
+		s.scanMapChange,
 		s.scanPlayerConnect,
 		s.scanPlayerDisconnect,
 	}
@@ -127,6 +128,7 @@ func (s *OdamexServer) scanPort(b []byte) []byte {
 var (
 	odaClientConnectRegexp    = regexp.MustCompile(`^\[\d{2}:\d{2}:\d{2}\] .+ has connected\.$`)
 	odaClientDisconnectRegexp = regexp.MustCompile(`^\[\d{2}:\d{2}:\d{2}\] .+ disconnected\. \(.+\)$`)
+	odaMapChange              = regexp.MustCompile(`^\[\d{2}:\d{2}:\d{2}\] ---.+: .+ ---$`)
 )
 
 func (s *OdamexServer) scanPlayerConnect(b []byte) []byte {
@@ -140,6 +142,14 @@ func (s *OdamexServer) scanPlayerConnect(b []byte) []byte {
 func (s *OdamexServer) scanPlayerDisconnect(b []byte) []byte {
 	if !s.isChat(b) && odaClientDisconnectRegexp.Match(b) {
 		s.metrics.DecPlayerCount(s.cfg.ID, string(s.cfg.Engine))
+	}
+
+	return b
+}
+
+func (s *OdamexServer) scanMapChange(b []byte) []byte {
+	if !s.isChat(b) && odaMapChange.Match(b) {
+		s.resetPlayerCount()
 	}
 
 	return b
